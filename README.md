@@ -1,3 +1,3 @@
 # pflege
 
-Ein Projekt der THI Studenten WINF SS25.
+Ein Projekt der THI StudentenInnen WINF SS25.
