@@ -2,11 +2,11 @@ package org;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.langchain4j.model.output.structured.Description;
-import org.model.*;
+import org.model.CareType;
+import org.model.Period;
+import org.model.Reason;
 
 public class FormData {
-
-
     // wird von AIResource genutzt, um der KI die aktuellen Daten mitzuteilen.
     @Override
     public String toString() {
@@ -25,8 +25,8 @@ public class FormData {
                 careLevel != null && careLevel >= 1 && careLevel <= 5 &&
                         // careType:
                         careType != null &&
-        // carePeriod:
-            carePeriod.isValid() &&
+                        // carePeriod:
+                        carePeriod.isValid() &&
                         // reason:
                         reason != null;
     }
@@ -54,7 +54,6 @@ public class FormData {
 
     //@JsonProperty("insuredPerson")
     //private InsuredPerson insuredPerson;
-
 
 
 //    @JsonProperty("caregiver")
