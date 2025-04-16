@@ -5,6 +5,10 @@ import dev.langchain4j.model.output.structured.Description;
 import org.model.CareType;
 import org.model.Period;
 import org.model.Reason;
+import org.model.Address;
+import org.model.Caregiver;
+import org.model.InsuredPerson;
+import org.model.ReplacementCare;
 
 public class FormData {
     // wird von AIResource genutzt, um der KI die aktuellen Daten mitzuteilen.
@@ -21,23 +25,28 @@ public class FormData {
 
     // prüft, ob alle FormData schon ausgefüllt / erfragt wurden
     public boolean isComplete() {
-        return //carelevel:
-                careLevel != null && careLevel >= 1 && careLevel <= 5 &&
-                        // careType:
-                        careType != null &&
-                        // carePeriod:
-                        carePeriod.isValid() &&
-                        // reason:
-                        reason != null;
+        return
+                careLevel != null && careLevel >= 2 && careLevel <= 5 &&
+                careType != null &&
+                // carePeriod
+                carePeriod.isValid() &&
+                // reason
+                reason != null &&
+                insuredPerson != null && insuredPerson.isValid() &&
+                caregiver != null && caregiver.isValid() &&
+                replacementCare != null && replacementCare.isValid() &&
+                Boolean.TRUE.equals(isHomeCare) &&
+                Boolean.TRUE.equals(careDurationMin6Months) &&
+                Boolean.TRUE.equals(legalAcknowledgement);
     }
 
+    @JsonProperty("chatbotMessage")
+    private String chatbotMessage;
 
     @JsonProperty("careType")
     @Description("Describes the type of care. Either hourly or daily.")
     private CareType careType;
 
-    @JsonProperty("chatbotMessage")
-    private String chatbotMessage;
 
     @JsonProperty("careLevel")
     @Description("Indicates the care level (Pflegegrad) of a person. Can range from 1 to 5.")
@@ -52,26 +61,32 @@ public class FormData {
     @Description("Describes the reason for the care. Either holiday or other.")
     private Reason reason;
 
-    //@JsonProperty("insuredPerson")
-    //private InsuredPerson insuredPerson;
+    @JsonProperty("insuredPerson")
+    @Description("Information about the insured person, including full name, birth date, address, phone number and insurance number.")
+    private InsuredPerson insuredPerson;
 
 
-//    @JsonProperty("caregiver")
-//    private Caregiver caregiver;
+    @JsonProperty("caregiver")
+    @Description("Information about the regular caregiver including name, address, phone number and care start date.")
+    private Caregiver caregiver;
 
-//    @JsonProperty("replacementCare")
-//    private ReplacementCare replacementCare;
-//
-//    @JsonProperty("isHomeCare")
-//    private Boolean isHomeCare;
-//
-//    @JsonProperty("careDurationMin6Months")
-//    private Boolean careDurationMin6Months;
-//
-//    @JsonProperty("legalAcknowledgement")
-//    private Boolean legalAcknowledgement;
-//
-//
+    @JsonProperty("replacementCare")
+    @Description("Details of the person or organization providing the replacement care. Can be a professional provider or a private person.")
+    private ReplacementCare replacementCare;
+
+    @JsonProperty("isHomeCare")
+    @Description("Indicates whether the care takes place at home. Must be true.")
+    private Boolean isHomeCare;
+
+    @JsonProperty("careDurationMin6Months")
+    @Description("Indicates whether care has been provided for at least 6 months. Required field.")
+    private Boolean careDurationMin6Months;
+
+    @JsonProperty("legalAcknowledgement")
+    @Description("Confirmation that the provided information is truthful. Must be true.")
+    private Boolean legalAcknowledgement;
+
+
     // Getter & Setter
 
     public CareType getCareType() {
