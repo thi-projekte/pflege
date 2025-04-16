@@ -17,6 +17,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class AiResource {
     @Inject
     AiService aiService;
+    FormDataPresenter formDataPresenter;
 
     private final Map<String, FormData> sessions = new HashMap<>();
     private static final Logger LOG = getLogger(AiResource.class);
@@ -47,8 +48,16 @@ public class AiResource {
         System.out.println("User writes: " + userInput);
 
         // Prompt bauen mit aktuellem Zustand
+        String jsonFormData = formDataPresenter.present(session);
+        String prompt = "The current form data is: " + jsonFormData +
+                ". The user just said: '" + userInput + "'. Please update the missing fields accordingly.";
+
+
+        /* toString Version
         String prompt = "The current form data is: " + session.toString() +
                 ". The user just said: '" + userInput + "'. Please update the missing fields accordingly.";
+
+         */
         System.out.println(prompt);
         FormData updatedResponse = aiService.chatWithAiStructured(prompt);
 
