@@ -12,6 +12,8 @@ import org.model.ReplacementCare;
 
 public class FormData {
     // wird von AIResource genutzt, um der KI die aktuellen Daten mitzuteilen.
+
+    /* durch FormDataPresenter ersetzt
     @Override
     public String toString() {
         return String.format(
@@ -22,6 +24,8 @@ public class FormData {
                 reason != null ? reason.toString() : null
         );
     }
+     */
+
 
     // prüft, ob alle FormData schon ausgefüllt / erfragt wurden
     public boolean isComplete() {
