@@ -1,0 +1,86 @@
+{
+  "sessionId": "b01ed248-4c3f-4d3c-be3a-3bfcec076ff7",
+  "message": "Bitte geben Sie die Adresse des professionellen Anbieters an.",
+  "formData": {
+    "complete": false,
+    "chatbotMessage": "Bitte geben Sie die Adresse des professionellen Anbieters an.",
+    "careType": "STUNDENWEISE",
+    "careLevel": 3,
+    "carePeriod": {
+      "valid": true,
+      "careStartValid": true,
+      "careEndValid": true,
+      "careStart": "2025-11-10",
+      "careEnd": "2025-12-21"
+    },
+    "reason": "URLAUB",
+    "insuredPerson": {
+      "valid": true,
+      "insuranceNumberValid": true,
+      "fullNameValid": true,
+      "birthDateValid": true,
+      "phoneNumberValid": true,
+      "fullName": "Max Meier",
+      "birthDate": "1970-08-09",
+      "insuredAddress": {
+        "valid": true,
+        "houseNumberValid": true,
+        "streetValid": true,
+        "zipValid": true,
+        "cityValid": true,
+        "street": "Fraunhoferstraße",
+        "houseNumber": 30,
+        "city": "München",
+        "zip": 80469
+      },
+      "phoneNumber": "0157 32352131",
+      "insuranceNumber": "985167234123"
+    },
+    "caregiver": {
+      "valid": true,
+      "caregiverNameValid": true,
+      "careStartDateValid": true,
+      "caregiverPhoneNumberValid": true,
+      "careStartDate": "2025-11-10",
+      "caregiverName": "Manuel Meier",
+      "caregiverAddress": {
+        "valid": true,
+        "houseNumberValid": true,
+        "streetValid": true,
+        "zipValid": true,
+        "cityValid": true,
+        "street": "Fraunhoferstraße",
+        "houseNumber": 30,
+        "city": "München",
+        "zip": 80469
+      },
+      "caregiverPhoneNumber": "0157 323512311"
+    },
+    "replacementCare": {
+      "valid": true,
+      "professionalValid": true,
+      "professional": true,
+      "isProfessional": true,
+      "provider": {
+        "valid": true,
+        "providerNameValid": true,
+        "providerName": "Professional Pflege GmbH",
+        "providerAddress": {
+          "valid": true,
+          "houseNumberValid": true,
+          "streetValid": true,
+          "zipValid": true,
+          "cityValid": true,
+          "street": "Esplaande",
+          "houseNumber": 12,
+          "city": "München",
+          "zip": 80469
+        }
+      },
+      "privatePerson": null
+    },
+    "isHomeCare": true,
+    "careDurationMin6Months": true,
+    "legalAcknowledgement": true
+  }
+}
