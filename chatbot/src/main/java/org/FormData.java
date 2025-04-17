@@ -11,21 +11,6 @@ import org.model.InsuredPerson;
 import org.model.ReplacementCare;
 
 public class FormData {
-    // wird von AIResource genutzt, um der KI die aktuellen Daten mitzuteilen.
-
-    /* durch FormDataPresenter ersetzt
-    @Override
-    public String toString() {
-        return String.format(
-                "{careLevel: %s, careType: %s, carePeriod: %s, reason: %s}",
-                careLevel != null ? careLevel : "not provided",
-                careType != null ? careType.toString() : "not provided",
-                carePeriod != null ? carePeriod.getCareStart() + " bis " + carePeriod.getCareEnd() : "not provided",
-                reason != null ? reason.toString() : null
-        );
-    }
-     */
-
 
     // prüft, ob alle FormData schon ausgefüllt / erfragt wurden
     public boolean isComplete() {
@@ -33,15 +18,15 @@ public class FormData {
                 careLevel != null && careLevel >= 2 && careLevel <= 5 &&
                 careType != null &&
                 // carePeriod
-                carePeriod.isValid() &&
+                carePeriod != null && carePeriod.isValid() &&
                 // reason
                 reason != null &&
                 insuredPerson != null && insuredPerson.isValid() &&
                 caregiver != null && caregiver.isValid() &&
                 replacementCare != null && replacementCare.isValid() &&
-                Boolean.TRUE.equals(isHomeCare) &&
-                Boolean.TRUE.equals(careDurationMin6Months) &&
-                Boolean.TRUE.equals(legalAcknowledgement);
+                isHomeCare != null && Boolean.TRUE.equals(isHomeCare) &&
+                careDurationMin6Months != null && Boolean.TRUE.equals(careDurationMin6Months) &&
+                legalAcknowledgement != null && Boolean.TRUE.equals(legalAcknowledgement);
     }
 
     @JsonProperty("chatbotMessage")
