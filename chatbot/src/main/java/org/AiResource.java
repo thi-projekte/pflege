@@ -63,6 +63,11 @@ public class AiResource {
         LOG.info("Prompt to AI: {}", prompt);
         FormData updatedResponse = aiService.chatWithAiStructured(prompt);
 
+        if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
+            updatedResponse.setChatbotMessage(
+                    "Die Verhinderungspflege steht erst ab Pflegegrad 2 zur Verfügung. Bitte prüfen Sie Ihre Angaben.");
+        }
+
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Thank you! All required information has been collected.");

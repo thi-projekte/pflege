@@ -19,7 +19,7 @@ public class Address {
 
     @JsonProperty("zip")
     @Description("Postal code (PLZ) of the address. Should be a valid 5-digit code. This is a required filed.")
-    private int zip;
+    private String zip;
 
     public boolean isStreetValid() {
         return street != null && !street.trim().isEmpty();
@@ -30,7 +30,7 @@ public class Address {
     }
 
     public boolean isZipValid() {
-        return zip != 0 && String.valueOf(zip).matches("^\\d{5}$");
+        return zip != null && zip.matches("^\\d{5}$");
     }
 
     public boolean isCityValid() {
@@ -66,11 +66,11 @@ public class Address {
         this.city = city;
     }
 
-    public int getZip() {
+    public String getZip() {
         return zip;
     }
 
-    public void setZip(int zip) {
+    public void setZip(String zip) {
         this.zip = zip;
     }
 }

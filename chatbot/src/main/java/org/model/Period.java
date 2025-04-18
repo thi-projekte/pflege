@@ -9,11 +9,11 @@ import java.time.temporal.ChronoUnit;
 public class Period {
 
     @JsonProperty("careStart")
-    @Description("Start date of the replacement care period in format YYYY-MM-DD. Must be today or a future date.")
+    @Description("Start date of the replacement care period. Must be today or a future date.")
     private LocalDate careStart;
 
     @JsonProperty("careEnd")
-    @Description("End date of the replacement care period in format YYYY-MM-DD. Must be on or after careStart and max. 42 days later.")
+    @Description("End date of the replacement care period. Must be on or after careStart and max. 42 days later.")
     private LocalDate careEnd;
 
     public boolean isCareStartValid() {
