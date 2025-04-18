@@ -13,7 +13,7 @@ public class InsuredPerson {
     private String fullName;
 
     @JsonProperty("birthDate")
-    @Description("Date of birth of the insured person in format YYYY-MM-DD. Must be a date in the past.")
+    @Description("Date of birth of the insured person. Must be a date in the past.")
     private LocalDate birthDate;
 
     @JsonProperty("insuredAddress")
