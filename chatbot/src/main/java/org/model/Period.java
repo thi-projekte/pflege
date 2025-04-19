@@ -8,22 +8,22 @@ import java.time.temporal.ChronoUnit;
 
 public class Period {
 
-    @JsonProperty("careStart")
+    @JsonProperty("replacementcareStart")
     @Description("Start date of the replacement care period. Must be today or a future date.")
-    private LocalDate careStart;
+    private LocalDate replacementcareStart;
 
-    @JsonProperty("careEnd")
+    @JsonProperty("replacementcareEnd")
     @Description("End date of the replacement care period. Must be on or after careStart and max. 42 days later.")
-    private LocalDate careEnd;
+    private LocalDate replacementcareEnd;
 
     public boolean isCareStartValid() {
-        return careStart != null && !careStart.isBefore(LocalDate.now());
+        return replacementcareStart != null && !replacementcareStart.isBefore(LocalDate.now());
     }
 
     public boolean isCareEndValid() {
-        if (careStart == null || careEnd == null) return false;
-        long daysBetween = ChronoUnit.DAYS.between(careStart, careEnd);
-        return !careEnd.isBefore(careStart) && daysBetween <= 42;
+        if (replacementcareStart == null || replacementcareEnd == null) return false;
+        long daysBetween = ChronoUnit.DAYS.between(replacementcareStart, replacementcareEnd);
+        return !replacementcareEnd.isBefore(replacementcareStart) && daysBetween <= 42;
     }
 
     public boolean isValid() {
@@ -32,18 +32,18 @@ public class Period {
     }
 
     public LocalDate getCareStart() {
-        return careStart;
+        return replacementcareStart;
     }
 
-    public void setCareStart(LocalDate careStart) {
-        this.careStart = careStart;
+    public void setCareStart(LocalDate replacementcareStart) {
+        this.replacementcareStart = replacementcareStart;
     }
 
     public LocalDate getCareEnd() {
-        return careEnd;
+        return replacementcareEnd;
     }
 
-    public void setCareEnd(LocalDate careEnd) {
-        this.careEnd = careEnd;
+    public void setCareEnd(LocalDate replacementcareEnd) {
+        this.replacementcareEnd = replacementcareEnd;
     }
 }

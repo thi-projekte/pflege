@@ -6,7 +6,7 @@ import dev.langchain4j.model.output.structured.Description;
 import java.time.LocalDate;
 import java.util.Date;
 
-public class InsuredPerson {
+public class Carerecipient {
 
     @JsonProperty("fullName")
     @Description("Full name of the insured person (first name and surname). This is a required field and must not be empty.")
