@@ -24,10 +24,10 @@ public class ReplacementCare {
     public boolean isValid(){
         if (isProfessionalValid() == false) return false;
         if(isProfessional == true) {
-            return provider.isValid();
+            return provider != null && provider.isValid();
         }
         else{
-            return privatePerson.isValid();
+            return privatePerson != null && privatePerson.isValid();
         }
 
     }

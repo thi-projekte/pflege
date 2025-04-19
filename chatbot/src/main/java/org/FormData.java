@@ -7,7 +7,7 @@ import org.model.Period;
 import org.model.Reason;
 import org.model.Address;
 import org.model.Caregiver;
-import org.model.InsuredPerson;
+import org.model.Carerecipient;
 import org.model.ReplacementCare;
 
 public class FormData {
@@ -21,7 +21,7 @@ public class FormData {
                 carePeriod != null && carePeriod.isValid() &&
                 // reason
                 reason != null &&
-                insuredPerson != null && insuredPerson.isValid() &&
+                careRecipient != null && careRecipient.isValid() &&
                 caregiver != null && caregiver.isValid() &&
                 replacementCare != null && replacementCare.isValid() &&
                 isHomeCare != null && Boolean.TRUE.equals(isHomeCare) &&
@@ -38,21 +38,21 @@ public class FormData {
 
 
     @JsonProperty("careLevel")
-    @Description("Indicates the care level (Pflegegrad) of a person. Can range from 1 to 5.")
+    @Description("Indicates the care level of a person. Can range from 1 to 5.")
     private Integer careLevel;
 
 
     @JsonProperty("carePeriod")
-    @Description("Indicates the careStart and careEnd in LocalDate format in YYYY-MM-DD")
+    @Description("Indicates the replacementcareStart and replacementcareEnd of the replacementcare.")
     private Period carePeriod;
 
     @JsonProperty("reason")
     @Description("Describes the reason for the care. Either holiday or other.")
     private Reason reason;
 
-    @JsonProperty("insuredPerson")
-    @Description("Information about the insured person, including full name, birth date, address, phone number and insurance number.")
-    private InsuredPerson insuredPerson;
+    @JsonProperty("careRecipient")
+    @Description("Information about the care recipient, including full name, birth date, address, phone number and insurance number.")
+    private Carerecipient careRecipient;
 
 
     @JsonProperty("caregiver")

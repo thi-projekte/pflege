@@ -7,9 +7,9 @@ import java.time.LocalDate;
 
 public class Caregiver {
 
-    @JsonProperty("careStartDate")
-    @Description("Date when the caregiver starts providing care.")
-    private LocalDate careStartDate;
+    @JsonProperty("careStartedDate")
+    @Description("Date in the past when the caregiver started providing care.")
+    private LocalDate careStartedDate;
 
     @JsonProperty("caregiverName")
     @Description("Full name of the caregiver. This is a required field.")
@@ -28,8 +28,8 @@ public class Caregiver {
         return caregiverName != null && !caregiverName.trim().isEmpty();
     }
 
-    public boolean isCareStartDateValid() {
-        return careStartDate != null;
+    public boolean isCareStartedDateValid() {
+        return careStartedDate != null;
     }
 
     public boolean isCaregiverPhoneNumberValid() {
@@ -39,18 +39,18 @@ public class Caregiver {
     public boolean isValid() {
         return isCaregiverNameValid()
                 && caregiverAddress != null && caregiverAddress.isValid()
-                && isCareStartDateValid()
+                && isCareStartedDateValid()
                 && isCaregiverPhoneNumberValid();
     }
 
     // Getter & Setter
 
     public LocalDate getCareStartDate() {
-        return careStartDate;
+        return careStartedDate;
     }
 
-    public void setCareStartDate(LocalDate careStartDate) {
-        this.careStartDate = careStartDate;
+    public void setCareStartDate(LocalDate careStartedDate) {
+        this.careStartedDate = careStartedDate;
     }
 
     public String getCaregiverName() {
