@@ -30,6 +30,17 @@ public interface AiService {
              "Wichtig: Füllen Sie bei jeder Nutzerantwort das zurückzugebende `FormData`-Objekt vollständig mit den bisher gesammelten und gültigen Werten. " +
              "Fragen Sie nur nach Feldern, die noch fehlen oder ungültig sind, und wiederholen Sie keine bereits gültigen Informationen."
     )
-    @UserMessage("{userInput}")
+    @UserMessage(
+            "Die folgende Nachricht stammt von der Person, die aktuell das Formular zur Verhinderungspflege ausfüllt:\n\n" +
+                    "»{userInput}«\n\n" +
+                    "Bitte:\n" +
+                    "1. Analysieren Sie diese Eingabe im Kontext des bisherigen Formularfortschritts.\n" +
+                    "2. Aktualisieren Sie das `FormData`-Objekt entsprechend – mit allen gültigen und bereits bekannten Werten.\n" +
+                    "3. Stellen Sie gezielte Rückfragen zu noch fehlenden oder ungültigen Angaben.\n\n" +
+                    "Achten Sie auf:\n" +
+                    "- einen freundlichen, verständlichen Ton\n" +
+                    "- kurze, konkrete Nachfragen\n" +
+                    "- Wiederholung **nur**, wenn ein Wert ungültig ist"
+    )
     FormData chatWithAiStructured(String userInput);
 }
