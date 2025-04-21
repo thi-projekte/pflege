@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.slf4j.Logger;
+import io.quarkus.security.Authenticated;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Path("/chat")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class AiResource {
     @Inject
     AiService aiService;
