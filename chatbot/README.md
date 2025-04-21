@@ -1,20 +1,28 @@
 # AI-Chatbot PoC
 
 ### Applikation starten:
-    1. git clone https://github.com/Schubijaner/quarkus-AI-ChatBot.git
-    2. API-Key konfigurieren: im Terminal export QUARKUS_LANGCHAIN4J_OPENAI_API_KEY="YOUR_API_KEY"
-    3. ./mvnw clean install
-    4. /mvnw quarkus:dev oder quarkus dev
-    5. "d" im Terminal drücken um Quarkus Dev UI zu öffnen, du erreichst die REST-Endpoints unter http://localhost:8080.
+    1. cd chatbot 
+    2. application.properties konfigurieren:
+        - export QUARKUS_LANGCHAIN4J_OPENAI_API_KEY="YOUR_API_KEY"
+        - export QUARKUS_OIDC_CREDENTIALS_SECRET="<<QUARKUS_OIDC_CREDENTIALS_SECRET>>"
+        - export QUARKUS_OIDC_AUTH_SERVER_URL="<<QUARKUS_OIDC_AUTH_SERVER_URL>>"
+        - export QUARKUS_OIDC_CLIENT_ID="<<QUARKUS_OIDC_CLIENT_ID>>"
+    3. mvn clean install
+    4. mvn quarkus:dev oder quarkus dev
+    5. "d" im Terminal drücken um Quarkus Dev UI zu öffnen, REST-Endpoints unter http://localhost:8080.
 
-### Endpunkte:
+### Endpunkte, mit OAuth2 / OIDC geschützt
     /chat/reply   -    POST (consumes: application/json) (produces:application/json)
     /chat/start   -    POST (consumes: application/json) (produces:application/json)
 
-### Beispiel-Requests:
-    /chat/start
-<img width="821" alt="image" src="https://github.com/user-attachments/assets/3bfc5230-65ad-4e40-a139-ab5b4076be8b" /> <br />
+### Token und in Postman testen
+    1. Token generieren
+            curl -X POST https://keycloak.winfprojekt.de/realms/Pflege/protocol/openid-connect/token \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "grant_type=client_credentials" \
+            -d "client_id=CLIENT_ID“ \
+            -d "client_secret=CLIENT_SECRET"
+        
+            (CLIENT_ID und CLIENT_SECRET ersetzen)
 
-
-    /chat/reply
-<img width="807" alt="image" src="https://github.com/user-attachments/assets/41fddd47-21ca-4040-b757-e2b03e687519" />
+    2. Endpunkte in Postman testen, unter Tab Authentication mit Auth Type <Bearer Token> 
