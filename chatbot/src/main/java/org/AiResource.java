@@ -55,11 +55,6 @@ public class AiResource {
                 ". The user just said: '" + userInput + "'. Please update the missing fields accordingly.";
 
 
-        /* toString Version
-        String prompt = "The current form data is: " + session.toString() +
-                ". The user just said: '" + userInput + "'. Please update the missing fields accordingly.";
-
-         */
         LOG.info("Prompt to AI: {}", prompt);
         FormData updatedResponse = aiService.chatWithAiStructured(prompt);
 
