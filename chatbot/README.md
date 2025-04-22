@@ -2,11 +2,11 @@
 
 ### Applikation starten:
     1. cd chatbot 
-    2. application.properties konfigurieren:
-        - export QUARKUS_LANGCHAIN4J_OPENAI_API_KEY="YOUR_API_KEY"
-        - export QUARKUS_OIDC_CREDENTIALS_SECRET="<<QUARKUS_OIDC_CREDENTIALS_SECRET>>"
-        - export QUARKUS_OIDC_AUTH_SERVER_URL="<<QUARKUS_OIDC_AUTH_SERVER_URL>>"
-        - export QUARKUS_OIDC_CLIENT_ID="<<QUARKUS_OIDC_CLIENT_ID>>"
+    2. .env Datei konfigurieren
+        QUARKUS_LANGCHAIN4J_OPENAI_API_KEY=YOUR_API_KEY
+        QUARKUS_OIDC_AUTH-SERVER-URL=https://...
+        QUARKUS_OIDC_CREDENTIALS_SECRET=YOUR_CREDENTIALS
+        QUARKUS_OIDC_CLIENT_ID=OIDC_CLIENT
     3. mvn clean install
     4. mvn quarkus:dev oder quarkus dev
     5. "d" im Terminal drücken um Quarkus Dev UI zu öffnen, REST-Endpoints unter http://localhost:8080.
