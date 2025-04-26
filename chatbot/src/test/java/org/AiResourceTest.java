@@ -53,7 +53,7 @@ public class AiResourceTest {
                     .when()
                     .post(authServerUrl + "/protocol/openid-connect/token");
             if (resp.statusCode() != 200) {
-                throw new RuntimeException("Token holen fehlgeschlagen: " + resp.statusCode());
+                throw new IllegalStateException("Token holen fehlgeschlagen: " + resp.statusCode());
             }
             return resp.jsonPath().getString("access_token");
         });
@@ -113,25 +113,35 @@ public class AiResourceTest {
 
     //Fängt 500 Timeouts ab --> 3 retrys
     private static <T> T retryRequest(RequestSupplier<T> supplier) {
-        Throwable last = null;
+        Exception lastException = null;
         for (int i = 1; i <= MAX_RETRIES; i++) {
             try {
                 return supplier.get();
-            } catch (Throwable t) {
-                last = t;
-                if (i < MAX_RETRIES) {
-                    try { Thread.sleep(RETRY_DELAY_MS); }
-                    catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+            } catch (AssertionError ae) {
+                lastException = new RuntimeException(ae);
+            } catch (Exception e) {
+                lastException = e;
+            }
+
+            if (i < MAX_RETRIES) {
+                try {
+                    Thread.sleep(RETRY_DELAY_MS);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Interrupted during retry", ie);
                 }
             }
         }
-        if (last instanceof RuntimeException) throw (RuntimeException) last;
-        throw new RuntimeException(last);
+        throw new IllegalStateException(
+                "Request failed after " + MAX_RETRIES + " retries",
+                lastException
+        );
     }
+
 
 
     @FunctionalInterface
     private interface RequestSupplier<T> {
-        T get() throws Exception;
+        T get();
     }
 }
