@@ -5,7 +5,6 @@ import dev.langchain4j.model.output.structured.Description;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-
 public class Period {
 
     @JsonProperty("replacementcareStart")
@@ -21,13 +20,15 @@ public class Period {
     }
 
     public boolean isCareEndValid() {
-        if (replacementcareStart == null || replacementcareEnd == null) return false;
+        if (replacementcareStart == null || replacementcareEnd == null)
+            return false;
         long daysBetween = ChronoUnit.DAYS.between(replacementcareStart, replacementcareEnd);
         return !replacementcareEnd.isBefore(replacementcareStart) && daysBetween <= 42;
     }
 
     public boolean isValid() {
-        // Prüft, ob careStart und careEnd ausgefüllt sind und ob careStart vor careEnd liegt + die 42 max Tage Differenz
+        // Prüft, ob careStart und careEnd ausgefüllt sind und ob careStart vor careEnd liegt + die 42 max Tage
+        // Differenz
         return isCareStartValid() && isCareEndValid();
     }
 

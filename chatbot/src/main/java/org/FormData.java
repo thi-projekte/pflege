@@ -14,8 +14,7 @@ public class FormData {
 
     // prüft, ob alle FormData schon ausgefüllt / erfragt wurden
     public boolean isComplete() {
-        return
-                careLevel != null && careLevel >= 2 && careLevel <= 5 &&
+        return careLevel != null && careLevel >= 2 && careLevel <= 5 &&
                 careType != null &&
                 // carePeriod
                 carePeriod != null && carePeriod.isValid() &&
@@ -36,11 +35,9 @@ public class FormData {
     @Description("Describes the type of care. Either hourly or daily.")
     private CareType careType;
 
-
     @JsonProperty("careLevel")
     @Description("Indicates the care level of a person. Can range from 1 to 5.")
     private Integer careLevel;
-
 
     @JsonProperty("carePeriod")
     @Description("Indicates the replacementcareStart and replacementcareEnd of the replacementcare.")
@@ -53,7 +50,6 @@ public class FormData {
     @JsonProperty("careRecipient")
     @Description("Information about the care recipient, including full name, birth date, address, phone number and insurance number.")
     private Carerecipient careRecipient;
-
 
     @JsonProperty("caregiver")
     @Description("Information about the regular caregiver including name, address, phone number and care start date.")
@@ -74,7 +70,6 @@ public class FormData {
     @JsonProperty("legalAcknowledgement")
     @Description("Confirmation that the provided information is truthful. Must be true.")
     private Boolean legalAcknowledgement;
-
 
     // Getter & Setter
 

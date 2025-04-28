@@ -38,18 +38,23 @@ public class PrivatePerson {
     @Description("Description of the expenses incurred. Required if hasExpenses is true.")
     private String expenseDescription;
 
-
     public boolean isValid() {
-        if (privatePersonName == null || privatePersonName.trim().isEmpty()) return false;
-        if (privatePersonAddress == null || !privatePersonAddress.isValid()) return false;
-        if (isRelative == null) return false;
-        if (isRelative && (relationDescription == null || relationDescription.trim().isEmpty())) return false;
-        if (isSameHousehold == null) return false;
-        if (hasExpenses == null) return false;
-        if (hasExpenses && (expenseDescription == null || expenseDescription.trim().isEmpty())) return false;
+        if (privatePersonName == null || privatePersonName.trim().isEmpty())
+            return false;
+        if (privatePersonAddress == null || !privatePersonAddress.isValid())
+            return false;
+        if (isRelative == null)
+            return false;
+        if (isRelative && (relationDescription == null || relationDescription.trim().isEmpty()))
+            return false;
+        if (isSameHousehold == null)
+            return false;
+        if (hasExpenses == null)
+            return false;
+        if (hasExpenses && (expenseDescription == null || expenseDescription.trim().isEmpty()))
+            return false;
         return privatePersonPhone == null || privatePersonPhone.matches("^[+\\d][\\d\\s\\-/]{3,}$");
     }
-
 
     public String getPrivatePersonName() {
         return privatePersonName;

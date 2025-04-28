@@ -26,3 +26,6 @@
             (CLIENT_ID und CLIENT_SECRET ersetzen)
 
     2. Endpunkte in Postman testen, unter Tab Authentication mit Auth Type <Bearer Token> 
+
+### Formatierung
+    mvn formatter:format
