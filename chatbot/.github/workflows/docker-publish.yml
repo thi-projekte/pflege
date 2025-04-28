@@ -3,7 +3,7 @@ name: Build and Push Docker Image to GHCR
 on:
   push:
     branches:
-      - main  # Oder deinen Hauptbranch
+      - ai-chatbot-poc
 
 jobs:
   build-and-push:
