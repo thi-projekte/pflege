@@ -38,9 +38,8 @@ public class Address {
     }
 
     public boolean isValid() {
-        return isStreetValid() && isHouseNumberValid() && isZipValid() && isCityValid() ;
+        return isStreetValid() && isHouseNumberValid() && isZipValid() && isCityValid();
     }
-
 
     public String getStreet() {
         return street;

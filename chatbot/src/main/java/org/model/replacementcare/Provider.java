@@ -18,10 +18,9 @@ public class Provider {
         return providerName != null && !providerName.trim().isEmpty();
     }
 
-
-    public boolean isValid(){
+    public boolean isValid() {
         return isproviderNameValid() &&
-            providerAddress != null && providerAddress.isValid();
+                providerAddress != null && providerAddress.isValid();
 
     }
 

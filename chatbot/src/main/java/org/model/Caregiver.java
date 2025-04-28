@@ -23,7 +23,6 @@ public class Caregiver {
     @Description("Phone number of the caregiver. This field is optional but should follow a valid phone number format if provided.")
     private String caregiverPhoneNumber;
 
-
     public boolean isCaregiverNameValid() {
         return caregiverName != null && !caregiverName.trim().isEmpty();
     }
@@ -60,8 +59,6 @@ public class Caregiver {
     public void setCaregiverName(String caregiverName) {
         this.caregiverName = caregiverName;
     }
-
-
 
     public String getCaregiverPhoneNumber() {
         return caregiverPhoneNumber;

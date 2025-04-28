@@ -56,7 +56,6 @@ public class AiResource {
         String prompt = "The current form data is: " + jsonFormData +
                 ". The user just said: '" + userInput + "'. Please update the missing fields accordingly.";
 
-
         LOG.info("Prompt to AI: {}", prompt);
         FormData updatedResponse = aiService.chatWithAiStructured(prompt);
 
@@ -68,7 +67,7 @@ public class AiResource {
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Thank you! All required information has been collected.");
-            //FIXME: Start process here
+            // FIXME: Start process here
         }
         sessions.put(sessionId, updatedResponse);
 

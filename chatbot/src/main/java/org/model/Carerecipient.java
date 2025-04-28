@@ -28,7 +28,6 @@ public class Carerecipient {
     @Description("Insurance number of the insured person. Must contain 10 to 12 digits and is a required field.")
     private String insuranceNumber;
 
-
     public boolean isInsuranceNumberValid() {
         return insuranceNumber != null && insuranceNumber.matches("^\\d{10,12}$");
     }
@@ -52,10 +51,6 @@ public class Carerecipient {
                 insuredAddress != null && insuredAddress.isValid();
     }
 
-
-
-
-
     // Getter & Setter
 
     public String getFullName() {
@@ -74,7 +69,6 @@ public class Carerecipient {
         this.birthDate = birthDate;
     }
 
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -90,7 +84,6 @@ public class Carerecipient {
     public void setInsuranceNumber(String insuranceNumber) {
         this.insuranceNumber = insuranceNumber;
     }
-
 
     public Address getInsuredAddress() {
         return insuredAddress;

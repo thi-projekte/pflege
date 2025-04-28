@@ -23,32 +23,31 @@ public class AiResourceTest {
     public static void setUp() {
         token = obtainAccessToken();
 
-        sessionId = retryRequest(() ->
-                given()
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(ContentType.JSON)
-                        .body("{}")
-                        .when()
-                        .post("http://localhost:8080/chat/start")
-                        .then()
-                        .statusCode(200)
-                        .contentType(ContentType.JSON)
-                        .body(SESSION_ID, notNullValue())
-                        .extract().path(SESSION_ID)
-        );
+        sessionId = retryRequest(() -> given()
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body("{}")
+                .when()
+                .post("http://localhost:8080/chat/start")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body(SESSION_ID, notNullValue())
+                .extract()
+                .path(SESSION_ID));
     }
 
     private static String obtainAccessToken() {
         Config config = ConfigProvider.getConfig();
         String authServerUrl = config.getValue("quarkus.oidc.auth-server-url", String.class);
-        String clientId       = config.getValue("quarkus.oidc.client-id", String.class);
-        String clientSecret   = config.getValue("quarkus.oidc.credentials.secret", String.class);
+        String clientId = config.getValue("quarkus.oidc.client-id", String.class);
+        String clientSecret = config.getValue("quarkus.oidc.credentials.secret", String.class);
 
         return retryRequest(() -> {
             Response resp = given()
                     .contentType("application/x-www-form-urlencoded")
-                    .formParam("grant_type",    "client_credentials")
-                    .formParam("client_id",     clientId)
+                    .formParam("grant_type", "client_credentials")
+                    .formParam("client_id", clientId)
                     .formParam("client_secret", clientSecret)
                     .when()
                     .post(authServerUrl + "/protocol/openid-connect/token");
@@ -87,22 +86,21 @@ public class AiResourceTest {
         while (!completed && antwortIndex < antworten.length) {
             final String userInput = antworten[antwortIndex];
 
-            Response response = retryRequest(() ->
-                    given()
-                            .header("Authorization", "Bearer " + token)
-                            .contentType(ContentType.JSON)
-                            .queryParam(SESSION_ID, sessionId)
-                            .body(userInput)
-                            .when()
-                            .post("http://localhost:8080/chat/reply")
-                            .then()
-                            .statusCode(200)
-                            .contentType(ContentType.JSON)
-                            .body(SESSION_ID, equalTo(sessionId))
-                            .body("message", not(emptyOrNullString()))
-                            .body("formData", notNullValue())
-                            .extract().response()
-            );
+            Response response = retryRequest(() -> given()
+                    .header("Authorization", "Bearer " + token)
+                    .contentType(ContentType.JSON)
+                    .queryParam(SESSION_ID, sessionId)
+                    .body(userInput)
+                    .when()
+                    .post("http://localhost:8080/chat/reply")
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body(SESSION_ID, equalTo(sessionId))
+                    .body("message", not(emptyOrNullString()))
+                    .body("formData", notNullValue())
+                    .extract()
+                    .response());
 
             completed = Boolean.TRUE.equals(response.path("formData.completed"));
             if (!completed) {
@@ -111,7 +109,7 @@ public class AiResourceTest {
         }
     }
 
-    //Fängt 500 Timeouts ab --> 3 retrys
+    // Fängt 500 Timeouts ab --> 3 retrys
     private static <T> T retryRequest(RequestSupplier<T> supplier) {
         Exception lastException = null;
         for (int i = 1; i <= MAX_RETRIES; i++) {
@@ -134,11 +132,8 @@ public class AiResourceTest {
         }
         throw new IllegalStateException(
                 "Request failed after " + MAX_RETRIES + " retries",
-                lastException
-        );
+                lastException);
     }
-
-
 
     @FunctionalInterface
     private interface RequestSupplier<T> {

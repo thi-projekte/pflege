@@ -19,13 +19,12 @@ public class ReplacementCare {
     @Description("Details about the private person providing the replacement care. Required if isProfessional is false.")
     private PrivatePerson privatePerson;
 
-
-    public boolean isValid(){
-        if (isProfessional) return false;
-        if(isProfessional) {
+    public boolean isValid() {
+        if (isProfessional)
+            return false;
+        if (isProfessional) {
             return provider != null && provider.isValid();
-        }
-        else{
+        } else {
             return privatePerson != null && privatePerson.isValid();
         }
 
