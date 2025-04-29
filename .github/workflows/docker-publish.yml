@@ -24,7 +24,9 @@ jobs:
           java-version: '21'
 
       - name: Build Quarkus Application
-        run: ./mvnw package -DskipTests
+        run: |
+          cd chatbot
+          ./mvnw package -DskipTests
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -38,9 +40,10 @@ jobs:
 
       - name: Build Docker Image
         run: |
+          cd chatbot
           docker build -f src/main/docker/Dockerfile.jvm \
-            -t ghcr.io/${{ github.repository }}/quarkus-app:latest .
+            -t ghcr.io/thi-projekte/pflege/chatbot:latest .
 
       - name: Push Docker Image to GHCR
         run: |
-          docker push ghcr.io/${{ github.repository }}/quarkus-app:latest
+          docker push ghcr.io/thi-projekte/pflege/chatbot:latest
