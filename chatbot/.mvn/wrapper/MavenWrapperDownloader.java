@@ -28,17 +28,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.ThreadLocalRandom;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public final class MavenWrapperDownloader {
     private static final String WRAPPER_VERSION = "3.3.2";
 
     private static final boolean VERBOSE = Boolean.parseBoolean(System.getenv("MVNW_VERBOSE"));
+    private static final Logger LOG = getLogger(MavenWrapperDownloader.class);
 
     public static void main(String[] args) {
         log("Apache Maven Wrapper Downloader " + WRAPPER_VERSION);
 
         if (args.length != 2) {
-            System.err.println(" - ERROR wrapperUrl or wrapperJarPath parameter missing");
+            LOG.error(" - ERROR wrapperUrl or wrapperJarPath parameter missing");
             System.exit(1);
         }
 
@@ -50,7 +52,7 @@ public final class MavenWrapperDownloader {
             downloadFileFromURL(wrapperUrl, wrapperJarPath);
             log("Done");
         } catch (IOException e) {
-            System.err.println("- Error downloading: " + e.getMessage());
+            LOG.error("- Error downloading: " + e.getMessage(), e);
             if (VERBOSE) {
                 e.printStackTrace();
             }
@@ -86,7 +88,7 @@ public final class MavenWrapperDownloader {
 
     private static void log(String msg) {
         if (VERBOSE) {
-            System.out.println(msg);
+            LOG.info(msg);
         }
     }
 
