@@ -12,8 +12,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-
-
 @QuarkusTest
 @TestSecurity(authorizationEnabled = false) // Security in Tests deaktiviert
 public class AiResourceTest {
