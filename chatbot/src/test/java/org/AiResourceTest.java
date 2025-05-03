@@ -1,61 +1,43 @@
 package org;
 
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
+import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
+
+
+@QuarkusTest
+@TestSecurity(authorizationEnabled = false) // Security in Tests deaktiviert
 public class AiResourceTest {
 
-    private static String token;
-    private static String sessionId;
+    private String sessionId;
 
     private static final String SESSION_ID = "sessionId";
     private static final int MAX_RETRIES = 3;
-    private static final long RETRY_DELAY_MS = 2_000; // 2 Sekunden
+    private static final long RETRY_DELAY_MS = 2_000;
+    private static final Logger LOG = getLogger(AiResource.class);
 
-    @BeforeAll
-    public static void setUp() {
-        token = obtainAccessToken();
-
+    @BeforeEach
+    public void setUp() {
         sessionId = retryRequest(() -> given()
-                .header("Authorization", "Bearer " + token)
                 .contentType(ContentType.JSON)
                 .body("{}")
                 .when()
-                .post("http://localhost:8080/chat/start")
+                .post("/chat/start")
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
                 .body(SESSION_ID, notNullValue())
                 .extract()
                 .path(SESSION_ID));
-    }
-
-    private static String obtainAccessToken() {
-        Config config = ConfigProvider.getConfig();
-        String authServerUrl = config.getValue("quarkus.oidc.auth-server-url", String.class);
-        String clientId = config.getValue("quarkus.oidc.client-id", String.class);
-        String clientSecret = config.getValue("quarkus.oidc.credentials.secret", String.class);
-
-        return retryRequest(() -> {
-            Response resp = given()
-                    .contentType("application/x-www-form-urlencoded")
-                    .formParam("grant_type", "client_credentials")
-                    .formParam("client_id", clientId)
-                    .formParam("client_secret", clientSecret)
-                    .when()
-                    .post(authServerUrl + "/protocol/openid-connect/token");
-            if (resp.statusCode() != 200) {
-                throw new IllegalStateException("Token holen fehlgeschlagen: " + resp.statusCode());
-            }
-            return resp.jsonPath().getString("access_token");
-        });
     }
 
     @Test
@@ -76,8 +58,7 @@ public class AiResourceTest {
                 "Caritas",
                 "Testsrtrasse 3 85053 Ingolstadt",
                 "Es ist HomeCare",
-                "Die Eingabe sind wahrheitgemäß"
-
+                "Die Eingaben sind wahrheitgemäß"
         };
 
         int antwortIndex = 0;
@@ -87,12 +68,11 @@ public class AiResourceTest {
             final String userInput = antworten[antwortIndex];
 
             Response response = retryRequest(() -> given()
-                    .header("Authorization", "Bearer " + token)
                     .contentType(ContentType.JSON)
                     .queryParam(SESSION_ID, sessionId)
                     .body(userInput)
                     .when()
-                    .post("http://localhost:8080/chat/reply")
+                    .post("/chat/reply")
                     .then()
                     .statusCode(200)
                     .contentType(ContentType.JSON)
@@ -102,6 +82,7 @@ public class AiResourceTest {
                     .extract()
                     .response());
 
+            LOG.info("Empfangen Response für Input[{}]: {}", antwortIndex, response.asString());
             completed = Boolean.TRUE.equals(response.path("formData.completed"));
             if (!completed) {
                 antwortIndex++;
