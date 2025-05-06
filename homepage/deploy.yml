@@ -3,8 +3,8 @@ name: Build and Push to GHCR
 on:
   push:
     paths:
-      - 'homepage/**'
-      - 'Dockerfile'
+      - 'homepage/pflegital/**'
+      - 'homepage/Dockerfile'
 
 jobs:
   build-and-push:
