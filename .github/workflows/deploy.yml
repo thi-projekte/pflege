@@ -23,7 +23,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        IMAGE_NAME=ghcr.io/projektpflegital/homepage:latest
+        IMAGE_NAME=ghcr.io/thi-projekte/pflege/homepage:latest
         docker build -t $IMAGE_NAME .
         echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
