@@ -46,7 +46,7 @@ public class AiResource {
     public ChatResponse processUserInput(@QueryParam("sessionId") String sessionId, String userInput) {
         FormData session = sessions.get(sessionId);
         if (session == null) {
-            return null;
+            throw new NotAuthorizedException("Sie sind nicht authorisiert.");
         }
 
         LOG.info("User writes: {}", userInput);
