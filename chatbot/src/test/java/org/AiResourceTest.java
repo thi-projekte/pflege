@@ -1,11 +1,13 @@
 package org;
 
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -16,6 +18,9 @@ import static org.hamcrest.Matchers.*;
 @TestSecurity(authorizationEnabled = false) // Security in Tests deaktiviert
 public class AiResourceTest {
 
+    @InjectMock
+    AiService aiService;
+
     private String sessionId;
 
     private static final String SESSION_ID = "sessionId";
@@ -25,6 +30,10 @@ public class AiResourceTest {
 
     @BeforeEach
     public void setUp() {
+        FormData mockFormData = new FormData();
+        mockFormData.setCareLevel(3);
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString())).thenReturn(mockFormData);
+
         sessionId = retryRequest(() -> given()
                 .contentType(ContentType.JSON)
                 .body("{}")
