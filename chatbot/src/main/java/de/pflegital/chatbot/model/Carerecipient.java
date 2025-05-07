@@ -1,10 +1,9 @@
-package org.model;
+package de.pflegital.chatbot.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.langchain4j.model.output.structured.Description;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class Carerecipient {
 

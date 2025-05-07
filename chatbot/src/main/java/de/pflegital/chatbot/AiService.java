@@ -1,4 +1,4 @@
-package org;
+package de.pflegital.chatbot;
 
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;

@@ -1,4 +1,4 @@
-package org;
+package de.pflegital.chatbot;
 
 import dev.langchain4j.agent.tool.Tool;
 import jakarta.enterprise.context.ApplicationScoped;
