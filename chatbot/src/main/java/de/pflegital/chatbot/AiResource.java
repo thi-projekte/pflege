@@ -1,4 +1,4 @@
-package org;
+package de.pflegital.chatbot;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;

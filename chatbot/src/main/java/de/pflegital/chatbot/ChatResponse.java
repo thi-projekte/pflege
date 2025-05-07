@@ -1,4 +1,4 @@
-package org;
+package de.pflegital.chatbot;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

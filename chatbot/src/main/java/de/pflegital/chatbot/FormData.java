@@ -1,14 +1,14 @@
-package org;
+package de.pflegital.chatbot;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.pflegital.chatbot.model.CareType;
+import de.pflegital.chatbot.model.Caregiver;
+import de.pflegital.chatbot.model.Carerecipient;
+import de.pflegital.chatbot.model.Period;
+import de.pflegital.chatbot.model.Reason;
+import de.pflegital.chatbot.model.ReplacementCare;
 import dev.langchain4j.model.output.structured.Description;
-import org.model.CareType;
-import org.model.Period;
-import org.model.Reason;
-import org.model.Address;
-import org.model.Caregiver;
-import org.model.Carerecipient;
-import org.model.ReplacementCare;
 
 public class FormData {
 

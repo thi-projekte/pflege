@@ -1,8 +1,9 @@
-package org.model;
+package de.pflegital.chatbot.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.model.replacementCare.PrivatePerson;
-import org.model.replacementCare.Provider;
+
+import de.pflegital.chatbot.model.replacementcare.PrivatePerson;
+import de.pflegital.chatbot.model.replacementcare.Provider;
 import dev.langchain4j.model.output.structured.Description;
 
 public class ReplacementCare {
