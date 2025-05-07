@@ -8,7 +8,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.model.CareType;
+import de.pflegital.chatbot.model.CareType;
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import static io.restassured.RestAssured.given;
@@ -33,11 +33,11 @@ public class AiResourceTest {
         mockFormData.setCareType(CareType.TAGEWEISE);
         Mockito.when(aiService.chatWithAiStructured(Mockito.anyString())).thenReturn(mockFormData);
 
-
         sessionId = given()
                 .contentType(ContentType.JSON)
                 .body("{}")
-                .when().post("/chat/start")
+                .when()
+                .post("/chat/start")
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
@@ -53,11 +53,14 @@ public class AiResourceTest {
                 .contentType(ContentType.JSON)
                 .queryParam(SESSION_ID, sessionId)
                 .body("Pflegegrad und Art")
-                .when().post("/chat/reply")
-                .then().statusCode(200)
+                .when()
+                .post("/chat/reply")
+                .then()
+                .statusCode(200)
                 .body("formData.careLevel", equalTo(3))
                 .body("formData.careType", equalTo("TAGEWEISE"))
-                .extract().response();
+                .extract()
+                .response();
         LOG.info("Response: {}", response.asString());
     }
 }
