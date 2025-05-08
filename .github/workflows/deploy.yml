@@ -1,4 +1,4 @@
-name: Build, Push and Deploy
+name: Website CI/CD using Portainer API
 
 on:
   push:
@@ -33,5 +33,34 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker push $IMAGE_NAME 
+          docker push $IMAGE_NAME
 
+      - name: Update Container via Portainer API
+        env:
+          API_URL: https://portainer.winfprojekt.de
+          API_TOKEN: ${{ secrets.PORTAINER_API_TOKEN }}
+        run: |
+          CONTAINER_NAME="homepage"
+
+          # Hole die Container-ID
+          CONTAINER_ID=$(curl -s -H "Authorization: Bearer $API_TOKEN" "$API_URL/endpoints/1/docker/containers/json" | jq -r ".[] | select(.Names[] | contains(\"${CONTAINER_NAME}\")) | .Id")
+
+          if [ -z "$CONTAINER_ID" ]; then
+            echo "Container not found!"
+            exit 1
+          fi
+
+          echo "Updating container: $CONTAINER_ID"
+
+          # Neustart des Containers
+          curl -X POST -H "Authorization: Bearer $API_TOKEN" \
+               "$API_URL/endpoints/1/docker/containers/$CONTAINER_ID/update" \
+               -d '{"RestartPolicy": {"Name": "always"}}'
+
+          # Image neu pullen
+          curl -X POST -H "Authorization: Bearer $API_TOKEN" \
+               "$API_URL/endpoints/1/docker/images/create?fromImage=ghcr.io/thi-projekte/pflege/homepage&tag=latest"
+
+          # Container neu starten
+          curl -X POST -H "Authorization: Bearer $API_TOKEN" \
+               "$API_URL/endpoints/1/docker/containers/$CONTAINER_ID/restart"
