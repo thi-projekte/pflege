@@ -38,7 +38,7 @@ jobs:
       - name: Update Container via Portainer API
         env:
           API_URL: https://portainer.winfprojekt.de
-          API_TOKEN: ${{ secrets.PORTAINER_API_TOKEN }}
+          API_TOKEN: ${{ secrets.PORTAINER_API_KEY }}
         run: |
           CONTAINER_NAME="homepage"
 
