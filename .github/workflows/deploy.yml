@@ -40,14 +40,26 @@ jobs:
           API_URL: https://portainer.winfprojekt.de/api
           API_KEY: ${{ secrets.PORTAINER_API_KEY }}
         run: |
-          # Container Name
-          CONTAINER_NAME="homepage"
-
           # Endpoint ID (1 ist standardmäßig der erste Endpoint, ggf. anpassen)
           ENDPOINT_ID=1
 
+          echo "Fetching container information..."
+          RESPONSE=$(curl -s -H "Authorization: Bearer $API_KEY" "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/json")
+          echo "API Response: $RESPONSE"
+
+          # Prüfe, ob die API-Antwort ein gültiges JSON-Array ist
+          if echo "$RESPONSE" | jq -e . >/dev/null 2>&1; then
+            echo "Valid JSON received."
+          else
+            echo "Invalid JSON received."
+            exit 1
+          fi
+
+          # Container Name
+          CONTAINER_NAME="homepage"
+
           # Hole die Container-ID basierend auf dem Namen
-          CONTAINER_ID=$(curl -s -H "Authorization: Bearer $API_KEY" "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/json" | jq -r ".[] | select(.Names[] | contains(\"${CONTAINER_NAME}\")) | .Id")
+          CONTAINER_ID=$(echo "$RESPONSE" | jq -r ".[] | select(.Names[] | contains(\"${CONTAINER_NAME}\")) | .Id")
 
           if [ -z "$CONTAINER_ID" ]; then
             echo "Container not found!"
@@ -56,12 +68,3 @@ jobs:
 
           echo "Container ID: $CONTAINER_ID"
 
-          # Pull das neueste Image
-          echo "Pulling latest image..."
-          curl -X POST -H "Authorization: Bearer $API_KEY" \
-               "$API_URL/endpoints/$ENDPOINT_ID/docker/images/create?fromImage=ghcr.io/thi-projekte/pflege/homepage&tag=latest"
-
-          # Container neu starten
-          echo "Restarting container..."
-          curl -X POST -H "Authorization: Bearer $API_KEY" \
-               "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID/restart"
