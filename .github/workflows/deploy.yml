@@ -1,9 +1,10 @@
-name: Build and Push to GHCR
+name: Pflegital Homepage CI/CD
 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - 'homepage/pflegital/**'
+      - 'homepage/Dockerfile'
 
 permissions:
   packages: write
