@@ -1,4 +1,4 @@
-name: Pflegital Homepage CI/CD
+name: Build, Push and Deploy
 
 on:
   push:
@@ -7,15 +7,15 @@ on:
       - 'homepage/Dockerfile'
 
 permissions:
-  packages: write
   contents: read
+  packages: write
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Log in to GitHub Container Registry
@@ -25,11 +25,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker Image
+      - name: Build Docker image
         run: |
-          docker build -f homepage/Dockerfile \
-            -t ghcr.io/thi-projekte/pflege/homepage:latest homepage
+          IMAGE_NAME=ghcr.io/thi-projekte/pflege/homepage:latest
+          docker build -f homepage/Dockerfile -t $IMAGE_NAME homepage
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
-      - name: Push Docker Image to GHCR
+      - name: Push Docker image
         run: |
-          docker push ghcr.io/thi-projekte/pflege/homepage:latest
+          docker push $IMAGE_NAME 
+
