@@ -1,4 +1,4 @@
-name: Website CI/CD using Portainer API
+name: Build, Push and Deploy using Portainer API
 
 on:
   push:
@@ -37,30 +37,31 @@ jobs:
 
       - name: Update Container via Portainer API
         env:
-          API_URL: https://portainer.winfprojekt.de
-          API_TOKEN: ${{ secrets.PORTAINER_API_KEY }}
+          API_URL: https://portainer.winfprojekt.de/api
+          API_KEY: ${{ secrets.PORTAINER_API_KEY }}
         run: |
+          # Container Name
           CONTAINER_NAME="homepage"
 
-          # Hole die Container-ID
-          CONTAINER_ID=$(curl -s -H "Authorization: Bearer $API_TOKEN" "$API_URL/endpoints/1/docker/containers/json" | jq -r ".[] | select(.Names[] | contains(\"${CONTAINER_NAME}\")) | .Id")
+          # Endpoint ID (1 ist standardmäßig der erste Endpoint, ggf. anpassen)
+          ENDPOINT_ID=1
+
+          # Hole die Container-ID basierend auf dem Namen
+          CONTAINER_ID=$(curl -s -H "Authorization: Bearer $API_KEY" "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/json" | jq -r ".[] | select(.Names[] | contains(\"${CONTAINER_NAME}\")) | .Id")
 
           if [ -z "$CONTAINER_ID" ]; then
             echo "Container not found!"
             exit 1
           fi
 
-          echo "Updating container: $CONTAINER_ID"
+          echo "Container ID: $CONTAINER_ID"
 
-          # Neustart des Containers
-          curl -X POST -H "Authorization: Bearer $API_TOKEN" \
-               "$API_URL/endpoints/1/docker/containers/$CONTAINER_ID/update" \
-               -d '{"RestartPolicy": {"Name": "always"}}'
-
-          # Image neu pullen
-          curl -X POST -H "Authorization: Bearer $API_TOKEN" \
-               "$API_URL/endpoints/1/docker/images/create?fromImage=ghcr.io/thi-projekte/pflege/homepage&tag=latest"
+          # Pull das neueste Image
+          echo "Pulling latest image..."
+          curl -X POST -H "Authorization: Bearer $API_KEY" \
+               "$API_URL/endpoints/$ENDPOINT_ID/docker/images/create?fromImage=ghcr.io/thi-projekte/pflege/homepage&tag=latest"
 
           # Container neu starten
-          curl -X POST -H "Authorization: Bearer $API_TOKEN" \
-               "$API_URL/endpoints/1/docker/containers/$CONTAINER_ID/restart"
+          echo "Restarting container..."
+          curl -X POST -H "Authorization: Bearer $API_KEY" \
+               "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID/restart"
