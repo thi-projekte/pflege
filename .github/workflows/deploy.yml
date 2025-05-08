@@ -1,4 +1,4 @@
-name: Build, Push and Deploy
+name: Build and Push to GHCR
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   packages: write
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,19 +34,3 @@ jobs:
       - name: Push Docker image
         run: |
           docker push $IMAGE_NAME
-
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: |
-            docker pull ghcr.io/thi-projekte/pflege/homepage:latest
-            docker stop homepage || true
-            docker rm homepage || true
-            docker run -d \
-              --name homepage \
-              --network nginx-proxy-manager \
-              ghcr.io/thi-projekte/pflege/homepage:latest
