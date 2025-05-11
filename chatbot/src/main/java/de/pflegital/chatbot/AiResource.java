@@ -23,6 +23,10 @@ public class AiResource {
     @Inject
     FormDataPresenter formDataPresenter;
 
+    @Inject
+    InsuranceNumberTool insuranceNumberTool;
+
+
     private final Map<String, FormData> sessions = new HashMap<>();
     private static final Logger LOG = getLogger(AiResource.class);
 
@@ -62,6 +66,11 @@ public class AiResource {
         if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
             updatedResponse.setChatbotMessage(
                     "Die Verhinderungspflege steht erst ab Pflegegrad 2 zur Verfügung. Bitte prüfen Sie Ihre Angaben.");
+        } else if (updatedResponse.getCareRecipient() != null &&
+                updatedResponse.getCareRecipient().getInsuranceNumber() != null &&
+                !insuranceNumberTool.isValidSecurityNumber(updatedResponse.getCareRecipient().getInsuranceNumber())) {
+            updatedResponse.setChatbotMessage(
+                    "Die angegebene Versicherungsnummer scheint ungültig zu sein. Bitte überprüfen Sie Ihre Eingabe.");
         }
 
 
