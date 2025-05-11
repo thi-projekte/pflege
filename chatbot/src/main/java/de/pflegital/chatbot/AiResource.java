@@ -64,6 +64,8 @@ public class AiResource {
                     "Die Verhinderungspflege steht erst ab Pflegegrad 2 zur Verfügung. Bitte prüfen Sie Ihre Angaben.");
         }
 
+
+
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Thank you! All required information has been collected.");
