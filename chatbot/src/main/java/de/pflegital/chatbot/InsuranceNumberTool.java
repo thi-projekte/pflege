@@ -9,11 +9,12 @@ public class InsuranceNumberTool {
     @Tool("Ermittelt ob eine Versicherungsnummer gültig ist oder nicht.")
     public boolean isValidSecurityNumber(String versicherungsnummer) {
 
-        // Leerzeichen entfernen und trimmen
-        versicherungsnummer = versicherungsnummer.trim();
+        // Leerzeichen entfernen
+        versicherungsnummer = versicherungsnummer.replaceAll("\\s+", "").trim();
+
 
         // 1. Länge prüfen
-        if (versicherungsnummer == null || versicherungsnummer.length() != 12) {
+        if (versicherungsnummer.length() != 12) {
             return false;
         }
         // 2. Bestandteile extrahieren
