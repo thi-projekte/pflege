@@ -7,9 +7,13 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class InsuranceNumberTool {
 
     @Tool("Ermittelt ob eine Versicherungsnummer gültig ist oder nicht.")
-    public static boolean isValidSecurityNumber(String versicherungsnummer) {
+    public boolean isValidSecurityNumber(String versicherungsnummer) {
+
+        // Leerzeichen entfernen und trimmen
+        versicherungsnummer = versicherungsnummer.trim();
+
         // 1. Länge prüfen
-        if (versicherungsnummer == null || versicherungsnummer.length() != 12) {
+        if (versicherungsnummer.length() != 12) {
             return false;
         }
         // 2. Bestandteile extrahieren
