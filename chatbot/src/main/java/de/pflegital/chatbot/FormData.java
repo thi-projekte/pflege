@@ -23,9 +23,9 @@ public class FormData {
                 careRecipient != null && careRecipient.isValid() &&
                 caregiver != null && caregiver.isValid() &&
                 replacementCare != null && replacementCare.isValid() &&
-                isHomeCare != null && Boolean.TRUE.equals(isHomeCare) &&
-                careDurationMin6Months != null && Boolean.TRUE.equals(careDurationMin6Months) &&
-                legalAcknowledgement != null && Boolean.TRUE.equals(legalAcknowledgement);
+                isHomeCare != null && isHomeCare &&
+                careDurationMin6Months != null && careDurationMin6Months &&
+                legalAcknowledgement != null && legalAcknowledgement;
     }
 
     @JsonProperty("chatbotMessage")

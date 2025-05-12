@@ -40,7 +40,7 @@ public class AiResource {
             LOG.info("Chat started: {}", aiResponse.getChatbotMessage());
             return new ChatResponse(sessionId, aiResponse);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WebApplicationException(e);
         }
     }
 
@@ -74,7 +74,7 @@ public class AiResource {
 
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
-            updatedResponse.setChatbotMessage("Thank you! All required information has been collected.");
+            updatedResponse.setChatbotMessage("Danke! Es wurden alle Informationen gesammelt");
             // FIXME: Start process here
         }
         sessions.put(sessionId, updatedResponse);
@@ -83,7 +83,7 @@ public class AiResource {
             LOG.info("AI response: {}", updatedResponse.getChatbotMessage());
             return new ChatResponse(sessionId, updatedResponse);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WebApplicationException(e);
         }
     }
 }
