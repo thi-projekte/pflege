@@ -225,5 +225,38 @@
   });
 </script>
 
+<script>
+  function sendToWhatsApp() {
+    // Eingabefelder holen
+    const nameInput    = document.getElementById('name');
+    const messageInput = document.getElementById('message');
+
+    const name    = nameInput.value.trim();
+    const message = messageInput.value.trim();
+
+    // Validierung
+    if (message === '') {
+      alert('Bitte gib eine Nachricht ein.');
+      return;
+    }
+
+    const phoneNumber = '15556422777';
+
+    // Nachricht zusammenbauen (inkl. Name, falls angegeben)
+    let fullMessage = message;
+    if (name !== '') {
+      fullMessage = `Name: ${name}\nNachricht: ${message}`;
+    }
+
+    // URL-codieren und öffnen
+    const encoded = encodeURIComponent(fullMessage);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encoded}`;
+    window.open(whatsappUrl, '_blank');
+
+    console.log('Nachricht gesendet:', fullMessage);
+  }
+</script>
+
+
 </body>
 </html>
