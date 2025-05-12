@@ -282,7 +282,168 @@ footer {
   }
 }
 
-/* Gallery */
+.pdp-gallery {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Haupt-Slider */
+.pdp-gallery__main {
+  position: relative;
+  overflow: hidden;
+}
+.pdp-gallery__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+.pdp-gallery__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  position: relative;
+}
+.pdp-gallery__slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Nav-Buttons */
+.pdp-gallery__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: rgba(255,255,255,0.7);
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+}
+.pdp-gallery__nav--prev { left: 0.5rem; }
+.pdp-gallery__nav--next { right: 0.5rem; }
+
+/* Thumbnail-Slider */
+.pdp-gallery__thumbs {
+  position: relative;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+.pdp-gallery__thumb-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+.pdp-gallery__thumb {
+  flex: 0 0 80px;
+  margin-right: 0.5rem;
+  scroll-snap-align: center;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.pdp-gallery__thumb.active,
+.pdp-gallery__thumb:hover {
+  opacity: 1;
+}
+.pdp-gallery__thumb img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* Thumbnail-Nav */
+.pdp-gallery__thumb-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  background: rgba(255,255,255,0.7);
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+}
+.pdp-gallery__thumb-nav--prev { left: 0; }
+.pdp-gallery__thumb-nav--next { right: 0; }
+
+/* ——————————————————————————————————————————
+   1) Hauptslider einengen und Höhe fixieren
+   —————————————————————————————————————————— */
+/* style.css */
+
+.pdp-gallery__main {
+  max-width: 350px;    /* gewünschte Slider-Breite */
+  margin: 0 auto;
+  position: relative;
+  /* kein overflow:hidden mehr, sonst wird zugeschnitten */
+}
+
+.pdp-gallery__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  /* keine fixe Höhe mehr */
+}
+
+.pdp-gallery__slide {
+  flex: 0 0 100%;            /* Slide so breit wie der Container */
+  scroll-snap-align: center;
+  padding: 0.5rem 0;         /* optional: etwas Abstand oben/unten */
+  /* kein overflow:hidden hier */
+}
+
+.pdp-gallery__slide img {
+  display: block;
+  width: 90%;               /* füllt die Slide-Breite */
+  height: auto;              /* bewahrt das Seitenverhältnis */
+  object-fit: contain;       /* skaliert rein, ohne zu beschneiden */
+}
+
+/* Punkte unter dem Slider */
+.pdp-gallery__dots {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+.pdp-gallery__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ccc;
+  margin: 0 4px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.pdp-gallery__dot.active {
+  background: #333;
+}
+
+/* Für Firefox */
+.pdp-gallery__track {
+  scrollbar-width: none;       /* Versteckt die Scrollbar */
+  -ms-overflow-style: none;    /* IE 10+ */
+}
+
+/* Für WebKit-Browser (Chrome, Safari, Edge) */
+.pdp-gallery__track::-webkit-scrollbar {
+  display: none;               /* Versteckt die Scrollbar */
+}
+
+
+
+
+/* Gallery 
 .gallery-wrapper {
   position: relative;
   overflow: hidden;
@@ -299,17 +460,25 @@ footer {
   padding: 2rem 0;
 }
 
+
 .gallery-card {
-  flex: 0 0 80%;
-  scroll-snap-align: center;
-  background-size: cover;
-  background-position: center;
+  flex: 0 0 auto;     
+  width: 300px;         
+  max-width: 80%;       
   border-radius: 20px;
-  height: 500px;
   position: relative;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  transition: transform var(--transition-base);
+  overflow: hidden;
 }
+
+.gallery-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+
 
 .gallery-card:hover,
 .gallery-card:focus-within {
@@ -349,3 +518,4 @@ footer {
 
 .gallery-nav.prev { left: 1rem; }
 .gallery-nav.next { right: 1rem; }
+*/
