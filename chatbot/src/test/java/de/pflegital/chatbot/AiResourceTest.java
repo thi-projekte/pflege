@@ -63,4 +63,15 @@ public class AiResourceTest {
                 .response();
         LOG.info("Response: {}", response.asString());
     }
+
+    @Test
+    public void testReplyChatWithoutSessionId() {
+        given()
+                .contentType(ContentType.JSON)
+                .body("Testeingabe ohne Session")
+                .when()
+                .post("/chat/reply")
+                .then()
+                .statusCode(401);
+    }
 }
