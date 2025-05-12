@@ -47,7 +47,6 @@ public class FormData {
     @Description("Describes the reason for the care. Either holiday or other.")
     private Reason reason;
 
-
     @JsonProperty("careRecipient")
     @Description("Information about the care recipient, including full name, birth date, address, phone number and insurance number.")
     private Carerecipient careRecipient;
