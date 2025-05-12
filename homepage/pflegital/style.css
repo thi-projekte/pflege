@@ -1,0 +1,241 @@
+
+    body {
+      margin: 0;
+      font-family: 'Work Sans', sans-serif;
+      background-color: #FEFCEB;
+      color: #5E5043;
+    }
+    header {
+      background-color: #FEFCEB;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      position: relative;
+    }
+    .logo svg {
+      max-width: 120px;
+      height: auto;
+      display: block;
+    }
+    nav {
+      display: flex;
+      gap: 1rem;
+    }
+    nav a {
+      text-decoration: none;
+      color: #5E5043;
+      font-weight: bold;
+    }
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .menu-toggle span {
+      height: 3px;
+      width: 25px;
+      background: #5E5043;
+      margin: 4px 0;
+      transition: 0.4s;
+    }
+    .hero {
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .btn {
+      background-color: #F49B62;
+      color: #5E5043;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 3rem 1rem;
+      background-color: #F49B62;
+    }
+    .feature {
+      flex: 1 1 250px;
+      max-width: 300px;
+      margin: 1rem;
+      text-align: center;
+    }
+    .feature h3 {
+      color: #5E5043;
+    }
+    .cta-section {
+      background-color: #FEFCEB;
+      color: #5E5043;
+      text-align: center;
+      padding: 3rem 2rem;
+    }
+    .whatsapp-form {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .whatsapp-form input,
+    .whatsapp-form textarea {
+      padding: 0.75rem;
+      border-radius: 5px;
+      border: none;
+      width: 100%;
+      max-width: 400px;
+    }
+    .whatsapp-form button {
+      background-color: #F49B62;
+      color: #5E5043;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #FEFCEB;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+      nav.active {
+        display: flex;
+      }
+      .menu-toggle {
+        display: flex;
+      }
+      .hero h1 {
+        font-size: 2rem;
+      }
+      .hero p {
+        font-size: 1rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .features {
+        flex-direction: column;
+        align-items: center;
+      }
+      .feature {
+        max-width: 90%;
+      }
+    }
+  
+
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 2rem auto;
+  }
+  .chat-row {
+    display: flex;
+    animation: fadeIn 1.5s forwards;
+    opacity: 0;
+  }
+  .chat-row.bot {
+    justify-content: flex-start;
+  }
+  .chat-row.user {
+    justify-content: flex-end;
+  }
+  .chat-bubble {
+    background-color: #fff;
+    color: #5E5043;
+    padding: 1rem 1.25rem;
+    border-radius: 20px;
+    max-width: 70%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .chat-row.user .chat-bubble {
+    background-color: #F49B62;
+    color: white;
+  }
+  .delay-1 { animation-delay: 1s; }
+  .delay-2 { animation-delay: 2.5s; }
+  .delay-3 { animation-delay: 4s; }
+  .delay-4 { animation-delay: 5.5s; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+
+  .gallery-wrapper {
+    position: relative;
+    overflow: hidden;
+    max-width: 1000px;
+    margin: auto;
+  }
+  .gallery-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    gap: 1rem;
+    padding: 2rem 0;
+  }
+  .gallery-card {
+    flex: 0 0 80%;
+    scroll-snap-align: center;
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+    height: 500px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .gallery-text {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 0 5px black;
+  }
+  .gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #F49B62;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    z-index: 1;
+    border-radius: 50%;
+  }
+  .gallery-nav.prev {
+    left: 0;
+  }
+  .gallery-nav.next {
+    right: 0;
+  }
