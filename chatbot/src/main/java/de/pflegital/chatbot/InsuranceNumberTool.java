@@ -12,7 +12,6 @@ public class InsuranceNumberTool {
         // Leerzeichen entfernen
         versicherungsnummer = versicherungsnummer.replaceAll("\\s+", "").trim();
 
-
         // 1. Länge prüfen
         if (versicherungsnummer.length() != 12) {
             return false;

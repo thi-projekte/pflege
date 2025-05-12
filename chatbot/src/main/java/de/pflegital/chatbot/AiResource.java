@@ -26,7 +26,6 @@ public class AiResource {
     @Inject
     InsuranceNumberTool insuranceNumberTool;
 
-
     private final Map<String, FormData> sessions = new HashMap<>();
     private static final Logger LOG = getLogger(AiResource.class);
 
@@ -72,8 +71,6 @@ public class AiResource {
             updatedResponse.setChatbotMessage(
                     "Die angegebene Versicherungsnummer scheint ungültig zu sein. Bitte überprüfen Sie Ihre Eingabe.");
         }
-
-
 
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
