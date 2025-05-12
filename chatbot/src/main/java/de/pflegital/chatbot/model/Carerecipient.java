@@ -28,7 +28,7 @@ public class Carerecipient {
     private String insuranceNumber;
 
     public boolean isInsuranceNumberValid() {
-        return insuranceNumber != null && insuranceNumber.matches("^\\d{10,12}$");
+        return insuranceNumber != null && insuranceNumber.trim().matches("^\\d{10,12}$");
     }
 
     public boolean isFullNameValid() {

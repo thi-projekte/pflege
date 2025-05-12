@@ -23,9 +23,9 @@ public class FormData {
                 careRecipient != null && careRecipient.isValid() &&
                 caregiver != null && caregiver.isValid() &&
                 replacementCare != null && replacementCare.isValid() &&
-                isHomeCare != null && Boolean.TRUE.equals(isHomeCare) &&
-                careDurationMin6Months != null && Boolean.TRUE.equals(careDurationMin6Months) &&
-                legalAcknowledgement != null && Boolean.TRUE.equals(legalAcknowledgement);
+                isHomeCare != null && isHomeCare &&
+                careDurationMin6Months != null && careDurationMin6Months &&
+                legalAcknowledgement != null && legalAcknowledgement;
     }
 
     @JsonProperty("chatbotMessage")
@@ -46,7 +46,6 @@ public class FormData {
     @JsonProperty("reason")
     @Description("Describes the reason for the care. Either holiday or other.")
     private Reason reason;
-
 
     @JsonProperty("careRecipient")
     @Description("Information about the care recipient, including full name, birth date, address, phone number and insurance number.")
