@@ -7,16 +7,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Work+Sans&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
   
-
 <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    AOS.init({ duration: 800, once: true });
-  });
-</script>
-
-  <link rel="stylesheet" href="style.css">
+<script src="scripts.js"></script>
 </head>
 <body>
   <header>
@@ -161,26 +155,6 @@
 
 
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const track = document.getElementById('galleryTrack');
-    const prev = document.querySelector('.gallery-nav.prev');
-    const next = document.querySelector('.gallery-nav.next');
-
-    prev.addEventListener('click', () => {
-      track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' });
-    });
-
-    next.addEventListener('click', () => {
-      track.scrollBy({ left: track.clientWidth, behavior: 'smooth' });
-    });
-  });
-</script>
-
-
-
-
-
   <section class="cta-section" id="kontakt" data-aos="zoom-in">
     <h2>Bereit für die Zukunft der Pflege?</h2>
     <form class="whatsapp-form">
@@ -211,52 +185,6 @@
   <h2>Datenschutzerklärung</h2>
   <p>Ihre Daten werden gemäß DSGVO verarbeitet. Bei Nutzung von WhatsApp werden Daten an Meta Platforms übertragen. Sie stimmen bei Kontaktaufnahme über WhatsApp dieser Verarbeitung zu. Details dazu finden Sie in unserer vollständigen <a href="#datenschutz">Datenschutzerklärung</a>.</p>
 </section>
-
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const nav = document.querySelector('nav');
-    if (menuToggle && nav) {
-      menuToggle.addEventListener('click', () => {
-        nav.classList.toggle('active');
-      });
-    }
-  });
-</script>
-
-<script>
-  function sendToWhatsApp() {
-    // Eingabefelder holen
-    const nameInput    = document.getElementById('name');
-    const messageInput = document.getElementById('message');
-
-    const name    = nameInput.value.trim();
-    const message = messageInput.value.trim();
-
-    // Validierung
-    if (message === '') {
-      alert('Bitte gib eine Nachricht ein.');
-      return;
-    }
-
-    const phoneNumber = '15556422777';
-
-    // Nachricht zusammenbauen (inkl. Name, falls angegeben)
-    let fullMessage = message;
-    if (name !== '') {
-      fullMessage = `Name: ${name}\nNachricht: ${message}`;
-    }
-
-    // URL-codieren und öffnen
-    const encoded = encodeURIComponent(fullMessage);
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encoded}`;
-    window.open(whatsappUrl, '_blank');
-
-    console.log('Nachricht gesendet:', fullMessage);
-  }
-</script>
-
 
 </body>
 </html>
