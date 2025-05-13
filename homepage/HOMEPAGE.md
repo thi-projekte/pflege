@@ -15,26 +15,25 @@ Pflege ist eine Webanwendung, die Pflegebedürftige und Pflegeanbieter miteinand
 Das Projekt hat folgende Verzeichnisstruktur:
 
 ```
-pflege/
+.github/
+├── workflows/
+│   └── deploy.yml       # CI/CD-Workflow für die Bereitstellung
+homepage/
 ├── api_key.txt          # API-Schlüssel für externe Dienste
-├── README.md            # Projektbeschreibung
-├── .github/
-│   └── workflows/
-│       └── deploy.yml   # CI/CD-Workflow für die Bereitstellung
-├── homepage/
-│   ├── Dockerfile       # Docker-Konfiguration für die Anwendung
-│   └── pflegital/
-│       ├── datenschutz.html  # Datenschutzerklärung
-│       ├── impressum.html    # Impressum
-│       ├── index.html        # Hauptseite der Anwendung
-│       ├── scripts.js        # JavaScript-Funktionen
-│       ├── style.css         # CSS-Styles
-│       └── assets/           # Medienressourcen (Bilder, Logos)
-│           ├── image.png
-│           ├── logo.svg
-│           ├── Unterhaltung 1.png
-│           ├── Unterhaltung 2.png
-│           └── Unterhaltung 3.png
+├── Dockerfile           # Docker-Konfiguration für die Anwendung
+├── HOMEPAGE.md          # Dokumentation der Homepage
+└── pflegital/
+    ├── datenschutz.html # Datenschutzerklärung
+    ├── impressum.html   # Impressum
+    ├── index.html       # Hauptseite der Anwendung
+    ├── scripts.js       # JavaScript-Funktionen
+    ├── style.css        # CSS-Styles
+    └── assets/          # Medienressourcen (Bilder, Logos)
+        ├── image.png
+        ├── logo.svg
+        ├── Unterhaltung 1.png
+        ├── Unterhaltung 2.png
+        └── Unterhaltung 3.png
 ```
 
 ## Aktueller Stand
