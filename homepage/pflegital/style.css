@@ -236,12 +236,14 @@ footer {
   gap: 1rem;
   max-width: 600px;
   margin: 2rem auto;
+  animation: restart-animation 10s linear infinite; /* 10s entspricht der Dauer der Animation */
 }
 
 .chat-row {
   display: flex;
-  animation: fadeIn 1.5s forwards;
   opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s ease forwards;
 }
 
 .chat-row.bot {
@@ -279,6 +281,26 @@ footer {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes restart-animation {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
   }
 }
 

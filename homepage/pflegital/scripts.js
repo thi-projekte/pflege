@@ -114,3 +114,22 @@ document.addEventListener("DOMContentLoaded", () => {
     updateActive(0);
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  const chatRows = document.querySelectorAll(".chat-row");
+
+  function restartChatAnimation() {
+    chatRows.forEach((row, index) => {
+      row.style.animation = "none"; // Animation stoppen
+      void row.offsetWidth; // Reflow erzwingen
+      row.style.animation = `fadeInUp 1s ease forwards`; // Animation neu starten
+      row.style.animationDelay = `${index * 1.5}s`; // Verzögerung für jede Zeile
+    });
+  }
+
+  // Starte die Animation alle 10 Sekunden neu
+  setInterval(restartChatAnimation, 10000);
+
+  // Initiale Animation starten
+  restartChatAnimation();
+});
+
