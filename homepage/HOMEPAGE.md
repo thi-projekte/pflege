@@ -14,6 +14,7 @@ Pflege ist eine Webanwendung, die Pflegebedürftige und Pflegeanbieter miteinand
 
 Das Projekt hat folgende Verzeichnisstruktur:
 
+```
 pflege/
 ├── api_key.txt          # API-Schlüssel für externe Dienste
 ├── README.md            # Projektbeschreibung
@@ -34,7 +35,7 @@ pflege/
 │           ├── Unterhaltung 1.png
 │           ├── Unterhaltung 2.png
 │           └── Unterhaltung 3.png
-└── pflege/              # (Noch leer, für zukünftige Erweiterungen)
+```
 
 ## Aktueller Stand
 
