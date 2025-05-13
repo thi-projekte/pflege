@@ -67,18 +67,14 @@ public class InsuranceNumberTool {
     }
 
     private static char berechnePruefziffer(String input) {
-        StringBuilder numerisch = new StringBuilder();
+        int summe = 0;
         for (char c : input.toCharArray()) {
             if (Character.isDigit(c)) {
-                numerisch.append(c);
+                summe += Character.getNumericValue(c);
             } else if (Character.isLetter(c)) {
-                // Buchstaben werden zu Zahlen A=1, B=2, ..., Z=26
-                numerisch.append((int) Character.toUpperCase(c) - 64);
+                // Buchstaben: A=1, B=2, ..., Z=26
+                summe += Character.toUpperCase(c) - 'A' + 1;
             }
-        }
-        int summe = 0;
-        for (char c : numerisch.toString().toCharArray()) {
-            summe += Character.getNumericValue(c);
         }
         int pruefziffer = summe % 10;
         return Character.forDigit(pruefziffer, 10);

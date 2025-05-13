@@ -3,6 +3,7 @@ package de.pflegital.chatbot;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
 import io.quarkus.security.Authenticated;
 
@@ -59,8 +60,7 @@ public class AiResource {
         String prompt = "The current form data is: " + jsonFormData +
                 ". The user just said: '" + userInput + "'. Please update the missing fields accordingly.";
 
-        LOG.info("Prompt to AI: {}", prompt);
-        FormData updatedResponse = aiService.chatWithAiStructured(prompt);
+        FormData updatedResponse = getFormData(prompt);
 
         if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
             updatedResponse.setChatbotMessage(
@@ -85,5 +85,12 @@ public class AiResource {
         } catch (Exception e) {
             throw new WebApplicationException(e);
         }
+    }
+
+    @Retry(maxRetries = 3)
+    protected FormData getFormData(String prompt) {
+        LOG.info("Prompt to AI: {}", prompt);
+        FormData updatedResponse = aiService.chatWithAiStructured(prompt);
+        return updatedResponse;
     }
 }
