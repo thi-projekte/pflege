@@ -18,17 +18,24 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Consumes(MediaType.APPLICATION_JSON)
 @Authenticated
 public class AiResource {
-    @Inject
-    AiService aiService;
 
-    @Inject
-    FormDataPresenter formDataPresenter;
-
-    @Inject
-    InsuranceNumberTool insuranceNumberTool;
-
+    private final AiService aiService;
+    private final FormDataPresenter formDataPresenter;
+    private final InsuranceNumberTool insuranceNumberTool;
     private final Map<String, FormData> sessions = new HashMap<>();
     private static final Logger LOG = getLogger(AiResource.class);
+
+    @Inject
+    public AiResource(
+            AiService aiService,
+            FormDataPresenter formDataPresenter,
+            InsuranceNumberTool insuranceNumberTool) {
+        this.aiService = aiService;
+        this.formDataPresenter = formDataPresenter;
+        this.insuranceNumberTool = insuranceNumberTool;
+    }
+
+
 
     @POST
     @Path("/start")
@@ -75,7 +82,7 @@ public class AiResource {
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Danke! Es wurden alle Informationen gesammelt");
-            // FIXME: Start process here
+            // Start process here
         }
         sessions.put(sessionId, updatedResponse);
 
@@ -90,7 +97,6 @@ public class AiResource {
     @Retry(maxRetries = 3)
     protected FormData getFormData(String prompt) {
         LOG.info("Prompt to AI: {}", prompt);
-        FormData updatedResponse = aiService.chatWithAiStructured(prompt);
-        return updatedResponse;
+        return aiService.chatWithAiStructured(prompt);
     }
 }

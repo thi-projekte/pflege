@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestSecurity(authorizationEnabled = false)
-public class AiResourceTest {
+class AiResourceTest {
 
     @InjectMock
     AiService aiService;
@@ -26,7 +26,7 @@ public class AiResourceTest {
     private static final Logger LOG = getLogger(AiResource.class);
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         // Mock-FormData
         FormData mockFormData = new FormData();
         mockFormData.setCareLevel(3);
@@ -47,7 +47,7 @@ public class AiResourceTest {
     }
 
     @Test
-    public void testReplyChat() {
+    void testReplyChat() {
 
         Response response = given()
                 .contentType(ContentType.JSON)
@@ -66,7 +66,7 @@ public class AiResourceTest {
     }
 
     @Test
-    public void testReplyChatWithoutSessionId() {
+    void testReplyChatWithoutSessionId() {
         given()
                 .contentType(ContentType.JSON)
                 .body("Testeingabe ohne Session")
