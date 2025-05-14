@@ -57,6 +57,7 @@ public class AiResourceTest {
                 .post("/chat/reply")
                 .then()
                 .statusCode(200)
+                .contentType(ContentType.JSON)
                 .body("formData.careLevel", equalTo(3))
                 .body("formData.careType", equalTo("TAGEWEISE"))
                 .extract()
@@ -74,4 +75,6 @@ public class AiResourceTest {
                 .then()
                 .statusCode(401);
     }
+
+
 }

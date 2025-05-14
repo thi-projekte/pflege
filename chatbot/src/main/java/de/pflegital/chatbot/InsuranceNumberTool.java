@@ -59,25 +59,40 @@ public class InsuranceNumberTool {
     private static boolean istGueltigesDatum(String ttmmjj) {
         int tag = Integer.parseInt(ttmmjj.substring(0, 2));
         int monat = Integer.parseInt(ttmmjj.substring(2, 4));
-        int jahr = Integer.parseInt(ttmmjj.substring(4, 6));
-        if (monat < 1 || monat > 12 || tag < 1 || tag > 31)
-            return false;
-        // Grobe Prüfung ohne Schaltjahrlogik
-        return true;
+        return monat >= 1 && monat <= 12 && tag >= 1 && tag <= 31;
     }
 
     private static char berechnePruefziffer(String input) {
+        int[] gewichte = {2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2};
         int summe = 0;
-        for (char c : input.toCharArray()) {
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            int wert;
+
             if (Character.isDigit(c)) {
-                summe += Character.getNumericValue(c);
+                wert = Character.getNumericValue(c);
             } else if (Character.isLetter(c)) {
-                // Buchstaben: A=1, B=2, ..., Z=26
-                summe += Character.toUpperCase(c) - 'A' + 1;
+                // A=10, ..., Z=35 (offiziell bei Rentenversicherungsnummern)
+                wert = Character.toUpperCase(c) - 'A' + 10;
+            } else {
+                LOG.error("Ungültiges Zeichen in Prüfzifferberechnung: {}", c);
+                return 'X'; // Fehler
             }
+
+            int produkt = wert * gewichte[i];
+            int quersumme = (produkt / 10) + (produkt % 10);
+            summe += quersumme;
+
+            LOG.info("Stelle {}: Zeichen={} Wert={} Gewicht={} Produkt={} Quersumme={} Zwischensumme={}",
+                    i, c, wert, gewichte[i], produkt, quersumme, summe);
         }
-        int pruefziffer = summe % 10;
+
+        int pruefziffer = (10 - (summe % 10)) % 10;
+        LOG.info("Endsumme: {}, Modulo: {}, Prüfziffer: {}", summe, summe % 10, pruefziffer);
         return Character.forDigit(pruefziffer, 10);
     }
+
+
 
 }
