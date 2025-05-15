@@ -3,7 +3,7 @@ package de.pflegital.chatbot;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.pflegital.chatbot.whatsapp.WhatsAppService; // Dein Sende-Service
-import de.pflegital.chatbot.whatsapp.dto.WebhookPayload; // Deine DTOs
+import de.pflegital.chatbot.whatsapp.dto.*; // Deine DTOs
 import io.quarkus.logging.Log; // Einfaches Quarkus Logging
 import io.smallrye.common.annotation.Blocking;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import de.pflegital.chatbot.whatsapp.dto.Value;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -134,13 +135,7 @@ public class WhatsAppWebhookResource {
                                 }
                             }
 
-                            // Status-Updates loggen (optional)
-                            if (change.value.statuses != null) {
-                                for (Status status : change.value.statuses) {
-                                     Log.debugf("Status Update für Nachricht %s an %s: %s", status.id, status.recipientId, status.status);
-                                     // Hier könnte Logik für Zustellberichte implementiert werden
-                                 }
-                             }
+
                         } // endif "messages" field
                     } // end changes loop
                 } // end entry loop
@@ -155,12 +150,10 @@ public class WhatsAppWebhookResource {
             }
 
         } catch (JsonProcessingException jsonEx) {
-             Log.error("Fehler beim Parsen des Webhook JSON Payloads: {}", jsonEx.getMessage());
              // Sende trotzdem 200, Meta kann damit nichts anfangen
               return Response.ok("JSON_PARSE_ERROR").build();
         }
         catch (Exception e) {
-            Log.error("Unerwarteter Fehler bei der Verarbeitung des Webhook Payloads: {}", e.getMessage(), e);
             // Wichtig: Auch bei internen Fehlern 200 OK senden, sonst sendet Meta immer wieder.
             // Fehler müssen intern geloggt und behoben werden.
             return Response.ok("INTERNAL_PROCESSING_ERROR").build();
@@ -170,7 +163,6 @@ public class WhatsAppWebhookResource {
     // --- Hilfsmethode zur Signaturprüfung ---
     private boolean isValidSignature(String payload, String signatureHeader) {
         if (appSecret == null || appSecret.isBlank()) {
-            Log.error("APP_SECRET ist nicht konfiguriert! Signaturprüfung kann nicht durchgeführt werden.");
             // In einer produktiven Umgebung sollte dies ein harter Fehler sein.
             // Für lokale Tests KÖNNTE man es temporär erlauben (NICHT EMPFOHLEN!)
             // return true; // ACHTUNG: NUR FÜR LOKALE TESTS OHNE NGINX/HTTPS!
@@ -204,7 +196,7 @@ public class WhatsAppWebhookResource {
             );
 
             if (!signaturesMatch) {
-               Log.warn("Signatur stimmt nicht überein! Erwartet: {}, Bekommen: {}", calculatedSignature, expectedSignature);
+               Log.warn("Signatur stimmt nicht überein! Erwartet: {}, Bekommen: {}");
             }
             return signaturesMatch;
 
@@ -267,7 +259,7 @@ public class WhatsAppWebhookResource {
             String aiResponseMessage = updatedResponse.getChatbotMessage();
             if (aiResponseMessage == null || aiResponseMessage.isBlank()) {
                 aiResponseMessage = "Ich habe dazu leider keine passende Antwort. Bitte versuchen Sie es anders.";
-                Log.warn("AI hat keine Antwortnachricht geliefert für Nutzer {}.", senderId);
+                //Log.warn("AI hat keine Antwortnachricht geliefert für Nutzer {}.");
             }
 
             Log.infof("Sende AI Antwort an %s: '%s'", senderId, aiResponseMessage);
@@ -281,12 +273,12 @@ public class WhatsAppWebhookResource {
                  // sessions.remove(senderId); // Session entfernen? Oder für Follow-up behalten?
              }
         } catch (Exception e) {
-             Log.error("Fehler bei der AI-Verarbeitung oder beim Senden der Antwort für Nutzer {}: {}", senderId, e.getMessage(), e);
+             //Log.error("Fehler bei der AI-Verarbeitung oder beim Senden der Antwort für Nutzer {}: {}");
              // Optional: Eine Fehlermeldung an den Nutzer senden
               try {
                   whatsAppService.sendTextMessage(senderId, "Es ist ein interner Fehler aufgetreten. Bitte versuchen Sie es später erneut.");
               } catch (Exception sendEx) {
-                  Log.error("Konnte nicht einmal die Fehlermeldung an Nutzer {} senden: {}", senderId, sendEx.getMessage());
+                  //Log.error("Konnte nicht einmal die Fehlermeldung an Nutzer {} senden: {}");
               }
         }
     }
@@ -297,7 +289,7 @@ public class WhatsAppWebhookResource {
 
         // Prüfe Pflegegrad nur, wenn vorhanden
         if (responseData.getCareLevel() != null && responseData.getCareLevel() < 2) {
-              Log.debug("Business Rule: Pflegegrad < 2 erkannt.");
+              //Log.debug("Business Rule: Pflegegrad < 2 erkannt.");
               responseData.setChatbotMessage(
                       "Die Verhinderungspflege steht erst ab Pflegegrad 2 zur Verfügung. Bitte prüfen Sie Ihre Angaben.");
               return; // Regel hat gegriffen, keine weiteren Prüfungen für die Nachricht nötig
