@@ -1,315 +1,176 @@
 package de.pflegital.chatbot;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.pflegital.chatbot.whatsapp.WhatsAppService; // Dein Sende-Service
-import de.pflegital.chatbot.whatsapp.dto.*; // Deine DTOs
-import io.quarkus.logging.Log; // Einfaches Quarkus Logging
-import io.smallrye.common.annotation.Blocking;
+
+//import io.netty.channel.ChannelOutboundBuffer.MessageProcessor;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.slf4j.Logger;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Formatter;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import de.pflegital.chatbot.whatsapp.dto.Value;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import de.pflegital.chatbot.ChatResponse;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-
-@Path("/webhook") // Der Pfad für den WhatsApp Webhook
+@Path("/webhook")
 @ApplicationScoped
 public class WhatsAppWebhookResource {
 
-    private static final Logger LOG = getLogger(WhatsAppWebhookResource.class);
+    private static final Logger LOGGER = Logger.getLogger(WhatsAppWebhookResource.class.getName());
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    // --- Injizierte Abhängigkeiten ---
-    @Inject
-    AiService aiService; // Dein Service für die AI-Logik
+    @ConfigProperty(name = "whatsapp.verify.token")
+    String configuredVerifyToken;
 
-    @Inject
-    FormDataPresenter formDataPresenter; // Dein Service zum Formatieren von FormData
+    @ConfigProperty(name = "whatsapp.api.token")
+    String whatsappApiToken;
 
-    @Inject
-    InsuranceNumberTool insuranceNumberTool; // Dein Tool zur Validierung
+    @ConfigProperty(name = "whatsapp.phone.number.id")
+    String whatsappPhoneNumberId;
 
-    @Inject
-    WhatsAppService whatsAppService; // Dein Service zum Senden von WhatsApp Nachrichten
+    @ConfigProperty(name = "whatsapp.api.version")
+    String whatsappApiVersion;
 
-    @Inject
-    ObjectMapper objectMapper; // Jackson ObjectMapper zum Parsen
+    //@Inject
+    //MessageProcessor messageProcessor; // Injizierte Instanz von Datei 2
 
-    // --- Konfigurationswerte ---
-    @ConfigProperty(name = "pflegital.whatsapp.verify-token")
-    String verifyToken;
-
-    @ConfigProperty(name = "pflegital.whatsapp.app-secret")
-    String appSecret;
-
-    // --- Session Management ---
-    // Verwende WhatsApp ID (senderId) als Key
-    private final Map<String, FormData> sessions = new ConcurrentHashMap<>();
-
-    // === GET Request für Webhook Verifizierung ===
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response verifyWebhook(
             @QueryParam("hub.mode") String mode,
-            @QueryParam("hub.challenge") String challenge,
-            @QueryParam("hub.verify_token") String token) {
+            @QueryParam("hub.verify_token") String tokenFromHub,
+            @QueryParam("hub.challenge") String challenge) {
 
-        Log.infof("GET /webhook zur Verifizierung erhalten. Mode: %s, Token: %s", mode, token != null ? "[PRESENT]" : "[MISSING]");
+        LOGGER.info("GET /webhook - Verification attempt.");
+        LOGGER.fine("Mode: " + mode + ", Token: " + tokenFromHub + ", Challenge: " + challenge);
 
-        if (mode != null && token != null && mode.equals("subscribe") && token.equals(verifyToken)) {
-            Log.info("Webhook verifiziert. Sende Challenge zurück.");
+        if ("subscribe".equals(mode) && configuredVerifyToken.equals(tokenFromHub)) {
+            LOGGER.info("Webhook VERIFIED successfully!");
             return Response.ok(challenge).build();
         } else {
-            Log.warn("Webhook Verifizierung fehlgeschlagen.");
-            return Response.status(Response.Status.FORBIDDEN).build();
+            LOGGER.warning("Webhook verification FAILED. Mode: " + mode +
+                           ", Provided Token: " + tokenFromHub +
+                           ", Expected Token: " + configuredVerifyToken);
+            return Response.status(Response.Status.FORBIDDEN).entity("Webhook verification failed").build();
         }
     }
 
-    // === POST Request für Nachrichtenempfang ===
-    // @Blocking: Wichtig, da AI-Aufrufe und das Senden von Nachrichten blockieren können
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN) // Wir geben nur Text/Status an Meta zurück
-    @Blocking
-    public Response handleWebhook(
-            String rawPayload, // Roher Body für Signaturprüfung
-            @HeaderParam("X-Hub-Signature-256") String signatureHeader) {
-
-        Log.debug("POST /webhook empfangen.");
-        // Logge den Payload nur bei Bedarf und mit Vorsicht bzgl. sensibler Daten
-        // Log.trace("Raw Payload: {}", rawPayload);
-
-        // 1. Signatur prüfen (ESSENTIELL!)
-        if (!isValidSignature(rawPayload, signatureHeader)) {
-            Log.error("Ungültige Signatur empfangen! Anfrage wird abgelehnt.");
-            // Gib 403 zurück, damit Meta das Problem erkennt
-            return Response.status(Response.Status.FORBIDDEN).entity("Invalid Signature").build();
-        }
-        Log.info("Signatur erfolgreich verifiziert.");
+    @Produces(MediaType.APPLICATION_JSON) // Wichtig: WhatsApp erwartet eine 200 OK mit JSON Body oder leer
+    public Response handleIncomingMessage(String requestBody) {
+        LOGGER.info("POST /webhook - Received payload: " + requestBody);
 
         try {
-            // 2. Payload parsen
-            WebhookPayload payload = parsePayload(rawPayload);
+            JsonNode rootNode = objectMapper.readTree(requestBody);
 
-            if (payload != null && "whatsapp_business_account".equals(payload.object)) {
-                for (Entry entry : payload.entry) {
-                    if (entry.changes == null) continue;
-                    for (Change change : entry.changes) {
-                        if ("messages".equals(change.field) && change.value != null) {
+            if (rootNode.has("object") && "whatsapp_business_account".equals(rootNode.get("object").asText())) {
+                JsonNode entries = rootNode.path("entry");
+                for (JsonNode entry : entries) {
+                    JsonNode changes = entry.path("changes");
+                    for (JsonNode change : changes) {
+                        if ("messages".equals(change.path("field").asText())) {
+                            JsonNode value = change.path("value");
+                            JsonNode messages = value.path("messages");
+                            for (JsonNode messageNode : messages) {
+                                if (messageNode.has("type") && "text".equals(messageNode.path("type").asText())) {
+                                    String fromWaid = messageNode.path("from").asText();
+                                    String messageText = messageNode.path("text").path("body").asText();
 
-                            // Eingehende Nachrichten verarbeiten
-                            if (change.value.messages != null) {
-                                for (Message message : change.value.messages) {
-                                    // Aktuell nur Textnachrichten behandeln
-                                    if ("text".equals(message.type) && message.text != null && message.from != null) {
-                                        String senderId = message.from;
-                                        String userMessage = message.text.body;
-                                        Log.infof("Nachricht von %s empfangen: '%s'", senderId, userMessage);
+                                    LOGGER.info("Extracted Text Message from " + fromWaid + ": " + messageText);
 
-                                        // Asynchrone Verarbeitung wäre hier ideal,
-                                        // aber @Blocking reicht für den Anfang
-                                        processMessageWithChatbot(senderId, userMessage);
+                                    // --- Vorbereitung der Übergabe an Datei 2 ---
+                                    // `fromWaid` und `messageText` sind bereits vorbereitet.
 
-                                    } else {
-                                        Log.infof("Nachricht von %s erhalten (Typ: %s), wird ignoriert.", message.from, message.type);
-                                        // Optional: Standardantwort senden für nicht unterstützte Typen
-                                        // if (message.from != null) {
-                                        //    whatsAppService.sendTextMessage(message.from, "Ich kann momentan nur Textnachrichten verarbeiten.");
-                                        // }
+                                    // --- Übergabe an Datei 2 und Empfang der Antwort ---
+                                    AiResource chatResponse = new AiResource();
+                                    String replyText = chatResponse.processUserInput(fromWaid, messageText).getMessage();
+
+
+                                    // --- Senden der Antwort zurück an WhatsApp ---
+                                    if (replyText != null && !replyText.isEmpty()) {
+                                        sendWhatsAppReply(fromWaid, replyText);
                                     }
+                                } else if (messageNode.has("type")) {
+                                    LOGGER.info("Received non-text message (type: " +
+                                            messageNode.path("type").asText() + "). Ignoring.");
+                                } else {
+                                    LOGGER.warning("Received message without a type field. Payload: " + messageNode.toString());
                                 }
                             }
+                        }
+                    }
+                }
+            }
+            // Erfolgreiche Verarbeitung, sende 200 OK
+            return Response.ok("{\"status\":\"EVENT_RECEIVED\"}").build();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error processing incoming WhatsApp message: " + e.getMessage(), e);
+            // Sende einen Fehlerstatus, damit WhatsApp nicht ständig versucht, die Nachricht erneut zu senden.
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                           .entity("{\"status\":\"ERROR_PROCESSING_EVENT\", \"message\":\"" + e.getMessage() + "\"}")
+                           .build();
+        }
+    }
 
+    private void sendWhatsAppReply(String recipientWaid, String messageText) {
+        try {
+            String escapedMessageText = escapeJson(messageText); // Wichtig für JSON-Sicherheit
+            String jsonPayload = String.format("""
+                {
+                    "messaging_product": "whatsapp",
+                    "to": "%s",
+                    "type": "text",
+                    "text": {
+                        "preview_url": false,
+                        "body": "%s"
+                    }
+                }
+                """, recipientWaid, escapedMessageText);
 
-                        } // endif "messages" field
-                    } // end changes loop
-                } // end entry loop
+            HttpClient client = HttpClient.newHttpClient(); // Kann auch als Bean für bessere Testbarkeit injiziert werden
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://graph.facebook.com/" + whatsappApiVersion + "/" + whatsappPhoneNumberId + "/messages"))
+                    .header("Authorization", "Bearer " + whatsappApiToken)
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload, StandardCharsets.UTF_8))
+                    .build();
 
-                // 3. Erfolgreich verarbeitet (oder zumindest angenommen), 200 OK an Meta senden
-                return Response.ok("EVENT_RECEIVED").build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            LOGGER.info("WhatsApp reply API call to " + recipientWaid + ". Status: " + response.statusCode());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                LOGGER.fine("WhatsApp reply API response body: " + response.body());
             } else {
-                Log.warn("Empfangenes Objekt ist nicht 'whatsapp_business_account' oder Payload ist null.");
-                // Sende trotzdem 200, damit Meta nicht wiederholt
-                 return Response.ok("UNKNOWN_PAYLOAD_TYPE").build();
+                LOGGER.warning("Error sending WhatsApp reply. Status: " + response.statusCode() + ", Body: " + response.body());
             }
 
-        } catch (JsonProcessingException jsonEx) {
-             // Sende trotzdem 200, Meta kann damit nichts anfangen
-              return Response.ok("JSON_PARSE_ERROR").build();
-        }
-        catch (Exception e) {
-            // Wichtig: Auch bei internen Fehlern 200 OK senden, sonst sendet Meta immer wieder.
-            // Fehler müssen intern geloggt und behoben werden.
-            return Response.ok("INTERNAL_PROCESSING_ERROR").build();
+        } catch (IOException | InterruptedException e) {
+            LOGGER.log(Level.SEVERE, "Exception sending WhatsApp reply to " + recipientWaid + ": " + e.getMessage(), e);
+            Thread.currentThread().interrupt(); // Gute Praxis bei InterruptedException
         }
     }
 
-    // --- Hilfsmethode zur Signaturprüfung ---
-    private boolean isValidSignature(String payload, String signatureHeader) {
-        if (appSecret == null || appSecret.isBlank()) {
-            // In einer produktiven Umgebung sollte dies ein harter Fehler sein.
-            // Für lokale Tests KÖNNTE man es temporär erlauben (NICHT EMPFOHLEN!)
-            // return true; // ACHTUNG: NUR FÜR LOKALE TESTS OHNE NGINX/HTTPS!
-             return false; // Sicherer Standard
+    // Einfache JSON String Escaping Funktion
+    private String escapeJson(String s) {
+        if (s == null) {
+            return ""; // Oder null, je nachdem wie die API leere Strings behandelt
         }
-        if (payload == null || payload.isEmpty()) {
-            Log.warn("Signaturprüfung: Payload ist leer.");
-            return false; // Keine Signatur für leeren Payload möglich/sinnvoll
-        }
-        if (signatureHeader == null || !signatureHeader.startsWith("sha256=")) {
-            Log.warn("Signaturprüfung: Header fehlt oder ist ungültig formatiert.");
-            return false;
-        }
-
-        String expectedSignature = signatureHeader.substring(7); // Entferne "sha256="
-
-        try {
-            Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secret_key = new SecretKeySpec(appSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-            sha256_HMAC.init(secret_key);
-
-            byte[] hash = sha256_HMAC.doFinal(payload.getBytes(StandardCharsets.UTF_8));
-
-            // Konvertiere Byte-Array zu Hex-String
-            String calculatedSignature = bytesToHex(hash);
-
-            // Sicherer Vergleich (verhindert Timing-Attacken)
-            boolean signaturesMatch = MessageDigest.isEqual(
-                    calculatedSignature.getBytes(StandardCharsets.UTF_8),
-                    expectedSignature.getBytes(StandardCharsets.UTF_8)
-            );
-
-            if (!signaturesMatch) {
-               Log.warn("Signatur stimmt nicht überein! Erwartet: {}, Bekommen: {}");
-            }
-            return signaturesMatch;
-
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            Log.error("Fehler bei der HMAC SHA256 Berechnung: {}", e.getMessage(), e);
-            return false;
-        } catch (Exception e) {
-            Log.error("Unerwarteter Fehler bei der Signaturprüfung: {}", e.getMessage(), e);
-            return false;
-        }
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\b", "\\b")
+                .replace("\f", "\\f")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
-
-     // Hilfsmethode zur Hex-Konvertierung
-     private static String bytesToHex(byte[] bytes) {
-        try (Formatter formatter = new Formatter()) {
-            for (byte b : bytes) {
-                formatter.format("%02x", b);
-            }
-            return formatter.toString();
-        }
-    }
-
-
-    // --- Hilfsmethode zum Parsen des Payloads ---
-     private WebhookPayload parsePayload(String rawPayload) throws JsonProcessingException {
-         // Konfiguriere ObjectMapper bei Bedarf (z.B. unknown properties ignorieren)
-         // objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-         return objectMapper.readValue(rawPayload, WebhookPayload.class);
-     }
-
-    // --- Kernlogik: Nachricht verarbeiten und an Chatbot senden ---
-    private void processMessageWithChatbot(String senderId, String userInput) {
-        // Session holen oder neu erstellen
-        FormData session = sessions.computeIfAbsent(senderId, k -> {
-            Log.infof("Neue Session für WhatsApp Nutzer %s gestartet.", k);
-            // Ggf. initiales FormData-Objekt erstellen oder laden
-            return new FormData(); // Beispiel: Leeres Objekt
-        });
-
-        Log.infof("Verarbeite Nachricht für Nutzer %s: '%s'", senderId, userInput);
-
-        // Prompt bauen
-        String jsonFormData = formDataPresenter.present(session);
-        String prompt = "The current form data is: " + jsonFormData +
-                ". The user (via WhatsApp) just said: '" + userInput +
-                "'. Please update the missing fields accordingly and formulate a concise response for WhatsApp.";
-        Log.infof("Prompt an AI für Nutzer %s: %s", senderId, prompt);
-
-        try {
-            // AI aufrufen
-            FormData updatedResponse = aiService.chatWithAiStructured(prompt);
-
-            // Business-Regeln anwenden
-            applyBusinessRules(updatedResponse);
-
-            // Aktualisierte Session speichern
-            sessions.put(senderId, updatedResponse);
-
-            // Antwort vom Chatbot holen
-            String aiResponseMessage = updatedResponse.getChatbotMessage();
-            if (aiResponseMessage == null || aiResponseMessage.isBlank()) {
-                aiResponseMessage = "Ich habe dazu leider keine passende Antwort. Bitte versuchen Sie es anders.";
-                //Log.warn("AI hat keine Antwortnachricht geliefert für Nutzer {}.");
-            }
-
-            Log.infof("Sende AI Antwort an %s: '%s'", senderId, aiResponseMessage);
-
-            // Antwort über WhatsAppService zurücksenden
-            whatsAppService.sendTextMessage(senderId, aiResponseMessage);
-
-             // Optional: Wenn Formular komplett, Session entfernen oder markieren
-             if (updatedResponse.isComplete()) {
-                 Log.infof("Formular für Nutzer %s ist vollständig.", senderId);
-                 // sessions.remove(senderId); // Session entfernen? Oder für Follow-up behalten?
-             }
-        } catch (Exception e) {
-             //Log.error("Fehler bei der AI-Verarbeitung oder beim Senden der Antwort für Nutzer {}: {}");
-             // Optional: Eine Fehlermeldung an den Nutzer senden
-              try {
-                  whatsAppService.sendTextMessage(senderId, "Es ist ein interner Fehler aufgetreten. Bitte versuchen Sie es später erneut.");
-              } catch (Exception sendEx) {
-                  //Log.error("Konnte nicht einmal die Fehlermeldung an Nutzer {} senden: {}");
-              }
-        }
-    }
-
-     // --- Hilfsmethode für Business-Regeln ---
-     private void applyBusinessRules(FormData responseData) {
-        if (responseData == null) return; // Sicherstellen, dass responseData nicht null ist
-
-        // Prüfe Pflegegrad nur, wenn vorhanden
-        if (responseData.getCareLevel() != null && responseData.getCareLevel() < 2) {
-              //Log.debug("Business Rule: Pflegegrad < 2 erkannt.");
-              responseData.setChatbotMessage(
-                      "Die Verhinderungspflege steht erst ab Pflegegrad 2 zur Verfügung. Bitte prüfen Sie Ihre Angaben.");
-              return; // Regel hat gegriffen, keine weiteren Prüfungen für die Nachricht nötig
-        }
-
-        // Prüfe Versicherungsnummer nur, wenn vorhanden
-        if (responseData.getCareRecipient() != null &&
-                responseData.getCareRecipient().getInsuranceNumber() != null &&
-                !insuranceNumberTool.isValidSecurityNumber(responseData.getCareRecipient().getInsuranceNumber())) {
-             Log.debug("Business Rule: Ungültige Versicherungsnummer erkannt.");
-             responseData.setChatbotMessage(
-                     "Die angegebene Versicherungsnummer scheint ungültig zu sein. Bitte überprüfen Sie Ihre Eingabe.");
-             return; // Regel hat gegriffen
-        }
-
-        // Setze Abschlussnachricht nur, wenn das Formular komplett ist UND noch keine Nachricht gesetzt wurde
-        if (responseData.isComplete() && (responseData.getChatbotMessage() == null || responseData.getChatbotMessage().isEmpty())) {
-             Log.debug("Business Rule: Formular ist vollständig.");
-             responseData.setChatbotMessage("Vielen Dank! Alle benötigten Informationen wurden erfasst.");
-              // FIXME: Hier den Folgeprozess starten (z.B. Daten speichern, E-Mail senden)
-        }
-     }
 }
