@@ -34,3 +34,74 @@ jobs:
       - name: Push Docker image
         run: |
           docker push $IMAGE_NAME
+      
+            - name: Update Container via Portainer API
+        env:
+          API_URL: https://winfprojekt.de:9443/api
+          API_KEY: ${{ secrets.PORTAINER_API_KEY }}
+        run: |
+          # Endpoint ID (1 ist standardmäßig der erste Endpoint, ggf. anpassen)
+          ENDPOINT_ID=1
+
+          echo "Fetching container information..."
+          RESPONSE=$(curl -s -H "Authorization: Bearer $API_KEY" "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/json")
+          echo "API Response: $RESPONSE"
+
+          # Prüfe, ob die API-Antwort ein gültiges JSON-Array ist
+          if echo "$RESPONSE" | jq -e . >/dev/null 2>&1; then
+            echo "Valid JSON received."
+          else
+            echo "Invalid JSON received."
+            exit 1
+          fi
+
+          # Container Name
+          CONTAINER_NAME="homepage"
+
+          # Hole die Container-ID basierend auf dem Namen
+          CONTAINER_ID=$(echo "$RESPONSE" | jq -r ".[] | select(.Names[] | contains(\"${CONTAINER_NAME}\")) | .Id")
+
+          if [ -z "$CONTAINER_ID" ]; then
+            echo "Container not found!"
+            exit 1
+          fi
+
+          echo "Container ID: $CONTAINER_ID"
+
+          # Pull das neueste Image
+          echo "Pulling latest image for homepage..."
+          curl -X POST -H "Authorization: Bearer $API_KEY" \
+               "$API_URL/endpoints/$ENDPOINT_ID/docker/images/create?fromImage=ghcr.io/thi-projekte/pflege/homepage&tag=latest"
+
+          # Container stoppen
+          echo "Stopping container..."
+          curl -X POST -H "Authorization: Bearer $API_KEY" \
+               "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID/stop"
+
+          # Container entfernen
+          echo "Removing container..."
+          curl -X DELETE -H "Authorization: Bearer $API_KEY" \
+               "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID"
+
+          # Container neu starten mit dem neuen Image
+          echo "Starting new container with latest image..."
+          curl -X POST -H "Authorization: Bearer $API_KEY" \
+               -H "Content-Type: application/json" \
+               -d '{
+                     "Image": "ghcr.io/thi-projekte/pflege/homepage:latest",
+                     "name": "homepage",
+                     "HostConfig": {
+                       "RestartPolicy": {
+                         "Name": "always"
+                       },
+                       "NetworkMode": "nginx-proxy-manager"
+                     }
+                   }' \
+               "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/create?name=homepage"
+
+          # Container starten
+          echo "Starting the container..."
+          curl -X POST -H "Authorization: Bearer $API_KEY" \
+               "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/homepage/start"
+
+          
