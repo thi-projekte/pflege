@@ -40,15 +40,16 @@ jobs:
           API_URL: https://winfprojekt.de:9443/api
           API_KEY: ${{ secrets.PORTAINER_API_KEY }}
           ENDPOINT_ID: 1
-          CONTAINER_NAME: homepage
+          # Der Präfix deines Compose-Stacks + Service-Name:
+          CONTAINER_FILTER: pflegital-homepage
         run: |
-          # 1. Container-ID ermitteln
+          # 1. Container-ID ermitteln (matcht 'pflegital-homepage-1')
           CONTAINER_ID=$(curl -k -s -H "X-API-Key: $API_KEY" \
             "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/json" \
-            | jq -r ".[] | select(.Names[]|contains(\"/$CONTAINER_NAME\")) | .Id")
+            | jq -r ".[] | select(.Names[] | contains(\"$CONTAINER_FILTER\")) | .Id")
 
           if [ -z "$CONTAINER_ID" ]; then
-            echo "❌ Container '$CONTAINER_NAME' nicht gefunden!"
+            echo "❌ Container mit Filter '$CONTAINER_FILTER' nicht gefunden!"
             exit 1
           fi
           echo "▶️ Found container ID: $CONTAINER_ID"
@@ -69,22 +70,22 @@ jobs:
             "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID"
 
           # 5. Neuen Container mit latest Image erstellen
-          echo "🔄 Create new container '$CONTAINER_NAME'"
+          echo "🔄 Create new container with name filter '$CONTAINER_FILTER'"
           curl -k -X POST -H "X-API-Key: $API_KEY" \
             -H "Content-Type: application/json" \
             -d '{
                   "Image": "'"$IMAGE"'",
-                  "name": "'"$CONTAINER_NAME"'",
+                  "name": "'"$CONTAINER_FILTER"-1"'",
                   "HostConfig": {
                     "NetworkMode": "nginx-proxy-manager",
                     "RestartPolicy": { "Name": "always" }
                   }
                 }' \
-            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/create?name=$CONTAINER_NAME"
+            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/create?name=$CONTAINER_FILTER-1"
 
           # 6. Neuen Container starten
-          echo "▶️ Start new container '$CONTAINER_NAME'"
+          echo "▶️ Start new container '$CONTAINER_FILTER-1'"
           curl -k -X POST -H "X-API-Key: $API_KEY" \
-            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_NAME/start"
+            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_FILTER-1/start"
 
           echo "✅ Redeploy abgeschlossen!"
