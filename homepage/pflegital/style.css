@@ -462,6 +462,14 @@ footer {
   display: none;               /* Versteckt die Scrollbar */
 }
 
+.impressum {
+  margin-left: 5%;
+}
+
+.datenschutz {
+  margin-left: 5%;
+}
+
 
 
 
