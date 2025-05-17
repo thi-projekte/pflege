@@ -598,3 +598,30 @@ footer {
 .gallery-nav.prev { left: 1rem; }
 .gallery-nav.next { right: 1rem; }
 */
+
+/* Footer styles */
+footer {
+  padding: 3rem 2rem;
+  background: linear-gradient(to right, var(--color-accent), var(--color-accent));
+  color: var(--color-text);
+  text-align: center;
+}
+
+footer a {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+footer .footer-links {
+  margin-top: 2rem;
+}
+
+footer .footer-links a {
+  color: var(--color-text);
+  margin: 0 1rem;
+  text-decoration: none;
+}
+
+footer .footer-links a:hover {
+  text-decoration: underline;
+}
