@@ -133,3 +133,25 @@ document.addEventListener("DOMContentLoaded", () => {
   restartChatAnimation();
 });
 
+// Warte, bis das DOM geladen ist
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('backToTop');
+  if (!btn) return; // Falls die ID fehlt, nicht weiter machen
+
+  // Scroll-Listener zum Ein-/Ausblenden
+  window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 200) {
+      btn.classList.add('show');
+    } else {
+      btn.classList.remove('show');
+    }
+  });
+
+  // Klick-Listener zum sanften Scrollen nach oben
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Funktionert in allen modernen Browsern:
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
