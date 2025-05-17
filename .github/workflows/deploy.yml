@@ -25,67 +25,74 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker image
+      - name: Build and push Docker image
         run: |
           IMAGE=ghcr.io/thi-projekte/pflege/homepage:latest
           docker build -f homepage/Dockerfile -t $IMAGE homepage
-          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-
-      - name: Push Docker image
-        run: |
           docker push $IMAGE
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
 
       - name: Redeploy Container via Portainer API
         env:
           API_URL: https://winfprojekt.de:9443/api
           API_KEY: ${{ secrets.PORTAINER_API_KEY }}
           ENDPOINT_ID: 1
-          CONTAINER_NAME: pflegital-homepage-1
-          IMAGE: ${{ env.IMAGE }}
+          PROJECT_LABEL: pflegital
+          SERVICE_LABEL: homepage
         run: |
-          # 1) Container-ID ermitteln
-          CONTAINER_ID=$(curl -k -s -H "X-API-Key: $API_KEY" \
-            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/json" \
-            | jq -r ".[] | select(.Names[] | contains(\"$CONTAINER_NAME\")) | .Id")
-
+          # 1) Container-ID ermitteln über Labels
+          CONTAINER_ID=$(
+            curl -k -s -H "X-API-Key: $API_KEY" \
+              "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/json?all=1" \
+              | jq -r \
+                  ".[] |
+                   select(.Labels[\"com.docker.compose.project\"]==\"$PROJECT_LABEL\" and
+                          .Labels[\"com.docker.compose.service\"]==\"$SERVICE_LABEL\") |
+                   .Id"
+          )
           if [ -z "$CONTAINER_ID" ]; then
-            echo "❌ Container '$CONTAINER_NAME' nicht gefunden!"
+            echo "❌ Container not found!"
             exit 1
           fi
           echo "▶️ Found container ID: $CONTAINER_ID"
 
-          # 2) Neuestes Image pullen
+          # 2) Pull latest image
           echo "⬇️ Pull latest image $IMAGE"
           curl -k -s -X POST -H "X-API-Key: $API_KEY" \
             "$API_URL/endpoints/$ENDPOINT_ID/docker/images/create?fromImage=$IMAGE&tag=latest"
 
-          # 3) Alten Container stoppen & entfernen
-          echo "⏸️ Stop container $CONTAINER_ID"
+          # 3) Stop & remove old container
+          echo "⏸️ Stopping container $CONTAINER_ID"
           curl -k -s -X POST -H "X-API-Key: $API_KEY" \
             "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID/stop"
-          echo "🗑️ Remove container $CONTAINER_ID"
+          echo "🗑️ Removing container $CONTAINER_ID"
           curl -k -s -X DELETE -H "X-API-Key: $API_KEY" \
             "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID"
 
-          # 4) Neuen Container mit latest Image erstellen
-          echo "🔄 Create new container '$CONTAINER_NAME'"
+          # 4) Create new container with labels
+          echo "🔄 Creating new container"
           read -r -d '' PAYLOAD <<EOF
           {
             "Image": "$IMAGE",
-            "name": "$CONTAINER_NAME",
+            "name": "${PROJECT_LABEL}_${SERVICE_LABEL}_1",
             "HostConfig": {
               "NetworkMode": "nginx-proxy-manager",
               "RestartPolicy": { "Name": "always" }
+            },
+            "Labels": {
+              "com.docker.compose.project": "$PROJECT_LABEL",
+              "com.docker.compose.service": "$SERVICE_LABEL"
             }
           }
           EOF
-          curl -k -s -X POST -H "X-API-Key: $API_KEY" -H "Content-Type: application/json" \
-            --data-binary "$PAYLOAD" \
-            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/create?name=$CONTAINER_NAME"
-
-          # 5) Neuen Container starten
-          echo "▶️ Start new container '$CONTAINER_NAME'"
           curl -k -s -X POST -H "X-API-Key: $API_KEY" \
-            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_NAME/start"
+            -H "Content-Type: application/json" \
+            --data-binary "$PAYLOAD" \
+            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/create?name=${PROJECT_LABEL}_${SERVICE_LABEL}_1"
+
+          # 5) Start new container
+          echo "▶️ Starting new container"
+          curl -k -s -X POST -H "X-API-Key: $API_KEY" \
+            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/${PROJECT_LABEL}_${SERVICE_LABEL}_1/start"
 
           echo "✅ Redeploy completed!"
