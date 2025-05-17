@@ -318,8 +318,10 @@ footer {
 }
 
 .pdp-gallery {
-  max-width: 600px;
+  max-width: 700px; /* Breiterer Container */
   margin: 0 auto;
+  padding: 0 1rem; /* Platz für die Navigationspfeile angepasst */
+  position: relative;
 }
 
 /* Haupt-Slider */
@@ -350,28 +352,33 @@ footer {
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.9);
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-.pdp-gallery__nav--prev { left: 0.5rem; }
-.pdp-gallery__nav--next { right: 0.5rem; }
+.pdp-gallery__nav--prev { left: 0.25rem; }
+.pdp-gallery__nav--next { right: 0.25rem; }
 
 /* Thumbnail-Slider */
 .pdp-gallery__thumbs {
   position: relative;
   margin-top: 1rem;
   overflow: hidden;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .pdp-gallery__thumb-track {
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
+  justify-content: center;
 }
 .pdp-gallery__thumb {
   flex: 0 0 80px;
@@ -398,16 +405,17 @@ footer {
   top: 50%;
   transform: translateY(-50%);
   z-index: 5;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.9);
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
-.pdp-gallery__thumb-nav--prev { left: 0; }
-.pdp-gallery__thumb-nav--next { right: 0; }
+.pdp-gallery__thumb-nav--prev { left: -0.5rem; }
+.pdp-gallery__thumb-nav--next { right: -0.5rem; }
 
 /* ——————————————————————————————————————————
    1) Hauptslider einengen und Höhe fixieren
@@ -415,9 +423,10 @@ footer {
 /* style.css */
 
 .pdp-gallery__main {
-  max-width: 350px;    /* gewünschte Slider-Breite */
+  max-width: 450px;    /* breitere Slider-Breite */
   margin: 0 auto;
   position: relative;
+  padding: 0 2.5rem;   /* mehr Platz für die Pfeile außerhalb */
   /* kein overflow:hidden mehr, sonst wird zugeschnitten */
 }
 
@@ -426,6 +435,8 @@ footer {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
+  margin: 0 auto;      /* Zentrierung */
+  align-items: center; /* vertikale Zentrierung */
   /* keine fixe Höhe mehr */
 }
 
@@ -434,11 +445,13 @@ footer {
   scroll-snap-align: center;
   padding: 0.5rem 0;         /* optional: etwas Abstand oben/unten */
   /* kein overflow:hidden hier */
+  display: flex;             /* Flex hinzufügen für horizontale Zentrierung */
+  justify-content: center;   /* Horizontales Zentrieren des Bildes */
 }
 
 .pdp-gallery__slide img {
   display: block;
-  width: 90%;               /* füllt die Slide-Breite */
+  width: 85%;               /* etwas schmaler, damit die Pfeile gut sichtbar sind */
   height: auto;              /* bewahrt das Seitenverhältnis */
   object-fit: contain;       /* skaliert rein, ohne zu beschneiden */
 }

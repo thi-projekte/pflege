@@ -10,7 +10,6 @@ pflege/
   │   └── workflows/
   │       └── deploy.yml         # CI/CD-Konfiguration
   └── homepage/
-      ├── api_key.txt            # API-Schlüssel (nicht in Version Control!)
       ├── Dockerfile             # Container-Konfiguration
       ├── HOMEPAGE.md            # Diese Dokumentation
       └── pflegital/             # Hauptverzeichnis der Website
@@ -20,7 +19,6 @@ pflege/
           ├── scripts.js         # JavaScript-Funktionen
           ├── style.css          # Stylesheet
           └── assets/            # Medien und Grafiken
-              ├── image.png
               ├── logo.svg
               ├── Unterhaltung 1.png
               ├── Unterhaltung 2.png
@@ -46,10 +44,13 @@ Die Pflegital-Homepage ist in einem modernen, benutzerfreundlichen Design gestal
 - Die Seite passt sich an verschiedene Bildschirmgrößen an
 - Mobile-First-Ansatz für optimale Darstellung auf Smartphones
 
+**Favicon:**
+- Ein passendes Favicon wurde hinzugefügt, um die Website im Browser besser erkennbar zu machen.
+
 ### 3.2 Hauptkomponenten
 
 #### Header
-- Logo (SVG-Format)
+- Logo (SVG-Format), das auf die Startseite (`index.html`) verlinkt ist
 - Responsive Navigationmenü mit Links zu:
   - Start
   - Features
@@ -90,6 +91,9 @@ Zeigt einen beispielhaften Chatverlauf, um die Funktionsweise von Pflegital zu d
 - Button zum Versenden der Nachricht über WhatsApp
 - JavaScript-Funktion `sendToWhatsApp()` zur Verarbeitung der Anfrage
 
+#### Back-To-Top-Button
+- Ein Back-To-Top-Button wurde auf allen HTML-Seiten (`index.html`, `impressum.html`, `datenschutz.html`) hinzugefügt, um die Benutzerfreundlichkeit zu verbessern.
+
 #### Footer
 - Kontaktinformationen
 - E-Mail-Adresse: kontakt@pflegital.de
@@ -114,6 +118,9 @@ Die Datei scripts.js enthält verschiedene Funktionen:
 4. **WhatsApp-Integration:**
    - `sendToWhatsApp()`-Funktion zur Weiterleitung von Nutzernachrichten
 
+5. **Back-To-Top-Button:**
+   - Funktionalität, um den Benutzer mit einem Klick zurück zum Seitenanfang zu bringen
+
 ## 4. CI/CD-Pipeline
 
 Die CI/CD-Pipeline wird über GitHub Actions mit der Datei deploy.yml konfiguriert.
@@ -127,6 +134,8 @@ Die Pipeline wird automatisch ausgelöst bei Änderungen an:
 ```yml
 on:
   push:
+    branches:
+      - main
     paths:
       - 'homepage/pflegital/**'
       - 'homepage/Dockerfile'
@@ -147,6 +156,9 @@ on:
 
 4. **Image pushen:**
    - Lädt das erstellte Image in die GitHub Container Registry hoch
+
+5. **Portainer-Hook auslösen:**
+   - Führt einen HTTP-Request aus, um den Portainer-Hook für das Deployment zu triggern
 
 ```yml
 steps:
@@ -169,6 +181,10 @@ steps:
   - name: Push Docker image
     run: |
       docker push $IMAGE_NAME
+
+  - name: Trigger Portainer Hook
+    run: |
+      curl -X POST ${{ secrets.PORTAINER_HOOK_URL }}
 ```
 
 ### 4.3 Container-Konfiguration
