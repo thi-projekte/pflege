@@ -1,4 +1,4 @@
-name: Build, Push and Redeploy via Portainer API
+name: Build, Push and Redeploy Container via Portainer API
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Log in to GHCR
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -35,12 +35,56 @@ jobs:
         run: |
           docker push $IMAGE
 
-      - name: Redeploy Portainer Stack
+      - name: Redeploy Container via Portainer API
         env:
+          API_URL: https://winfprojekt.de:9443/api
           API_KEY: ${{ secrets.PORTAINER_API_KEY }}
+          ENDPOINT_ID: 1
+          CONTAINER_NAME: homepage
         run: |
-          curl -k -X PUT \
-            -H "X-API-Key: $API_KEY" \
+          # 1. Container-ID ermitteln
+          CONTAINER_ID=$(curl -k -s -H "X-API-Key: $API_KEY" \
+            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/json" \
+            | jq -r ".[] | select(.Names[]|contains(\"/$CONTAINER_NAME\")) | .Id")
+
+          if [ -z "$CONTAINER_ID" ]; then
+            echo "❌ Container '$CONTAINER_NAME' nicht gefunden!"
+            exit 1
+          fi
+          echo "▶️ Found container ID: $CONTAINER_ID"
+
+          # 2. Neuestes Image pullen
+          echo "⬇️ Pull latest image $IMAGE"
+          curl -k -X POST -H "X-API-Key: $API_KEY" \
+            "$API_URL/endpoints/$ENDPOINT_ID/docker/images/create?fromImage=$IMAGE&tag=latest"
+
+          # 3. Alten Container stoppen
+          echo "⏸️ Stop container $CONTAINER_ID"
+          curl -k -X POST -H "X-API-Key: $API_KEY" \
+            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID/stop"
+
+          # 4. Alten Container entfernen
+          echo "🗑️ Remove container $CONTAINER_ID"
+          curl -k -X DELETE -H "X-API-Key: $API_KEY" \
+            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID"
+
+          # 5. Neuen Container mit latest Image erstellen
+          echo "🔄 Create new container '$CONTAINER_NAME'"
+          curl -k -X POST -H "X-API-Key: $API_KEY" \
             -H "Content-Type: application/json" \
-            -d "{\"StackFileContent\":\"version: '3.8'\\nservices:\\n  homepage:\\n    image: ghcr.io/thi-projekte/pflege/homepage:latest\\n    restart: unless-stopped\\n    networks:\\n      - nginx-proxy-manager\\nnetworks:\\n  nginx-proxy-manager:\\n    external: true\"}" \
-            "https://winfprojekt.de:9443/api/stacks/67?endpointId=1"
+            -d '{
+                  "Image": "'"$IMAGE"'",
+                  "name": "'"$CONTAINER_NAME"'",
+                  "HostConfig": {
+                    "NetworkMode": "nginx-proxy-manager",
+                    "RestartPolicy": { "Name": "always" }
+                  }
+                }' \
+            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/create?name=$CONTAINER_NAME"
+
+          # 6. Neuen Container starten
+          echo "▶️ Start new container '$CONTAINER_NAME'"
+          curl -k -X POST -H "X-API-Key: $API_KEY" \
+            "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_NAME/start"
+
+          echo "✅ Redeploy abgeschlossen!"
