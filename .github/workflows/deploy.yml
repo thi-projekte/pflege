@@ -13,7 +13,6 @@ permissions:
 jobs:
   build-and-redeploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -44,11 +43,7 @@ jobs:
           CONTAINER_ID=$(
             curl -k -s -H "X-API-Key: $API_KEY" \
               "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/json?all=1" \
-              | jq -r \
-                  ".[] |
-                   select(.Labels[\"com.docker.compose.project\"]==\"$PROJECT_LABEL\" and
-                          .Labels[\"com.docker.compose.service\"]==\"$SERVICE_LABEL\") |
-                   .Id"
+            | jq -r ".[] | select(.Labels[\"com.docker.compose.project\"]==\"$PROJECT_LABEL\" and .Labels[\"com.docker.compose.service\"]==\"$SERVICE_LABEL\") | .Id"
           )
           if [ -z "$CONTAINER_ID" ]; then
             echo "❌ Container not found!"
@@ -71,23 +66,9 @@ jobs:
 
           # 4) Create new container with labels
           echo "🔄 Creating new container"
-          read -r -d '' PAYLOAD <<EOF
-          {
-            "Image": "$IMAGE",
-            "name": "${PROJECT_LABEL}_${SERVICE_LABEL}_1",
-            "HostConfig": {
-              "NetworkMode": "nginx-proxy-manager",
-              "RestartPolicy": { "Name": "always" }
-            },
-            "Labels": {
-              "com.docker.compose.project": "$PROJECT_LABEL",
-              "com.docker.compose.service": "$SERVICE_LABEL"
-            }
-          }
-          EOF
           curl -k -s -X POST -H "X-API-Key: $API_KEY" \
             -H "Content-Type: application/json" \
-            --data-binary "$PAYLOAD" \
+            -d '{"Image":"'"$IMAGE"'","name":"'"${PROJECT_LABEL}_${SERVICE_LABEL}_1"'","HostConfig":{"NetworkMode":"nginx-proxy-manager","RestartPolicy":{"Name":"always"}},"Labels":{"com.docker.compose.project":"'"$PROJECT_LABEL"'","com.docker.compose.service":"'"$SERVICE_LABEL"'"}}' \
             "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/create?name=${PROJECT_LABEL}_${SERVICE_LABEL}_1"
 
           # 5) Start new container
