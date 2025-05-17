@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Scroll-Listener zum Ein-/Ausblenden
   window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 200) {
+    if (window.pageYOffset > 100) {
       btn.classList.add('show');
     } else {
       btn.classList.remove('show');
