@@ -44,7 +44,7 @@ jobs:
           ENDPOINT_ID=1
 
           echo "Fetching container information..."
-          RESPONSE=$(curl -s -H "Authorization: Bearer $API_KEY" "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/json")
+          RESPONSE=$(curl -k -s -H "Authorization: Bearer $API_KEY" "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/json")
           echo "API Response: $RESPONSE"
 
           # Prüfe, ob die API-Antwort ein gültiges JSON-Array ist
@@ -70,22 +70,22 @@ jobs:
 
           # Pull das neueste Image
           echo "Pulling latest image for homepage..."
-          curl -X POST -H "Authorization: Bearer $API_KEY" \
+          curl -k -X POST -H "Authorization: Bearer $API_KEY" \
                "$API_URL/endpoints/$ENDPOINT_ID/docker/images/create?fromImage=ghcr.io/thi-projekte/pflege/homepage&tag=latest"
 
           # Container stoppen
           echo "Stopping container..."
-          curl -X POST -H "Authorization: Bearer $API_KEY" \
+          curl -k -X POST -H "Authorization: Bearer $API_KEY" \
                "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID/stop"
 
           # Container entfernen
           echo "Removing container..."
-          curl -X DELETE -H "Authorization: Bearer $API_KEY" \
+          curl -k -X DELETE -H "Authorization: Bearer $API_KEY" \
                "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID"
 
           # Container neu erstellen mit dem neuen Image
           echo "Starting new container with latest image..."
-          curl -X POST -H "Authorization: Bearer $API_KEY" \
+          curl -k -X POST -H "Authorization: Bearer $API_KEY" \
                -H "Content-Type: application/json" \
                -d '{
                      "Image": "ghcr.io/thi-projekte/pflege/homepage:latest",
@@ -101,5 +101,5 @@ jobs:
 
           # Container starten
           echo "Starting the container..."
-          curl -X POST -H "Authorization: Bearer $API_KEY" \
+          curl -k -X POST -H "Authorization: Bearer $API_KEY" \
                "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/homepage/start"
