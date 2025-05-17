@@ -34,8 +34,8 @@ jobs:
       - name: Push Docker image
         run: |
           docker push $IMAGE_NAME
-      
-            - name: Update Container via Portainer API
+
+      - name: Update Container via Portainer API
         env:
           API_URL: https://winfprojekt.de:9443/api
           API_KEY: ${{ secrets.PORTAINER_API_KEY }}
@@ -83,7 +83,7 @@ jobs:
           curl -X DELETE -H "Authorization: Bearer $API_KEY" \
                "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/$CONTAINER_ID"
 
-          # Container neu starten mit dem neuen Image
+          # Container neu erstellen mit dem neuen Image
           echo "Starting new container with latest image..."
           curl -X POST -H "Authorization: Bearer $API_KEY" \
                -H "Content-Type: application/json" \
@@ -103,5 +103,3 @@ jobs:
           echo "Starting the container..."
           curl -X POST -H "Authorization: Bearer $API_KEY" \
                "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/homepage/start"
-
-          
