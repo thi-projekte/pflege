@@ -2,8 +2,6 @@ package de.pflegital.chatbot;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-//import io.netty.channel.ChannelOutboundBuffer.MessageProcessor;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -11,18 +9,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import de.pflegital.chatbot.ChatResponse;
 
 @Path("/webhook")
 @ApplicationScoped
@@ -34,18 +22,12 @@ public class WhatsAppWebhookResource {
     @ConfigProperty(name = "whatsapp.verify.token")
     String configuredVerifyToken;
 
-    @ConfigProperty(name = "whatsapp.api.token")
-    String whatsappApiToken;
+    @Inject
+    WhatsAppRestClient whatsAppClient;
 
-    @ConfigProperty(name = "whatsapp.phone.number.id")
-    String whatsappPhoneNumberId;
-
-    @ConfigProperty(name = "whatsapp.api.version")
-    String whatsappApiVersion;
-
-    //@Inject
-    //MessageProcessor messageProcessor; // Injizierte Instanz von Datei 2
-
+    /**
+     * Verifiziert den Webhook durch Vergleich des Tokens mit dem konfigurierten.
+     */
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response verifyWebhook(
@@ -53,204 +35,59 @@ public class WhatsAppWebhookResource {
             @QueryParam("hub.verify_token") String tokenFromHub,
             @QueryParam("hub.challenge") String challenge) {
 
-        LOGGER.info("GET /webhook - Verification attempt.");
-        LOGGER.fine("Mode: " + mode + ", Token: " + tokenFromHub + ", Challenge: " + challenge);
-
         if ("subscribe".equals(mode) && configuredVerifyToken.equals(tokenFromHub)) {
             LOGGER.info("Webhook VERIFIED successfully!");
             return Response.ok(challenge).build();
         } else {
-            LOGGER.warning("Webhook verification FAILED. Mode: " + mode +
-                           ", Provided Token: " + tokenFromHub +
-                           ", Expected Token: " + configuredVerifyToken);
+            LOGGER.warning("Webhook verification FAILED.");
             return Response.status(Response.Status.FORBIDDEN).entity("Webhook verification failed").build();
         }
     }
 
+    /**
+     * Hauptlogik zur Verarbeitung eingehender WhatsApp-Nachrichten.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON) // Wichtig: WhatsApp erwartet eine 200 OK mit JSON Body oder leer
+    @Produces(MediaType.APPLICATION_JSON)
     public Response handleIncomingMessage(String requestBody) {
-        LOGGER.info("POST /webhook - Received payload: " + requestBody);
+        LOGGER.info("Received WhatsApp message: " + requestBody);
 
         try {
             JsonNode rootNode = objectMapper.readTree(requestBody);
 
             if (rootNode.has("object") && "whatsapp_business_account".equals(rootNode.get("object").asText())) {
-                JsonNode entries = rootNode.path("entry");
-                for (JsonNode entry : entries) {
-                    JsonNode changes = entry.path("changes");
-                    for (JsonNode change : changes) {
+                for (JsonNode entry : rootNode.path("entry")) {
+                    for (JsonNode change : entry.path("changes")) {
                         if ("messages".equals(change.path("field").asText())) {
-                            JsonNode value = change.path("value");
-                            JsonNode messages = value.path("messages");
-                            for (JsonNode messageNode : messages) {
-                                if (messageNode.has("type") && "text".equals(messageNode.path("type").asText())) {
+                            for (JsonNode messageNode : change.path("value").path("messages")) {
+                                if ("text".equals(messageNode.path("type").asText())) {
+
                                     String fromWaid = messageNode.path("from").asText();
                                     String messageText = messageNode.path("text").path("body").asText();
 
-                                    LOGGER.info("Extracted Text Message from " + fromWaid + ": " + messageText);
+                                    LOGGER.info("Message from " + fromWaid + ": " + messageText);
 
-                                    // --- Vorbereitung der Übergabe an Datei 2 ---
-                                    // `fromWaid` und `messageText` sind bereits vorbereitet.
-
-                                    // --- Übergabe an Datei 2 und Empfang der Antwort ---
-                                    AiResource chatResponse = new AiResource();
-                                    
-                                    //TODO: den Fehler bei chatResponse.startChat().getSessionId() lösen
-                                    //String replyText = chatResponse.processUserInput(chatResponse.startChat().getSessionId(), messageText).getMessage();
-                                    //String replyText = chatResponse.processUserInput("f5a030a0-3e44-401d-8277-7852c1dbf6e1", messageText).getMessage();
-                                    HttpClient client = HttpClient.newHttpClient();
-            
-                                    // Baue den POST-Request (ohne Body)
-                                    HttpRequest request = HttpRequest.newBuilder()
-                                            .uri(URI.create("http://localhost:8083/chat/start"))
-                                            .header("Content-Type", "application/json")
-                                            .POST(HttpRequest.BodyPublishers.noBody())
-                                            .build();
-
-                                    // Sende den Request und empfange die Antwort
-                                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                                    String responseBody = response.body();
-                                    Pattern pattern = Pattern.compile("\"sessionId\":\"([^\"]+)\"");
-                                    Matcher matcher = pattern.matcher(responseBody);
-
-                                    String replyText = "";
-                                    if (matcher.find()) {
-                                        String sessionId = matcher.group(1);
-                                        System.out.println("SessionId: " + sessionId);
-                                        replyText= sendToReply(sessionId, messageText);
-
-
-
-                                    } else {
-                                        System.out.println("SessionId nicht gefunden");
+                                    String sessionId = whatsAppClient.startSession();
+                                    if (sessionId != null) {
+                                        String replyText = whatsAppClient.sendToReply(sessionId, messageText);
+                                        if (replyText != null && !replyText.isEmpty()) {
+                                            whatsAppClient.sendWhatsAppReply(fromWaid, replyText);
+                                        }
                                     }
-
-
-
-                                    // --- Senden der Antwort zurück an WhatsApp ---
-                                    if (replyText != null && !replyText.isEmpty()) {
-                                        sendWhatsAppReply(fromWaid, replyText);
-                                    }
-                                } else if (messageNode.has("type")) {
-                                    LOGGER.info("Received non-text message (type: " +
-                                            messageNode.path("type").asText() + "). Ignoring.");
-                                } else {
-                                    LOGGER.warning("Received message without a type field. Payload: " + messageNode.toString());
                                 }
                             }
                         }
                     }
                 }
             }
-            // Erfolgreiche Verarbeitung, sende 200 OK
+
             return Response.ok("{\"status\":\"EVENT_RECEIVED\"}").build();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error processing incoming WhatsApp message: " + e.getMessage(), e);
-            // Sende einen Fehlerstatus, damit WhatsApp nicht ständig versucht, die Nachricht erneut zu senden.
+            LOGGER.log(Level.SEVERE, "Error handling WhatsApp message", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                           .entity("{\"status\":\"ERROR_PROCESSING_EVENT\", \"message\":\"" + e.getMessage() + "\"}")
-                           .build();
-        }
-    }
-
-    private String sendToReply(String sessionId, String userInput) {
-        try {
-
-        String url = "http://localhost:8083/chat/reply?sessionId=" + sessionId.trim();
-        //System.out.println("sessionId: " + sessionId);
-        //System.out.println("userInput: " + userInput);
-            
-            // Erstelle den HTTP-Client
-            HttpClient client = HttpClient.newHttpClient();
-            String jsonBody = String.format("{\"userInput\": \"%s\"}", escapeJson(userInput));
-            // Bereite den Request vor - sende userInput im Body
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .entity("{\"status\":\"ERROR_PROCESSING_EVENT\"}")
                     .build();
-            
-            // Sende Request und empfange die Antwort
-            //System.out.println("Request URL: " + url);
-            //System.out.println("Request Body: " + jsonBody);
-            //System.out.println("Request: " + request);
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            //System.out.println("RESPONSE STATUS: " + response.statusCode());
-            
-            // Gib Status-Code und Antwort aus
-            String responseBody = response.body();
-            Pattern pattern = Pattern.compile("\"chatbotMessage\":\"([^\"]*)\"");
-            Matcher matcher = pattern.matcher(responseBody);
-            //System.out.println("RESPONSE REPLY: " + response.body());
-            
-            if (matcher.find()) {
-                String chatbotMessage = matcher.group(1);
-                //System.out.println("Chatbot sagt: " + chatbotMessage);
-                return chatbotMessage;
-            } else {
-                System.out.println("Keine chatbotMessage gefunden");
-                return null;
-            }
-            
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            return null;
         }
-    }
-
-    private void sendWhatsAppReply(String recipientWaid, String messageText) {
-        try {
-            System.out.println("KURZ VOR ENDE: " + messageText + "");
-            System.out.println("recipientWaid: " + recipientWaid);
-            String escapedMessageText = escapeJson(messageText); // Wichtig für JSON-Sicherheit
-            String jsonPayload = String.format("""
-                {
-                    "messaging_product": "whatsapp",
-                    "to": "%s",
-                    "type": "text",
-                    "text": {
-                        "preview_url": false,
-                        "body": "%s"
-                    }
-                }
-                """, recipientWaid, escapedMessageText);
-
-            HttpClient client = HttpClient.newHttpClient(); // Kann auch als Bean für bessere Testbarkeit injiziert werden
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://graph.facebook.com/" + whatsappApiVersion + "/" + whatsappPhoneNumberId + "/messages"))
-                    .header("Authorization", "Bearer " + whatsappApiToken)
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload, StandardCharsets.UTF_8))
-                    .build();
-
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            LOGGER.info("WhatsApp reply API call to " + recipientWaid + ". Status: " + response.statusCode());
-            if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                LOGGER.fine("WhatsApp reply API response body: " + response.body());
-            } else {
-                LOGGER.warning("Error sending WhatsApp reply. Status: " + response.statusCode() + ", Body: " + response.body());
-            }
-
-        } catch (IOException | InterruptedException e) {
-            LOGGER.log(Level.SEVERE, "Exception sending WhatsApp reply to " + recipientWaid + ": " + e.getMessage(), e);
-            Thread.currentThread().interrupt(); // Gute Praxis bei InterruptedException
-        }
-    }
-
-    // Einfache JSON String Escaping Funktion
-    private String escapeJson(String s) {
-        if (s == null) {
-            return ""; // Oder null, je nachdem wie die API leere Strings behandelt
-        }
-        return s.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\b", "\\b")
-                .replace("\f", "\\f")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
     }
 }
