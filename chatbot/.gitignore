@@ -32,7 +32,7 @@ build/
 !**/src/test/**/build/
 
 ### Local ###
-.env
+env.example
 
 ### VS Code ###
 .vscode/
