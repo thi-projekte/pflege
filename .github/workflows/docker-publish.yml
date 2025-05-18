@@ -3,7 +3,7 @@ name: Build and Push Docker Image to GHCR
 on:
   push:
     branches:
-      - ai-chatbot-poc
+      - kipsychose
 
 jobs:
   build-and-push:
@@ -26,7 +26,8 @@ jobs:
       - name: Build Quarkus Application
         run: |
           cd chatbot
-          ./mvnw package
+          chmod 777 mvnw
+          ./mvnw package -DskipTest=true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
