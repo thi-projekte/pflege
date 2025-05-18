@@ -19,6 +19,9 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import de.pflegital.chatbot.ChatResponse;
 
 @Path("/webhook")
@@ -93,7 +96,37 @@ public class WhatsAppWebhookResource {
 
                                     // --- Übergabe an Datei 2 und Empfang der Antwort ---
                                     AiResource chatResponse = new AiResource();
-                                    String replyText = chatResponse.processUserInput(fromWaid, messageText).getMessage();
+                                    
+                                    //TODO: den Fehler bei chatResponse.startChat().getSessionId() lösen
+                                    //String replyText = chatResponse.processUserInput(chatResponse.startChat().getSessionId(), messageText).getMessage();
+                                    //String replyText = chatResponse.processUserInput("f5a030a0-3e44-401d-8277-7852c1dbf6e1", messageText).getMessage();
+                                    HttpClient client = HttpClient.newHttpClient();
+            
+                                    // Baue den POST-Request (ohne Body)
+                                    HttpRequest request = HttpRequest.newBuilder()
+                                            .uri(URI.create("http://localhost:8083/chat/start"))
+                                            .header("Content-Type", "application/json")
+                                            .POST(HttpRequest.BodyPublishers.noBody())
+                                            .build();
+
+                                    // Sende den Request und empfange die Antwort
+                                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                                    String responseBody = response.body();
+                                    Pattern pattern = Pattern.compile("\"sessionId\":\"([^\"]+)\"");
+                                    Matcher matcher = pattern.matcher(responseBody);
+
+                                    String replyText = "";
+                                    if (matcher.find()) {
+                                        String sessionId = matcher.group(1);
+                                        System.out.println("SessionId: " + sessionId);
+                                        replyText= sendToReply(sessionId, messageText);
+
+
+
+                                    } else {
+                                        System.out.println("SessionId nicht gefunden");
+                                    }
+
 
 
                                     // --- Senden der Antwort zurück an WhatsApp ---
@@ -122,8 +155,55 @@ public class WhatsAppWebhookResource {
         }
     }
 
+    private String sendToReply(String sessionId, String userInput) {
+        try {
+
+        String url = "http://localhost:8083/chat/reply?sessionId=" + sessionId.trim();
+        //System.out.println("sessionId: " + sessionId);
+        //System.out.println("userInput: " + userInput);
+            
+            // Erstelle den HTTP-Client
+            HttpClient client = HttpClient.newHttpClient();
+            String jsonBody = String.format("{\"userInput\": \"%s\"}", escapeJson(userInput));
+            // Bereite den Request vor - sende userInput im Body
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+                    .build();
+            
+            // Sende Request und empfange die Antwort
+            //System.out.println("Request URL: " + url);
+            //System.out.println("Request Body: " + jsonBody);
+            //System.out.println("Request: " + request);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            //System.out.println("RESPONSE STATUS: " + response.statusCode());
+            
+            // Gib Status-Code und Antwort aus
+            String responseBody = response.body();
+            Pattern pattern = Pattern.compile("\"chatbotMessage\":\"([^\"]*)\"");
+            Matcher matcher = pattern.matcher(responseBody);
+            //System.out.println("RESPONSE REPLY: " + response.body());
+            
+            if (matcher.find()) {
+                String chatbotMessage = matcher.group(1);
+                //System.out.println("Chatbot sagt: " + chatbotMessage);
+                return chatbotMessage;
+            } else {
+                System.out.println("Keine chatbotMessage gefunden");
+                return null;
+            }
+            
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private void sendWhatsAppReply(String recipientWaid, String messageText) {
         try {
+            System.out.println("KURZ VOR ENDE: " + messageText + "");
+            System.out.println("recipientWaid: " + recipientWaid);
             String escapedMessageText = escapeJson(messageText); // Wichtig für JSON-Sicherheit
             String jsonPayload = String.format("""
                 {
