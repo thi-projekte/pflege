@@ -26,6 +26,7 @@ jobs:
       - name: Build Quarkus Application
         run: |
           cd chatbot
+          chmod 777 mvnw
           ./mvnw package
 
       - name: Set up Docker Buildx
