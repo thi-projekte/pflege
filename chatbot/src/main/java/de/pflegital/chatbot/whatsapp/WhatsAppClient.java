@@ -5,7 +5,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-@RegisterRestClient(configKey="whatsapp-graph-api") // Verweist auf Config Key in application.properties
+@RegisterRestClient(configKey = "whatsapp-graph-api") // Verweist auf Config Key in application.properties
 @Path("/{phoneNumberId}/messages")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -15,6 +15,5 @@ public interface WhatsAppClient {
     Response sendMessage(
             @PathParam("phoneNumberId") String phoneNumberId,
             @HeaderParam("Authorization") String authorizationHeader,
-            WhatsAppService.SendMessageRequest requestBody
-    );
+            WhatsAppService.SendMessageRequest requestBody);
 }

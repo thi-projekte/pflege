@@ -7,7 +7,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Message {
     public String from; // Absender (Nutzer)
-    public String id;   // Nachrichten-ID (wamid)
+    public String id; // Nachrichten-ID (wamid)
     public String timestamp;
     public String type; // text, image, etc.
     public Text text;

@@ -29,7 +29,8 @@ public class WhatsAppService {
 
     public void sendTextMessage(String recipientWaId, String messageBody) {
         if (recipientWaId == null || messageBody == null || messageBody.isBlank()) {
-            LOG.error("Ungültige Parameter zum Senden einer WhatsApp-Nachricht: recipientWaId={}, messageBody='{}'", recipientWaId, messageBody);
+            LOG.error("Ungültige Parameter zum Senden einer WhatsApp-Nachricht: recipientWaId={}, messageBody='{}'",
+                    recipientWaId, messageBody);
             return;
         }
         String bearerToken = "Bearer " + graphApiToken;
@@ -50,9 +51,9 @@ public class WhatsAppService {
                 response.close();
             }
         } catch (WebApplicationException e) { // Spezifischer Fehler vom REST Client
-             Response errorResponse = e.getResponse();
-             String errorBody = "(Keine Fehlerdetails lesbar)";
-             if (errorResponse != null && errorResponse.hasEntity()) {
+            Response errorResponse = e.getResponse();
+            String errorBody = "(Keine Fehlerdetails lesbar)";
+            if (errorResponse != null && errorResponse.hasEntity()) {
                 try {
                     errorBody = errorResponse.readEntity(String.class);
                 } catch (Exception readEx) {
@@ -60,12 +61,13 @@ public class WhatsAppService {
                 } finally {
                     errorResponse.close();
                 }
-             }
+            }
             LOG.error("WebApplicationException beim Senden an {}: Status={}, Body={}, Message={}",
-                    recipientWaId, errorResponse != null ? errorResponse.getStatus() : "N/A", errorBody, e.getMessage(), e);
-        }
-        catch (Exception e) { // Allgemeiner Fehler
-            LOG.error("Allgemeiner Fehler bei der Kommunikation mit der WhatsApp Graph API für {}: {}", recipientWaId, e.getMessage(), e);
+                    recipientWaId, errorResponse != null ? errorResponse.getStatus() : "N/A", errorBody, e.getMessage(),
+                    e);
+        } catch (Exception e) { // Allgemeiner Fehler
+            LOG.error("Allgemeiner Fehler bei der Kommunikation mit der WhatsApp Graph API für {}: {}", recipientWaId,
+                    e.getMessage(), e);
         }
     }
 

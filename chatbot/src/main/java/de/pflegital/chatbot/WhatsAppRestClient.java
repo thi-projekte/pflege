@@ -85,19 +85,20 @@ public class WhatsAppRestClient {
     public void sendWhatsAppReply(String recipientWaid, String messageText) {
         try {
             String payload = String.format("""
-                {
-                    "messaging_product": "whatsapp",
-                    "to": "%s",
-                    "type": "text",
-                    "text": {
-                        "preview_url": false,
-                        "body": "%s"
+                    {
+                        "messaging_product": "whatsapp",
+                        "to": "%s",
+                        "type": "text",
+                        "text": {
+                            "preview_url": false,
+                            "body": "%s"
+                        }
                     }
-                }
-                """, recipientWaid, escapeJson(messageText));
+                    """, recipientWaid, escapeJson(messageText));
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://graph.facebook.com/" + whatsappApiVersion + "/" + whatsappPhoneNumberId + "/messages"))
+                    .uri(URI.create("https://graph.facebook.com/" + whatsappApiVersion + "/" + whatsappPhoneNumberId
+                            + "/messages"))
                     .header("Authorization", "Bearer " + whatsappApiToken)
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(payload, StandardCharsets.UTF_8))
@@ -119,7 +120,8 @@ public class WhatsAppRestClient {
      * Escaped Eingabetext zur sicheren Verwendung in JSON.
      */
     private String escapeJson(String s) {
-        if (s == null) return "";
+        if (s == null)
+            return "";
         return s.replace("\\", "\\\\")
                 .replace("\"", "\\\"")
                 .replace("\b", "\\b")
@@ -129,4 +131,3 @@ public class WhatsAppRestClient {
                 .replace("\t", "\\t");
     }
 }
-
