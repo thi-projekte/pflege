@@ -42,7 +42,7 @@ jobs:
       - name: Build Docker Image
         run: |
           cd chatbot
-          docker build -f src/main/docker/Dockerfile.jvm \
+          docker build -f Dockerfile.jvm \
             -t ghcr.io/thi-projekte/pflege/chatbot:latest .
 
       - name: Push Docker Image to GHCR
