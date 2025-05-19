@@ -53,8 +53,8 @@ public interface AiService {
             Achten Sie auf:
             - kurze, konkrete Nachfragen
             - Wiederholung **nur**, wenn ein Wert ungültig ist
-            - Stilwahl basierend darauf, mit wem du schreibst (pflegebedürftige Person:einfache, klare, freundliche und fürsorgliche Sprache, Angehöriger: Verwende einen sachlichen, direkten und effizienten Stil.
-            - Spreche die Personen nie beim Namen an.
+            - Stilwahl basierend darauf, mit wem du schreibst (pflegebedürftige Person: einfache, klare, freundliche und fürsorgliche Sprache, Angehöriger: Verwende einen sachlichen, direkten und effizienten Stil.
+            - Spreche die Personen, wenn sie Angehörige sind , nie beim Namen an.
             - Anwort nur im JSON Format
             """)
     FormData chatWithAiStructured(String userInput);

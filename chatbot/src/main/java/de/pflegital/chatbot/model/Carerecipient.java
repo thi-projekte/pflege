@@ -28,7 +28,10 @@ public class Carerecipient {
     private String insuranceNumber;
 
     public boolean isInsuranceNumberValid() {
-        return insuranceNumber != null && insuranceNumber.trim().matches("^\\d{10,12}$");
+        return insuranceNumber != null &&
+                !insuranceNumber.trim().isEmpty() &&
+                insuranceNumber.trim().length() >= 10 &&
+                insuranceNumber.trim().length() <= 12;
     }
 
     public boolean isFullNameValid() {
@@ -91,4 +94,5 @@ public class Carerecipient {
     public void setInsuredAddress(Address insuredAddress) {
         this.insuredAddress = insuredAddress;
     }
+
 }

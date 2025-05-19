@@ -2,12 +2,7 @@ package de.pflegital.chatbot;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.pflegital.chatbot.model.CareType;
-import de.pflegital.chatbot.model.Caregiver;
-import de.pflegital.chatbot.model.Carerecipient;
-import de.pflegital.chatbot.model.Period;
-import de.pflegital.chatbot.model.Reason;
-import de.pflegital.chatbot.model.ReplacementCare;
+import de.pflegital.chatbot.model.*;
 import dev.langchain4j.model.output.structured.Description;
 
 public class FormData {
@@ -30,6 +25,10 @@ public class FormData {
 
     @JsonProperty("chatbotMessage")
     private String chatbotMessage;
+
+    @JsonProperty("conversationPartner")
+    @Description("Indicates whether the person currently interacting with the chatbot is the care recipient or a relative.")
+    private ConversationPartner conversationPartner;
 
     @JsonProperty("careType")
     @Description("Describes the type of care. Either hourly or daily.")
@@ -119,5 +118,53 @@ public class FormData {
 
     public void setCareRecipient(Carerecipient careRecipient) {
         this.careRecipient = careRecipient;
+    }
+
+    public ConversationPartner getConversationPartner() {
+        return conversationPartner;
+    }
+
+    public void setConversationPartner(ConversationPartner conversationPartner) {
+        this.conversationPartner = conversationPartner;
+    }
+
+    public Boolean getLegalAcknowledgement() {
+        return legalAcknowledgement;
+    }
+
+    public void setLegalAcknowledgement(Boolean legalAcknowledgement) {
+        this.legalAcknowledgement = legalAcknowledgement;
+    }
+
+    public Boolean getCareDurationMin6Months() {
+        return careDurationMin6Months;
+    }
+
+    public void setCareDurationMin6Months(Boolean careDurationMin6Months) {
+        this.careDurationMin6Months = careDurationMin6Months;
+    }
+
+    public Boolean getHomeCare() {
+        return isHomeCare;
+    }
+
+    public void setHomeCare(Boolean homeCare) {
+        isHomeCare = homeCare;
+    }
+
+    public ReplacementCare getReplacementCare() {
+        return replacementCare;
+    }
+
+    public void setReplacementCare(ReplacementCare replacementCare) {
+        this.replacementCare = replacementCare;
+    }
+
+    public Caregiver getCaregiver() {
+        return caregiver;
+    }
+
+    public void setCaregiver(Caregiver caregiver) {
+        this.caregiver = caregiver;
     }
 }
