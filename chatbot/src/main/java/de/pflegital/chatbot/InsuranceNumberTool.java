@@ -63,7 +63,7 @@ public class InsuranceNumberTool {
     }
 
     private static char berechnePruefziffer(String input) {
-        int[] gewichte = {2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2};
+        int[] gewichte = { 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2 };
         int summe = 0;
 
         for (int i = 0; i < input.length(); i++) {
@@ -92,7 +92,5 @@ public class InsuranceNumberTool {
         LOG.info("Endsumme: {}, Modulo: {}, Prüfziffer: {}", summe, summe % 10, pruefziffer);
         return Character.forDigit(pruefziffer, 10);
     }
-
-
 
 }

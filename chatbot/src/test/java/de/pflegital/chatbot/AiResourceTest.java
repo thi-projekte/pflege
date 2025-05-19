@@ -76,5 +76,4 @@ class AiResourceTest {
                 .statusCode(401);
     }
 
-
 }
