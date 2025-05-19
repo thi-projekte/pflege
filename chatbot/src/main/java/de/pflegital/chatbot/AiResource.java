@@ -35,8 +35,6 @@ public class AiResource {
         this.insuranceNumberTool = insuranceNumberTool;
     }
 
-
-
     @POST
     @Path("/start")
     public ChatResponse startChat() {
