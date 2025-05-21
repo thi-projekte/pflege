@@ -3,7 +3,6 @@ package de.pflegital.chatbot;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
 import io.quarkus.security.Authenticated;
 
@@ -16,24 +15,15 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Path("/chat")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Authenticated
 public class AiResource {
-
-    private final AiService aiService;
-    private final FormDataPresenter formDataPresenter;
-    private final InsuranceNumberTool insuranceNumberTool;
-    private final Map<String, FormData> sessions = new HashMap<>();
-    private static final Logger LOG = getLogger(AiResource.class);
+    @Inject
+    AiService aiService;
 
     @Inject
-    public AiResource(
-            AiService aiService,
-            FormDataPresenter formDataPresenter,
-            InsuranceNumberTool insuranceNumberTool) {
-        this.aiService = aiService;
-        this.formDataPresenter = formDataPresenter;
-        this.insuranceNumberTool = insuranceNumberTool;
-    }
+    FormDataPresenter formDataPresenter;
+
+    private final Map<String, FormData> sessions = new HashMap<>();
+    private static final Logger LOG = getLogger(AiResource.class);
 
     @POST
     @Path("/start")
@@ -46,7 +36,7 @@ public class AiResource {
             LOG.info("Chat started: {}", aiResponse.getChatbotMessage());
             return new ChatResponse(sessionId, aiResponse);
         } catch (Exception e) {
-            throw new WebApplicationException(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -65,22 +55,18 @@ public class AiResource {
         String prompt = "The current form data is: " + jsonFormData +
                 ". The user just said: '" + userInput + "'. Please update the missing fields accordingly.";
 
-        FormData updatedResponse = getFormData(prompt);
+        LOG.info("Prompt to AI: {}", prompt);
+        FormData updatedResponse = aiService.chatWithAiStructured(prompt);
 
         if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
             updatedResponse.setChatbotMessage(
                     "Die Verhinderungspflege steht erst ab Pflegegrad 2 zur Verfügung. Bitte prüfen Sie Ihre Angaben.");
-        } else if (updatedResponse.getCareRecipient() != null &&
-                updatedResponse.getCareRecipient().getInsuranceNumber() != null &&
-                !insuranceNumberTool.isValidSecurityNumber(updatedResponse.getCareRecipient().getInsuranceNumber())) {
-            updatedResponse.setChatbotMessage(
-                    "Die angegebene Versicherungsnummer scheint ungültig zu sein. Bitte überprüfen Sie Ihre Eingabe.");
         }
 
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
-            updatedResponse.setChatbotMessage("Danke! Es wurden alle Informationen gesammelt");
-            // Start process here
+            updatedResponse.setChatbotMessage("Thank you! All required information has been collected.");
+            // FIXME: Start process here
         }
         sessions.put(sessionId, updatedResponse);
 
@@ -88,13 +74,7 @@ public class AiResource {
             LOG.info("AI response: {}", updatedResponse.getChatbotMessage());
             return new ChatResponse(sessionId, updatedResponse);
         } catch (Exception e) {
-            throw new WebApplicationException(e);
+            throw new RuntimeException(e);
         }
-    }
-
-    @Retry(maxRetries = 3)
-    protected FormData getFormData(String prompt) {
-        LOG.info("Prompt to AI: {}", prompt);
-        return aiService.chatWithAiStructured(prompt);
     }
 }
