@@ -55,7 +55,10 @@
     <div class="hero-content" style="max-width: 700px; padding: 3rem; background-color: rgba(255, 255, 255, 0.85); border-radius: 15px; box-shadow: 0 10px 30px rgba(94, 80, 67, 0.15);">
       <h1 data-aos="fade-down" data-aos-duration="800" style="font-size: 3.2rem; margin-bottom: 1.5rem; color: #5E5043;">Pflege – einfach, schnell, digital</h1>
       <p data-aos="fade-up" data-aos-duration="800" data-aos-delay="300" style="font-size: 1.3rem; margin-bottom: 2.5rem; line-height: 1.6;">Pflegital verbindet Sie per WhatsApp direkt mit Pflegeanbietern, schnell und einfach.</p>
-      <button class="btn" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="600" style="background-color: #F49B62; color: #5E5043; padding: 1rem 2rem; border: none; border-radius: 50px; font-size: 1.2rem; cursor: pointer; transition: all 0.3s ease;">Jetzt starten</button>
+     <a href="knowledge.html" class="btn" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="600" style="background-color: #F49B62; color: #5E5043; padding: 1rem 2rem; border: none; border-radius: 50px; font-size: 1.2rem; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-block;">
+         So gehts
+      </a>
+
     </div>
   </section>
 
@@ -92,8 +95,10 @@
     </div>
   </section>
 
-  <section data-test="mms-pdp-gallery" aria-label="Produktgalerie" class="pdp-gallery">
+<section data-test="mms-pdp-gallery" aria-label="Produktgalerie" class="pdp-gallery-wrapper">
+  <div class="pdp-gallery-frame">
     <h2 style="text-align:center; color: #5E5043;">Pflegital in Bildern</h2>
+
     <!-- Hauptslider -->
     <section data-test="mms-scroll-snap-slider" aria-live="polite" class="pdp-gallery__main">
       <button class="pdp-gallery__nav pdp-gallery__nav--prev" aria-label="Vorheriges Bild">‹</button>
@@ -108,14 +113,12 @@
           <img src="assets/Unterhaltung 3.png" alt="Chatverlauf 3">
         </div>
       </div>
-      <!-- Dots-Navigation -->
       <div class="pdp-gallery__dots"></div>      
       <button class="pdp-gallery__nav pdp-gallery__nav--next" aria-label="Nächstes Bild">›</button>
     </section>
 
     <!-- Thumbnail-Slider -->
     <section data-test="mms-th-gallery" aria-live="polite" class="pdp-gallery__thumbs">
-      <!--<button class="pdp-gallery__thumb-nav pdp-gallery__thumb-nav--prev" aria-label="Vorheriges Thumbnail">‹</button>-->
       <div class="pdp-gallery__thumb-track">
         <div class="pdp-gallery__thumb" data-index="0">
           <img src="assets/Unterhaltung 1.png" alt="Thumbnail 1">
@@ -127,9 +130,10 @@
           <img src="assets/Unterhaltung 3.png" alt="Thumbnail 3">
         </div>
       </div>
-      <!--<button class="pdp-gallery__thumb-nav pdp-gallery__thumb-nav--next" aria-label="Nächstes Thumbnail">›</button> -->
     </section>
-  </section>
+  </div>
+</section>
+
 
   <section class="cta-section" id="kontakt" data-aos="zoom-in">
     <h2>Bereit für die Zukunft der Pflege?</h2>

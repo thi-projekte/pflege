@@ -558,3 +558,17 @@ footer .footer-links a {
 footer .footer-links a:hover {
   text-decoration: underline;
 }
+.pdp-gallery-wrapper {
+  padding: 2rem 1rem;
+  background-color: #fff;
+}
+
+.pdp-gallery-frame {
+  border: 3px solid var(--color-accent);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  background-color: #FEFCEB;
+  max-width: 800px;
+  margin: 0 auto;
+}
