@@ -1,0 +1,27 @@
+### Create Example Item 1
+POST http://localhost:8083/categories/1/items
+Content-Type: application/json
+
+{
+  "name": "Volleyball",
+  "photoUrl": "https://example.com/photo.jpg",
+  "icon": "🏐",
+  "urn": "example-urn"
+}
+
+### Create Example Item 2
+POST http://localhost:8083/categories/2/items
+Content-Type: application/json
+
+{
+  "name": "Basketball",
+  "photoUrl": "https://example.com/basketball.jpg",
+  "icon": "🏀",
+  "urn": "example-urn-basketball"
+}
+
+### Get All Items of Category 1
+GET http://localhost:8083/categories/1/items
+
+### Get All Items of Category 2
+GET http://localhost:8083/categories/2/items
