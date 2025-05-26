@@ -3,59 +3,58 @@ package de.pflegital.chatbot.tools;
 import dev.langchain4j.agent.tool.Tool;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-
-import static org.slf4j.LoggerFactory.getLogger;
+import java.time.temporal.ChronoUnit;
 
 @ApplicationScoped
 public class RegularCareStartDateTool {
-    private static final Logger LOG = getLogger(RegularCareStartDateTool.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RegularCareStartDateTool.class);
     private static final DateTimeFormatter[] DATE_FORMATTERS = {
             DateTimeFormatter.ofPattern("dd.MM.yyyy"),
-            DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-            DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            DateTimeFormatter.ofPattern("dd.MM.yy"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd")
     };
 
-    @Tool("Ermittelt ob ein Pflegebeginn gültig ist oder nicht. Das Datum muss in der Vergangenheit liegen und darf nicht älter als 6 Monate sein.")
-    public String isValidCareStartDate(String startDate) {
-        if (startDate == null || startDate.trim().isEmpty()) {
-            return "Das Pflegebeginn-Datum darf nicht leer sein!";
+    @Tool("Validates if the regular care start date is valid. The date must be at least 6 months in the past.")
+    public boolean validateRegularCareStartDate(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            LOG.error("Pflegebeginn-Datum ist leer");
+            return false;
         }
 
-        // Versuche das Datum in verschiedenen Formaten zu parsen
-        LocalDate parsedDate = parseDate(startDate);
-        if (parsedDate == null) {
-            return "Das Pflegebeginn-Datum hat kein gültiges Format!";
-        }
-
-        LocalDate now = LocalDate.now();
-        LocalDate sixMonthsAgo = now.minusMonths(6);
-
-        // Prüfe ob das Datum in der Vergangenheit liegt
-        if (!parsedDate.isBefore(now)) {
-            return "Das Pflegebeginn-Datum muss in der Vergangenheit liegen!";
-        }
-
-        // Prüfe ob das Datum nicht älter als 6 Monate ist
-        if (parsedDate.isBefore(sixMonthsAgo)) {
-            return "Das Pflegebeginn-Datum darf nicht älter als 6 Monate sein!";
-        }
-
-        return "valid";
-    }
-
-    private LocalDate parseDate(String date) {
+        LocalDate careStartDate = null;
         for (DateTimeFormatter formatter : DATE_FORMATTERS) {
             try {
-                return LocalDate.parse(date.trim(), formatter);
+                careStartDate = LocalDate.parse(dateStr.trim(), formatter);
+                break;
             } catch (DateTimeParseException e) {
-                // Versuche das nächste Format
-                continue;
+                LOG.debug("Datum konnte nicht im Format {} geparst werden: {}", formatter, dateStr);
             }
         }
-        return null;
+
+        if (careStartDate == null) {
+            LOG.error("Pflegebeginn-Datum hat kein gültiges Format: {}", dateStr);
+            return false;
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate sixMonthsAgo = today.minus(6, ChronoUnit.MONTHS);
+
+        if (careStartDate.isAfter(today)) {
+            LOG.error("Pflegebeginn-Datum liegt in der Zukunft: {}", careStartDate);
+            return false;
+        }
+
+        if (careStartDate.isAfter(sixMonthsAgo)) {
+            LOG.error("Pflegebeginn-Datum liegt weniger als 6 Monate in der Vergangenheit: {}", careStartDate);
+            return false;
+        }
+
+        LOG.info("Pflegebeginn-Datum ist gültig: {}", careStartDate);
+        return true;
     }
 }

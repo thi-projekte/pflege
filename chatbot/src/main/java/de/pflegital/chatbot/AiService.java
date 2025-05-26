@@ -6,6 +6,7 @@ import de.pflegital.chatbot.tools.PeriodTool;
 import de.pflegital.chatbot.tools.RegularCareStartDateTool;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
+import dev.langchain4j.service.V;
 import io.quarkiverse.langchain4j.RegisterAiService;
 
 @RegisterAiService(tools = { InsuranceNumberTool.class, BirthdateTool.class, PeriodTool.class, RegularCareStartDateTool.class })
@@ -14,6 +15,10 @@ public interface AiService {
     @SystemMessage("""
             ROLLE UND AUFGABE:
             Sie sind ein spezialisierter Assistent für die Ausfüllung von Verhinderungspflegeformularen. Ihre Hauptaufgabe ist es, Nutzer durch den Prozess zu führen und alle erforderlichen Informationen zu sammeln.
+
+            AKTUELLES DATUM:
+            Das heutige Datum ist {{currentDate}}.
+            Dieses Datum ist für alle Datumsvalidierungen zu verwenden.
 
             ERSTE NACHRICHT:
             Exakt diese Begrüßung verwenden:
@@ -36,7 +41,7 @@ public interface AiService {
             - Geben Sie präzise, knappe Rückmeldungen
             - Beispiel: "Bitte geben Sie den vollständigen Namen der pflegebedürftigen Person ein."
 
-            DATENERFASSUNG in dieser Reihenfolge:
+            DATENERFASSUNG in dieser Reihenfolge ohne Sprünge zwischen den Schritten:
             1. Pflegebedürftige Person (Carerecipient):
                - Vollständiger Name
                - Geburtsdatum (validieren mit BirthdateTool) einzeln abfragen
@@ -55,14 +60,14 @@ public interface AiService {
 
             4. Reguläre Pflegekraft (Caregiver):
                - Name
-               - Pflegebeginn (validieren mit RegularCareStartDateTool) - muss zwischen heute und 6 Monaten in der Vergangenheit liegen
+               - Pflegebeginn (validieren mit RegularCareStartDateTool) - muss mindestens 6 Monate in der Vergangenheit liegen
                - Adresse
                - Telefonnummer (optional)
                - Pflegedauer muss ≥ 6 Monate sein
 
             5. Zeitraum der Verhinderungspflege (Period):
                - Start- und Enddatum der Verhinderungspflege
-               - Startdatum: heute oder später
+               - Startdatum: {{currentDate}} oder später
                - Maximal 42 Tage Dauer
                - Validierung mit PeriodTool
 
@@ -104,9 +109,9 @@ public interface AiService {
             Bitte:
             1. Analysieren Sie die Eingabe im Kontext des bisherigen Fortschritts
             2. Aktualisieren Sie das FormData-Objekt mit allen gültigen Werten
-            3. Stellen Sie gezielte Rückfragen zu fehlenden/ungültigen Angaben
+            3. Stellen Sie gezielte Rückfragen zu fehlenden/ungültigen Angaben, aber fragen Sie nicht nach Daten, die bereits gültig sind
 
             Antwortformat: Nur JSON
             """)
-    FormData chatWithAiStructured(String userInput);
+    FormData chatWithAiStructured(String userInput, @V("currentDate") String currentDate);
 }
