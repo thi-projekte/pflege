@@ -5,6 +5,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
+
+import de.pflegital.chatbot.tools.InsuranceNumberTool;
 import io.quarkus.security.Authenticated;
 
 import java.util.HashMap;

@@ -5,21 +5,22 @@ import dev.langchain4j.model.output.structured.Description;
 
 import java.time.LocalDate;
 
+// regular Caregiver 
 public class Caregiver {
 
-    @JsonProperty("careStartedDate")
+    @JsonProperty("regularCareStartedDate")
     @Description("Date in the past when the caregiver started providing care.")
-    private LocalDate careStartedDate;
+    private LocalDate regularCareStartedDate;
 
-    @JsonProperty("caregiverName")
+    @JsonProperty("regularCaregiverName")
     @Description("Full name of the caregiver. This is a required field.")
     private String caregiverName;
 
-    @JsonProperty("caregiverAddress")
+    @JsonProperty("regularCaregiverAddress")
     @Description("Address of the caregiver. This is a required field.")
     private Address caregiverAddress;
 
-    @JsonProperty("caregiverPhoneNumber")
+    @JsonProperty("regularCaregiverPhoneNumber")
     @Description("Phone number of the caregiver. This field is optional but should follow a valid phone number format if provided.")
     private String caregiverPhoneNumber;
 
@@ -27,8 +28,8 @@ public class Caregiver {
         return caregiverName != null && !caregiverName.trim().isEmpty();
     }
 
-    public boolean isCareStartedDateValid() {
-        return careStartedDate != null;
+    public boolean isRegularCareStartedDateValid() {
+        return regularCareStartedDate != null && regularCareStartedDate.isBefore(LocalDate.now()) && regularCareStartedDate.isAfter(LocalDate.now().minusMonths(6));
     }
 
     public boolean isCaregiverPhoneNumberValid() {
@@ -38,18 +39,18 @@ public class Caregiver {
     public boolean isValid() {
         return isCaregiverNameValid()
                 && caregiverAddress != null && caregiverAddress.isValid()
-                && isCareStartedDateValid()
+                && isRegularCareStartedDateValid()
                 && isCaregiverPhoneNumberValid();
     }
 
     // Getter & Setter
 
-    public LocalDate getCareStartDate() {
-        return careStartedDate;
+    public LocalDate getRegularCareStartedDate() {
+        return regularCareStartedDate;
     }
 
-    public void setCareStartDate(LocalDate careStartedDate) {
-        this.careStartedDate = careStartedDate;
+    public void setRegularCareStartedDate(LocalDate regularCareStartedDate) {
+        this.regularCareStartedDate = regularCareStartedDate;
     }
 
     public String getCaregiverName() {
