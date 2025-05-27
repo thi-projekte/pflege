@@ -14,33 +14,33 @@ public class Caregiver {
 
     @JsonProperty("regularCaregiverName")
     @Description("Full name of the caregiver. This is a required field.")
-    private String caregiverName;
+    private String regularCaregiverName;
 
     @JsonProperty("regularCaregiverAddress")
     @Description("Address of the caregiver. This is a required field.")
-    private Address caregiverAddress;
+    private Address regularCaregiverAddress;
 
     @JsonProperty("regularCaregiverPhoneNumber")
     @Description("Phone number of the caregiver. This field is optional but should follow a valid phone number format if provided.")
-    private String caregiverPhoneNumber;
+    private String regularCaregiverPhoneNumber;
 
-    public boolean isCaregiverNameValid() {
-        return caregiverName != null && !caregiverName.trim().isEmpty();
+    public boolean isRegularCaregiverNameValid() {
+        return regularCaregiverName != null && !regularCaregiverName.trim().isEmpty();
     }
 
     public boolean isRegularCareStartedDateValid() {
         return regularCareStartedDate != null && regularCareStartedDate.isBefore(LocalDate.now()) && regularCareStartedDate.isAfter(LocalDate.now().minusMonths(6));
     }
 
-    public boolean isCaregiverPhoneNumberValid() {
-        return caregiverPhoneNumber == null || caregiverPhoneNumber.matches("^[+\\d][\\d\\s\\-/]{3,}$");
+    public boolean isRegularCaregiverPhoneNumberValid() {
+        return regularCaregiverPhoneNumber == null || regularCaregiverPhoneNumber.matches("^[+\\d][\\d\\s\\-/]{3,}$");
     }
 
     public boolean isValid() {
-        return isCaregiverNameValid()
-                && caregiverAddress != null && caregiverAddress.isValid()
+        return isRegularCaregiverNameValid()
+                && regularCaregiverAddress != null && regularCaregiverAddress.isValid()
                 && isRegularCareStartedDateValid()
-                && isCaregiverPhoneNumberValid();
+                && isRegularCaregiverPhoneNumberValid();
     }
 
     // Getter & Setter
@@ -53,27 +53,27 @@ public class Caregiver {
         this.regularCareStartedDate = regularCareStartedDate;
     }
 
-    public String getCaregiverName() {
-        return caregiverName;
+    public Address getRegularCaregiverAddress() {
+        return regularCaregiverAddress;
     }
 
-    public void setCaregiverName(String caregiverName) {
-        this.caregiverName = caregiverName;
+    public void setRegularCaregiverAddress(Address regularCaregiverAddress) {
+        this.regularCaregiverAddress = regularCaregiverAddress;
     }
 
-    public String getCaregiverPhoneNumber() {
-        return caregiverPhoneNumber;
+    public String getRegularCaregiverName() {
+        return regularCaregiverName;
     }
 
-    public void setCaregiverPhoneNumber(String caregiverPhoneNumber) {
-        this.caregiverPhoneNumber = caregiverPhoneNumber;
+    public void setRegularCaregiverName(String regularCaregiverName) {
+        this.regularCaregiverName = regularCaregiverName;
     }
 
-    public Address getCaregiverAddress() {
-        return caregiverAddress;
+    public String getRegularCaregiverPhoneNumber() {
+        return regularCaregiverPhoneNumber;
     }
 
-    public void setCaregiverAddress(Address caregiverAddress) {
-        this.caregiverAddress = caregiverAddress;
+    public void setRegularCaregiverPhoneNumber(String regularCaregiverPhoneNumber) {
+        this.regularCaregiverPhoneNumber = regularCaregiverPhoneNumber;
     }
 }
