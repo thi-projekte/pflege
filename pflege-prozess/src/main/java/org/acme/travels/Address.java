@@ -24,7 +24,6 @@ public class Address {
     private String city;
     private String zipCode;
     private String country;
-    private String test;
 
     public Address() {
 
@@ -41,7 +40,6 @@ public class Address {
     public String getStreet() {
         return street;
     }
-
 
     public void setStreet(String street) {
         this.street = street;
