@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/chatbot"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "maven"
+    directory: "/pflege-prozess"
+    schedule:
+      interval: "daily"
