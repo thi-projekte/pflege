@@ -14,12 +14,14 @@ pflege/
       ├── HOMEPAGE.md            # Diese Dokumentation
       └── pflegital/             # Hauptverzeichnis der Website
           ├── index.html         # Startseite
+          ├── knowledge.html     # Hilfeseite/Anleitung
           ├── impressum.html     # Impressum
           ├── datenschutz.html   # Datenschutzerklärung
           ├── scripts.js         # JavaScript-Funktionen
           ├── style.css          # Stylesheet
           └── assets/            # Medien und Grafiken
               ├── logo.svg
+              ├── HeroPage.PNG   # Hero-Hintergrundbild
               ├── Unterhaltung 1.png
               ├── Unterhaltung 2.png
               └── Unterhaltung 3.png
@@ -60,8 +62,8 @@ Die Pflegital-Homepage ist in einem modernen, benutzerfreundlichen Design gestal
 #### Hero-Sektion
 - Hauptüberschrift: "Pflege – einfach, schnell, digital"
 - Untertext: "Pflegital verbindet Sie per WhatsApp direkt mit Pflegeanbietern, schnell und einfach."
-- Call-to-Action-Button: "Jetzt starten"
-- Hintergrundbild aus einer Unsplash-Quelle
+- Call-to-Action-Button: "So gehts"
+- Hintergrundbild: HeroPage.PNG
 
 #### Features-Sektion
 Zeigt die Hauptfunktionen von Pflegital:
@@ -91,8 +93,14 @@ Zeigt einen beispielhaften Chatverlauf, um die Funktionsweise von Pflegital zu d
 - Button zum Versenden der Nachricht über WhatsApp
 - JavaScript-Funktion `sendToWhatsApp()` zur Verarbeitung der Anfrage
 
+#### Knowledge-Seite
+- Bietet eine ausführliche Anleitung zur Nutzung von Pflegital
+- Erklärt den Prozess der Verhinderungspflege in 4 einfachen Schritten
+- Listet die Vorteile von Pflegital auf
+- Zugänglich über den "So gehts"-Button auf der Startseite
+
 #### Back-To-Top-Button
-- Ein Back-To-Top-Button wurde auf allen HTML-Seiten (`index.html`, `impressum.html`, `datenschutz.html`) hinzugefügt, um die Benutzerfreundlichkeit zu verbessern.
+- Ein Back-To-Top-Button wurde auf allen HTML-Seiten (`index.html`, `knowledge.html`, `impressum.html`, `datenschutz.html`) hinzugefügt, um die Benutzerfreundlichkeit zu verbessern.
 
 #### Footer
 - Kontaktinformationen
@@ -121,6 +129,10 @@ Die Datei scripts.js enthält verschiedene Funktionen:
 5. **Back-To-Top-Button:**
    - Funktionalität, um den Benutzer mit einem Klick zurück zum Seitenanfang zu bringen
 
+6. **Chat-Animation:**
+   - Animiert den Demo-Chat-Bereich mit regelmäßiger Wiederholung
+   - Stellt eine realistische Chat-Interaktion dar
+
 ## 4. CI/CD-Pipeline
 
 Die CI/CD-Pipeline wird über GitHub Actions mit der Datei deploy.yml konfiguriert.
@@ -134,8 +146,6 @@ Die Pipeline wird automatisch ausgelöst bei Änderungen an:
 ```yml
 on:
   push:
-    branches:
-      - main
     paths:
       - 'homepage/pflegital/**'
       - 'homepage/Dockerfile'
@@ -150,41 +160,31 @@ on:
    - Verwendet die Docker-Login-Action
    - Authentifiziert sich mit den GitHub-Anmeldedaten
 
-3. **Docker-Image bauen:**
+3. **Docker-Image bauen und pushen:**
    - Erstellt ein Container-Image basierend auf der Dockerfile
    - Tagging: `ghcr.io/thi-projekte/pflege/homepage:latest`
+   - Lädt das Image in die GitHub Container Registry hoch
 
-4. **Image pushen:**
-   - Lädt das erstellte Image in die GitHub Container Registry hoch
-
-5. **Portainer-Hook auslösen:**
-   - Führt einen HTTP-Request aus, um den Portainer-Hook für das Deployment zu triggern
+4. **Redeploy des Containers über Portainer API:**
+   - Ermittelt die Container-ID über Labels
+   - Stoppt und entfernt den alten Container
+   - Erstellt einen neuen Container mit dem aktuellen Image
+   - Startet den neuen Container
 
 ```yml
-steps:
-  - name: Checkout code
-    uses: actions/checkout@v4
-
-  - name: Log in to GitHub Container Registry
-    uses: docker/login-action@v3
-    with:
-      registry: ghcr.io
-      username: ${{ github.actor }}
-      password: ${{ secrets.GITHUB_TOKEN }}
-
-  - name: Build Docker image
+  - name: Redeploy Container via Portainer API
+    env:
+      API_URL: https://winfprojekt.de:9443/api
+      API_KEY: ${{ secrets.PORTAINER_API_KEY }}
+      ENDPOINT_ID: 1
+      PROJECT_LABEL: pflegital
+      SERVICE_LABEL: homepage
     run: |
-      IMAGE_NAME=ghcr.io/thi-projekte/pflege/homepage:latest
-      docker build -f homepage/Dockerfile -t $IMAGE_NAME homepage
-      echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
-
-  - name: Push Docker image
-    run: |
-      docker push $IMAGE_NAME
-
-  - name: Trigger Portainer Hook
-    run: |
-      curl -X POST ${{ secrets.PORTAINER_HOOK_URL }}
+      # 1) Container-ID ermitteln über Labels
+      # 2) Pull latest image
+      # 3) Stop & remove old container
+      # 4) Create new container with labels
+      # 5) Start new container
 ```
 
 ### 4.3 Container-Konfiguration
@@ -207,10 +207,11 @@ Diese Konfiguration:
 1. Bearbeiten Sie die HTML-, CSS- oder JavaScript-Dateien im `homepage/pflegital/`-Verzeichnis
 2. Commit und Push der Änderungen lösen automatisch die Pipeline aus
 3. Das neue Docker-Image wird gebaut und in die Registry hochgeladen
+4. Der Container wird automatisch über die Portainer API neu erstellt und gestartet
 
 ### 5.2 Deployment-Prozess
 
-Die Bereitstellung des aktualisierten Images erfolgt automatisch nach dem Push in die Registry. Weitere Details zur Portainer-API-Integration finden sich im api_key.txt-File, welches **nicht** im Version-Control gehalten werden sollte.
+Die Bereitstellung des aktualisierten Images erfolgt vollautomatisch nach dem Push in die Registry durch die Integration der Portainer API in der GitHub Actions Pipeline.
 
 ### 5.3 Sicherheitsaspekte
 
@@ -235,3 +236,4 @@ Die Bereitstellung des aktualisierten Images erfolgt automatisch nach dem Push i
 - **CI/CD-Tools:**
   - GitHub Actions: https://github.com/features/actions
   - GitHub Container Registry: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry
+  - Portainer API: https://docs.portainer.io/api/docs
