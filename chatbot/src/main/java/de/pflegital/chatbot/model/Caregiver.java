@@ -5,7 +5,7 @@ import dev.langchain4j.model.output.structured.Description;
 
 import java.time.LocalDate;
 
-// regular Caregiver 
+// regular Caregiver
 public class Caregiver {
 
     @JsonProperty("regularCareStartedDate")
@@ -29,7 +29,8 @@ public class Caregiver {
     }
 
     public boolean isRegularCareStartedDateValid() {
-        return regularCareStartedDate != null && regularCareStartedDate.isBefore(LocalDate.now()) && regularCareStartedDate.isAfter(LocalDate.now().minusMonths(6));
+        return regularCareStartedDate != null && regularCareStartedDate.isBefore(LocalDate.now())
+                && regularCareStartedDate.isAfter(LocalDate.now().minusMonths(6));
     }
 
     public boolean isRegularCaregiverPhoneNumberValid() {
