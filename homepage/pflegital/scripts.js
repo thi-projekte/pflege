@@ -155,3 +155,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const openBtn = document.getElementById("openKnowledgePopup");
+  const popup = document.getElementById("knowledgePopup");
+  const closeBtn = popup.querySelector(".close-button");
+
+  if (openBtn && popup && closeBtn) {
+    openBtn.addEventListener("click", () => {
+      popup.style.display = "flex";
+    });
+    closeBtn.addEventListener("click", () => {
+      popup.style.display = "none";
+    });
+  }
+});
+
+
+
+

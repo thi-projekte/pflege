@@ -57,10 +57,37 @@
         <span class="mobile-text">Pflege<br>einfach, schnell, digital</span>
       </h1>
       <p data-aos="fade-up" data-aos-duration="800" data-aos-delay="300">Pflegital verbindet Sie per WhatsApp direkt mit Pflegeanbietern, schnell und einfach.</p>
-      <a href="knowledge.html" class="btn" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="600">
-        So gehts
-      </a>
-    </div>
+     <button id="openKnowledgePopup" class="btn" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="600">
+  So geht's
+</button>
+
+
+<div id="knowledgePopup" class="popup-overlay" style="display: none;">
+  <div class="popup-content">
+    <span class="close-button" onclick="closeKnowledgePopup()">&times;</span>
+    <h2>Anleitung: Verhinderungspflege mit Pflegital</h2>
+    <p>Pflegital hilft Ihnen schnell und einfach, Verhinderungspflege zu organisieren – direkt über WhatsApp.</p>
+
+    <h3>So funktioniert’s:</h3>
+    <ol>
+      <li><strong>Starten Sie den Chat:</strong> Klicken Sie auf <em>„Jetzt starten“</em> auf der Startseite oder schreiben Sie uns direkt über WhatsApp.</li>
+      <li><strong>Beantworten Sie ein paar Fragen:</strong> Der Chatbot fragt z. B. nach Name, Pflegegrad und Zeitraum.</li>
+      <li><strong>Digitale Formulare:</strong> Sie erhalten einen Link zu einem vorausgefüllten Formular – einfach überprüfen & abschicken.</li>
+      <li><strong>Fertig!</strong> Sie erhalten passende Angebote von Pflegediensten direkt in WhatsApp.</li>
+    </ol>
+
+    <h3>Vorteile auf einen Blick:</h3>
+    <ul>
+      <li>✅ Kein Papierkram</li>
+      <li>✅ Alles mobil über WhatsApp</li>
+      <li>✅ Antworten in wenigen Minuten</li>
+    </ul>
+
+    <p style="margin-top: 1rem;">Bei Fragen hilft Ihnen unser Team jederzeit gerne weiter. Schreiben Sie uns einfach.</p>
+  </div>
+</div>
+
+
 
     <!-- Unterer CTA-Bereich -->
     <div class="cta-section" data-aos="zoom-in">
@@ -146,14 +173,7 @@
 </section>
 
 
-  <section class="cta-section" id="kontakt" data-aos="zoom-in">
-    <h2>Bereit für die Zukunft der Pflege?</h2>
-    <form class="whatsapp-form">
-      <input type="text" id="name" placeholder="Ihr Name" required />
-      <textarea id="message" rows="4" placeholder="Ihre Nachricht" required></textarea>
-      <button type="button" onclick="sendToWhatsApp()">Nachricht über WhatsApp senden</button>
-    </form>
-  </section>
+
 
   <footer>
     <h3>Sie haben Fragen?</h3>
