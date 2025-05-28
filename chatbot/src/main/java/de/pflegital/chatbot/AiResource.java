@@ -22,7 +22,8 @@ public class AiResource {
     @Inject
     FormDataPresenter formDataPresenter;
 
-    private final Map<String, FormData> sessions = new HashMap<>();
+    @Inject
+    SessionStore sessionStore;
     private static final Logger LOG = getLogger(AiResource.class);
 
     @POST
@@ -30,7 +31,7 @@ public class AiResource {
     public ChatResponse startChat() {
         String sessionId = UUID.randomUUID().toString();
         FormData aiResponse = aiService.chatWithAiStructured("Start conversation.");
-        sessions.put(sessionId, aiResponse);
+        sessionStore.setFormData(sessionId, aiResponse);
 
         try {
             LOG.info("Chat started: {}", aiResponse.getChatbotMessage());
@@ -43,7 +44,7 @@ public class AiResource {
     @POST
     @Path("/reply")
     public ChatResponse processUserInput(@QueryParam("sessionId") String sessionId, String userInput) {
-        FormData session = sessions.get(sessionId);
+        FormData session =  sessionStore.getFormData(sessionId);
         if (session == null) {
             throw new NotAuthorizedException("Sie sind nicht authorisiert.");
         }
@@ -68,7 +69,7 @@ public class AiResource {
             updatedResponse.setChatbotMessage("Thank you! All required information has been collected.");
             // FIXME: Start process here
         }
-        sessions.put(sessionId, updatedResponse);
+        sessionStore.setFormData(sessionId, updatedResponse);
 
         try {
             LOG.info("AI response: {}", updatedResponse.getChatbotMessage());

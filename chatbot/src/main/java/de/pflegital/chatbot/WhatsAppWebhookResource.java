@@ -25,6 +25,11 @@ public class WhatsAppWebhookResource {
     @Inject
     WhatsAppRestClient whatsAppClient;
 
+    @Inject
+    AiService AiService;
+    @Inject
+    Pflegebot pflegebot;
+
     /**
      * Verifiziert den Webhook durch Vergleich des Tokens mit dem konfigurierten.
      */
@@ -68,13 +73,14 @@ public class WhatsAppWebhookResource {
 
                                     LOGGER.info("Message from " + fromWaid + ": " + messageText);
 
-                                    String sessionId = whatsAppClient.startSession();
-                                    if (sessionId != null) {
+                                    //String sessionId = whatsAppClient.startSession();
+                                    pflegebot.processUserInput(fromWaid,messageText);
+                                    /*if (sessionId != null) {
                                         String replyText = whatsAppClient.sendToReply(sessionId, messageText);
                                         if (replyText != null && !replyText.isEmpty()) {
                                             whatsAppClient.sendWhatsAppReply(fromWaid, replyText);
                                         }
-                                    }
+                                    }*/
                                 }
                             }
                         }
