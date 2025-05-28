@@ -5,7 +5,7 @@ import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
 
 @RegisterAiService(tools = InsuranceNumberTool.class)
-public interface AiService {
+public interface    AiService {
 
     @SystemMessage("""
             Sie sind ein intelligenter Assistent, der Benutzern hilft, das Formular zur Verhinderungspflege Schritt für Schritt auszufüllen.
