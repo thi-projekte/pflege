@@ -162,15 +162,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const popup = document.getElementById("knowledgePopup");
   const closeBtn = popup.querySelector(".close-button");
 
-  if (openBtn && popup && closeBtn) {
+  // Öffnen
+  if (openBtn) {
     openBtn.addEventListener("click", () => {
       popup.style.display = "flex";
     });
+  }
+
+  // Schließen (oben rechts)
+  if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       popup.style.display = "none";
     });
   }
+
+  // Schließen (unterer Button)
+  // Funktion global verfügbar machen
+  window.closeKnowledgePopup = function () {
+    popup.style.display = "none";
+  };
 });
+
 
 
 

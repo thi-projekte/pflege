@@ -823,12 +823,21 @@ footer .footer-links a:hover {
   max-width: 800px;
   position: relative;
   text-align: left;
+  max-height: 90vh;         /* nicht größer als Viewport */
+  overflow-y: auto;         /* vertikales Scrollen aktivieren */
+  padding: 2rem 1.5rem;     /* etwas schmaleres Padding für Mobilgeräte */
+  box-sizing: border-box;  /* Padding in die Höhe einrechnen */
 }
 .close-button {
   position: absolute;
-  top: 0.5rem;
+  top: 1rem;
   right: 1rem;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   cursor: pointer;
+  z-index: 10;
+  background: transparent;
+  border: none;
+  color: #333;
 }
+
 
