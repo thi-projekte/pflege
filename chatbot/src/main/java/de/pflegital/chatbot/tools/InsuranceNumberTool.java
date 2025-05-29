@@ -1,4 +1,4 @@
-package de.pflegital.chatbot;
+package de.pflegital.chatbot.tools;
 
 import dev.langchain4j.agent.tool.Tool;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -83,13 +83,10 @@ public class InsuranceNumberTool {
             int produkt = wert * gewichte[i];
             int quersumme = (produkt / 10) + (produkt % 10);
             summe += quersumme;
-
-            LOG.info("Stelle {}: Zeichen={} Wert={} Gewicht={} Produkt={} Quersumme={} Zwischensumme={}",
-                    i, c, wert, gewichte[i], produkt, quersumme, summe);
         }
 
         int pruefziffer = (10 - (summe % 10)) % 10;
-        LOG.info("Endsumme: {}, Modulo: {}, Prüfziffer: {}", summe, summe % 10, pruefziffer);
+
         return Character.forDigit(pruefziffer, 10);
     }
 

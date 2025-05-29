@@ -35,7 +35,7 @@ public class Carerecipient {
     }
 
     public boolean isFullNameValid() {
-        return fullName != null && !fullName.trim().isEmpty();
+        return fullName != null && !fullName.trim().isEmpty() && fullName.length() > 2 && fullName.length() < 80;
     }
 
     public boolean isBirthDateValid() {

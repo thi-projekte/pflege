@@ -5,8 +5,12 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
+
+import de.pflegital.chatbot.tools.InsuranceNumberTool;
 import io.quarkus.security.Authenticated;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,6 +28,7 @@ public class AiResource {
     private final InsuranceNumberTool insuranceNumberTool;
     private final Map<String, FormData> sessions = new HashMap<>();
     private static final Logger LOG = getLogger(AiResource.class);
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     @Inject
     public AiResource(
@@ -39,7 +44,8 @@ public class AiResource {
     @Path("/start")
     public ChatResponse startChat() {
         String sessionId = UUID.randomUUID().toString();
-        FormData aiResponse = aiService.chatWithAiStructured("Start conversation.");
+        String currentDate = LocalDate.now().format(DATE_FORMATTER);
+        FormData aiResponse = aiService.chatWithAiStructured("Start conversation.", currentDate);
         sessions.put(sessionId, aiResponse);
 
         try {
@@ -65,7 +71,8 @@ public class AiResource {
         String prompt = "The current form data is: " + jsonFormData +
                 ". The user just said: '" + userInput + "'. Please update the missing fields accordingly.";
 
-        FormData updatedResponse = getFormData(prompt);
+        String currentDate = LocalDate.now().format(DATE_FORMATTER);
+        FormData updatedResponse = getFormData(prompt, currentDate);
 
         if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
             updatedResponse.setChatbotMessage(
@@ -93,8 +100,13 @@ public class AiResource {
     }
 
     @Retry(maxRetries = 3)
-    protected FormData getFormData(String prompt) {
+    protected FormData getFormData(String prompt, String currentDate) {
         LOG.info("Prompt to AI: {}", prompt);
-        return aiService.chatWithAiStructured(prompt);
+        try {
+            return aiService.chatWithAiStructured(prompt, currentDate);
+        } catch (Exception e) {
+            LOG.error("Error getting form data: {}", e.getMessage());
+            throw new WebApplicationException(e);
+        }
     }
 }
