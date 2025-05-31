@@ -14,10 +14,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 @ApplicationScoped
 public class PeriodTool {
     private static final Logger LOG = getLogger(PeriodTool.class);
+    
+    //valide Formate für das Start- und Enddatum
     private static final DateTimeFormatter[] DATE_FORMATTERS = {
             DateTimeFormatter.ofPattern("dd.MM.yyyy"),
-            DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-            DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            DateTimeFormatter.ofPattern("dd.MM.yy"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd")
     };
 
     @Tool("Ermittelt ob ein Zeitraum für die Verhinderungspflege gültig ist oder nicht.")
@@ -44,15 +46,15 @@ public class PeriodTool {
             return false;
         }
 
-        // Prüfe ob das Enddatum nach dem Startdatum liegt
-        if (!parsedEndDate.isAfter(parsedStartDate)) {
+        // Prüfe ob das Enddatum vor dem Startdatum liegt
+        if (parsedEndDate.isBefore(parsedStartDate)) {
             LOG.error("Das Enddatum muss nach dem Startdatum liegen!");
             return false;
         }
 
         // Prüfe ob der Zeitraum maximal 42 Tage beträgt
         long daysBetween = ChronoUnit.DAYS.between(parsedStartDate, parsedEndDate);
-        if (daysBetween > 42) {
+        if (daysBetween >= 42) {
             LOG.error("Der Zeitraum darf maximal 42 Tage betragen!");
             return false;
         }
