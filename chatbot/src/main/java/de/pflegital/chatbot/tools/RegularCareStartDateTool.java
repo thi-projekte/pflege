@@ -13,8 +13,8 @@ import java.time.temporal.ChronoUnit;
 @ApplicationScoped
 public class RegularCareStartDateTool {
     private static final Logger LOG = LoggerFactory.getLogger(RegularCareStartDateTool.class);
-    
-    //valide Formate für das Pflegebeginn-Datum
+
+    // valide Formate für das Pflegebeginn-Datum
     private static final DateTimeFormatter[] DATE_FORMATTERS = {
             DateTimeFormatter.ofPattern("dd.MM.yyyy"),
             DateTimeFormatter.ofPattern("dd.MM.yy"),

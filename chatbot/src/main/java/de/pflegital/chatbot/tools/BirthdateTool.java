@@ -13,8 +13,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 @ApplicationScoped
 public class BirthdateTool {
     private static final Logger LOG = getLogger(BirthdateTool.class);
-    
-    //valide Formate für das Geburtsdatum
+
+    // valide Formate für das Geburtsdatum
     private static final DateTimeFormatter[] DATE_FORMATTERS = {
             DateTimeFormatter.ofPattern("dd.MM.yyyy"),
             DateTimeFormatter.ofPattern("yyyy-MM-dd"),

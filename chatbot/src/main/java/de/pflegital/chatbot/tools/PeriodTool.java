@@ -14,8 +14,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 @ApplicationScoped
 public class PeriodTool {
     private static final Logger LOG = getLogger(PeriodTool.class);
-    
-    //valide Formate für das Start- und Enddatum
+
+    // valide Formate für das Start- und Enddatum
     private static final DateTimeFormatter[] DATE_FORMATTERS = {
             DateTimeFormatter.ofPattern("dd.MM.yyyy"),
             DateTimeFormatter.ofPattern("dd.MM.yy"),

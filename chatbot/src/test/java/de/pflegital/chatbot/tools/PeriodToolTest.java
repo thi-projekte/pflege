@@ -42,9 +42,9 @@ class PeriodToolTest {
         LocalDate now = LocalDate.now();
         String pastDate = now.minusDays(1).format(GERMAN_FORMATTER);
         String futureDate = now.plusDays(10).format(GERMAN_FORMATTER);
-        
-        assertFalse(periodTool.isValidPeriod(pastDate, futureDate), 
-            "Startdatum in der Vergangenheit sollte ungültig sein");
+
+        assertFalse(periodTool.isValidPeriod(pastDate, futureDate),
+                "Startdatum in der Vergangenheit sollte ungültig sein");
     }
 
     @Test
@@ -52,9 +52,9 @@ class PeriodToolTest {
         LocalDate now = LocalDate.now();
         String startDate = now.plusDays(10).format(GERMAN_FORMATTER);
         String endDate = now.plusDays(5).format(GERMAN_FORMATTER);
-        
-        assertFalse(periodTool.isValidPeriod(startDate, endDate), 
-            "Enddatum vor Startdatum sollte ungültig sein");
+
+        assertFalse(periodTool.isValidPeriod(startDate, endDate),
+                "Enddatum vor Startdatum sollte ungültig sein");
     }
 
     @Test
@@ -62,9 +62,9 @@ class PeriodToolTest {
         LocalDate now = LocalDate.now();
         String startDate = now.plusDays(1).format(GERMAN_FORMATTER);
         String endDate = now.plusDays(43).format(GERMAN_FORMATTER);
-        
-        assertFalse(periodTool.isValidPeriod(startDate, endDate), 
-            "Zeitraum länger als 42 Tage sollte ungültig sein");
+
+        assertFalse(periodTool.isValidPeriod(startDate, endDate),
+                "Zeitraum länger als 42 Tage sollte ungültig sein");
     }
 
     @Test
@@ -79,12 +79,12 @@ class PeriodToolTest {
         String startIsoFormat = startDate.format(ISO_FORMATTER);
         String endDateStr = endDate.format(GERMAN_FORMATTER);
 
-        assertTrue(periodTool.isValidPeriod(startGermanFormat, endDateStr), 
-            "Deutsches Format (dd.MM.yyyy) für Startdatum sollte gültig sein");
-        assertTrue(periodTool.isValidPeriod(startGermanShortFormat, endDateStr), 
-            "Deutsches Kurzformat (dd.MM.yy) für Startdatum sollte gültig sein");
-        assertTrue(periodTool.isValidPeriod(startIsoFormat, endDateStr), 
-            "ISO Format für Startdatum sollte gültig sein");
+        assertTrue(periodTool.isValidPeriod(startGermanFormat, endDateStr),
+                "Deutsches Format (dd.MM.yyyy) für Startdatum sollte gültig sein");
+        assertTrue(periodTool.isValidPeriod(startGermanShortFormat, endDateStr),
+                "Deutsches Kurzformat (dd.MM.yy) für Startdatum sollte gültig sein");
+        assertTrue(periodTool.isValidPeriod(startIsoFormat, endDateStr),
+                "ISO Format für Startdatum sollte gültig sein");
 
         // Enddatum testen
         String endGermanFormat = endDate.format(GERMAN_FORMATTER);
@@ -92,22 +92,22 @@ class PeriodToolTest {
         String endIsoFormat = endDate.format(ISO_FORMATTER);
         String startDateStr = startDate.format(GERMAN_FORMATTER);
 
-        assertTrue(periodTool.isValidPeriod(startDateStr, endGermanFormat), 
-            "Deutsches Format (dd.MM.yyyy) für Enddatum sollte gültig sein");
-        assertTrue(periodTool.isValidPeriod(startDateStr, endGermanShortFormat), 
-            "Deutsches Kurzformat (dd.MM.yy) für Enddatum sollte gültig sein");
-        assertTrue(periodTool.isValidPeriod(startDateStr, endIsoFormat), 
-            "ISO Format für Enddatum sollte gültig sein");
+        assertTrue(periodTool.isValidPeriod(startDateStr, endGermanFormat),
+                "Deutsches Format (dd.MM.yyyy) für Enddatum sollte gültig sein");
+        assertTrue(periodTool.isValidPeriod(startDateStr, endGermanShortFormat),
+                "Deutsches Kurzformat (dd.MM.yy) für Enddatum sollte gültig sein");
+        assertTrue(periodTool.isValidPeriod(startDateStr, endIsoFormat),
+                "ISO Format für Enddatum sollte gültig sein");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
             "32.01.2024", // Ungültiger Tag
             "01.13.2024", // Ungültiger Monat
-            "01.01.201",  // Ungültiges Jahr
+            "01.01.201", // Ungültiges Jahr
             "2024/01/01", // Ungültiges Format
             "01-01-2024", // Ungültiges Format
-            "2024.01.01"  // Ungültiges Format
+            "2024.01.01" // Ungültiges Format
     })
     void testInvalidStartDateFormats(String invalidDate) {
         LocalDate now = LocalDate.now();
@@ -119,10 +119,10 @@ class PeriodToolTest {
     @ValueSource(strings = {
             "32.01.2024", // Ungültiger Tag
             "01.13.2024", // Ungültiger Monat
-            "01.01.201",  // Ungültiges Jahr
+            "01.01.201", // Ungültiges Jahr
             "2024/01/01", // Ungültiges Format
             "01-01-2024", // Ungültiges Format
-            "2024.01.01"  // Ungültiges Format
+            "2024.01.01" // Ungültiges Format
     })
     void testInvalidEndDateFormats(String invalidDate) {
         LocalDate now = LocalDate.now();
@@ -135,9 +135,9 @@ class PeriodToolTest {
         LocalDate now = LocalDate.now();
         String startDate = now.plusDays(1).format(GERMAN_FORMATTER);
         String endDate = now.plusDays(42).format(GERMAN_FORMATTER);
-        
-        assertTrue(periodTool.isValidPeriod(startDate, endDate), 
-            "Zeitraum von genau 42 Tagen sollte gültig sein");
+
+        assertTrue(periodTool.isValidPeriod(startDate, endDate),
+                "Zeitraum von genau 42 Tagen sollte gültig sein");
     }
 
     @Test
@@ -145,17 +145,17 @@ class PeriodToolTest {
         LocalDate now = LocalDate.now();
         String startDate = now.plusDays(1).format(GERMAN_FORMATTER);
         String endDate = now.plusDays(21).format(GERMAN_FORMATTER);
-        
-        assertTrue(periodTool.isValidPeriod(startDate, endDate), 
-            "Zeitraum von weniger als 42 Tagen sollte gültig sein");
+
+        assertTrue(periodTool.isValidPeriod(startDate, endDate),
+                "Zeitraum von weniger als 42 Tagen sollte gültig sein");
     }
 
     @Test
     void testSameStartAndEndDate() {
         LocalDate now = LocalDate.now();
         String date = now.plusDays(1).format(GERMAN_FORMATTER);
-        
-        assertTrue(periodTool.isValidPeriod(date, date), 
-            "Gleiches Start- und Enddatum sollte für einen eintägigen Zeitraum gültig sein");
+
+        assertTrue(periodTool.isValidPeriod(date, date),
+                "Gleiches Start- und Enddatum sollte für einen eintägigen Zeitraum gültig sein");
     }
-} 
+}
