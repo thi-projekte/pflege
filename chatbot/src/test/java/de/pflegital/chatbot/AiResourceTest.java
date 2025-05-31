@@ -9,6 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import de.pflegital.chatbot.model.CareType;
+import de.pflegital.chatbot.model.Carerecipient;
+import de.pflegital.chatbot.tools.InsuranceNumberTool;
+
 import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 import static io.restassured.RestAssured.given;
@@ -20,6 +23,9 @@ class AiResourceTest {
 
     @InjectMock
     AiService aiService;
+
+    @InjectMock
+    InsuranceNumberTool insuranceNumberTool;
 
     private String sessionId;
     private static final String SESSION_ID = "sessionId";
@@ -73,6 +79,62 @@ class AiResourceTest {
                 .post("/chat/reply")
                 .then()
                 .statusCode(401);
+    }
+
+    @Test
+    void testCareLevelBelowTwo() {
+        FormData mockFormData = new FormData();
+        mockFormData.setCareLevel(1); // < 2
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(mockFormData);
+
+        given()
+                .contentType(ContentType.JSON)
+                .queryParam(SESSION_ID, sessionId)
+                .body("Pflegegrad 1")
+                .when()
+                .post("/chat/reply")
+                .then()
+                .statusCode(200)
+                .body("formData.chatbotMessage", containsString("Pflegegrad 2"));
+    }
+
+    @Test
+    void testInvalidInsuranceNumber() {
+        FormData formData = new FormData();
+        Carerecipient recipient = new Carerecipient();
+        recipient.setInsuranceNumber("INVALID123");
+        formData.setCareRecipient(recipient);
+        formData.setCareLevel(3);
+
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(formData);
+        Mockito.when(insuranceNumberTool.isValidSecurityNumber("INVALID123")).thenReturn(false);
+
+        given()
+                .contentType(ContentType.JSON)
+                .queryParam(SESSION_ID, sessionId)
+                .body("Test mit ungültiger Versicherung")
+                .when()
+                .post("/chat/reply")
+                .then()
+                .statusCode(200)
+                .body("formData.chatbotMessage", containsString("Versicherungsnummer scheint ungültig"));
+    }
+
+    @Test
+    void testAiServiceThrowsException() {
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString()))
+                .thenThrow(new RuntimeException("AI failure"));
+
+        given()
+                .contentType(ContentType.JSON)
+                .queryParam(SESSION_ID, sessionId)
+                .body("Trigger Fehler")
+                .when()
+                .post("/chat/reply")
+                .then()
+                .statusCode(500); // WebApplicationException bei Fehler
     }
 
 }
