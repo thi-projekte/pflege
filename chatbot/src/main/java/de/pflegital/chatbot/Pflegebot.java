@@ -19,6 +19,11 @@ public class Pflegebot {
     private final Logger LOG = org.slf4j.LoggerFactory.getLogger(Pflegebot.class);
 
     public ChatResponse processUserInput(String sessionId, String userInput) {
+        LOG.info("IM PFLEGEBOT: {}", sessionId);
+        if (sessionStore.getFormData(sessionId) == null) {
+            FormData aiResponse = new FormData();
+            sessionStore.setFormData(sessionId, aiResponse);    
+        }
         FormData session = sessionStore.getFormData(sessionId);
         LOG.info("SessionID: {}",session);
         if (session == null) {
