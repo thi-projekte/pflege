@@ -4,14 +4,18 @@ import com.resend.*;
 import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
-
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class MailVersand {
     public static void main(String[] args) {
-        Resend resend = new Resend({$RESEND_API_KEY});
+        Dotenv dotenv = Dotenv.configure()
+            .directory("chatbot")
+            .filename(".env")
+            .load();
+        Resend resend = new Resend(dotenv.get("RESEND_API_KEY"));
 
         CreateEmailOptions params = CreateEmailOptions.builder()
-                .from("Acme <test@resend.dev>")
+                .from("Acme <test@pflegital.de>")
                 .to("nip6168@thi.de")
                 .subject("Antrag auf Verhinderungspflege")
                 .html("<!DOCTYPE html>\r\n" + //
