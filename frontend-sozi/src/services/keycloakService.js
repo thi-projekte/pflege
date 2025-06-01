@@ -4,7 +4,7 @@ import Keycloak from 'keycloak-js';
 const keycloakConfig = {
   url: 'https://keycloak.winfprojekt.de',                                    
   realm: 'Pflege', 
-  clientId: 'pflege-frontend', // Frontend-Client-ID in Keycloak
+  clientId: 'sozi-frontend', // Frontend-Client-ID in Keycloak
 };
 
 const kc = new Keycloak(keycloakConfig);
