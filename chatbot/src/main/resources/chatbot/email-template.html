@@ -6,221 +6,117 @@
     <title>Pflegeantrag Übersicht - Pflegital.de</title>
     <style>
         body {
-            font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+            font-family: Arial, sans-serif;
             line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #FDF3E7;
-            color: #5E5043;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #FFFFFF;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 20px;
+            background-color: #FEFCEB; /* Use the same background color as the website */
+            color: #5E5043; /* Use the same text color as the website */
         }
         .header {
-            background: linear-gradient(135deg, #F49B62 0%, #5E5043 100%);
-            color: #FDF3E7;
-            padding: 30px;
             text-align: center;
+            padding: 20px;
+            background-color: #FEFCEB; /* Make the background transparent */
         }
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 300;
-            letter-spacing: 1px;
-        }
-        .header .subtitle {
-            margin: 10px 0 0 0;
-            font-size: 16px;
-            opacity: 0.9;
-        }
-        .content {
-            padding: 30px;
-        }
-        .section {
-            margin-bottom: 30px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .section-header {
-            background-color: #F49B62;
-            color: #FDF3E7;
-            padding: 15px 20px;
-            font-size: 18px;
-            font-weight: 500;
-            margin: 0;
-        }
-        .section-content {
-            background-color: #FEFEFE;
-            padding: 0;
-        }
-        .info-row {
-            display: flex;
-            border-bottom: 1px solid #f0f0f0;
-            transition: background-color 0.2s ease;
-        }
-        .info-row:hover {
-            background-color: #fafafa;
-        }
-        .info-row:last-child {
-            border-bottom: none;
-        }
-        .info-label {
-            flex: 1;
-            padding: 15px 20px;
-            font-weight: 500;
-            color: #5E5043;
-            background-color: #f8f8f8;
-            border-right: 1px solid #f0f0f0;
-        }
-        .info-value {
-            flex: 1.5;
-            padding: 15px 20px;
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
             color: #333;
         }
+        .subtitle {
+            font-style: italic;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            /*margin-top: 20px;*/
+        }
+        th, td {
+            border: 2px solid #ddd; /* Thicker border */
+            padding: 0.4em 0.4em; /* Reduced padding */
+            text-align: left;
+            /*line-height: 1.4; /* Adjust line height for better spacing */
+            width: 30%; 
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .table-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px; /* Reduced margin */
+            background-color: #F49B62; /* Use the specified orange color */
+            color: black; /* Set font color to black */
+            padding: 8px;
+        }
+        .table-container {
+            margin-top: 20px; /* Add margin to separate tables */
+        }
         .footer {
-            background-color: #5E5043;
-            color: #FDF3E7;
-            padding: 20px 30px;
             text-align: center;
-            font-size: 14px;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 0.8em;
+            color: #666;
         }
         .footer a {
             color: #F49B62;
             text-decoration: none;
         }
-        .logo {
-            display: inline-block;
-            margin-bottom: 10px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        @media (max-width: 600px) {
-            .info-row {
-                flex-direction: column;
-            }
-            .info-label {
-                border-right: none;
-                border-bottom: 1px solid #f0f0f0;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">🤝 Pflegital.de</div>
-            <h1>Pflegeantrag Übersicht</h1>
-            <div class="subtitle">Antrag auf Verhinderungspflege</div>
-        </div>
-        
-        <div class="content">
-            <div class="section">
-                <h2 class="section-header">Allgemeine Informationen</h2>
-                <div class="section-content">
-                    <div class="info-row">
-                        <div class="info-label">Pflegeart</div>
-                        <div class="info-value">{careType}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Pflegegrad</div>
-                        <div class="info-value">{careLevel}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Pflegezeitraum</div>
-                        <div class="info-value">{careStart} – {careEnd}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Grund</div>
-                        <div class="info-value">{reason}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Pflege zu Hause</div>
-                        <div class="info-value">{isHomeCare}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Pflege länger als 6 Monate</div>
-                        <div class="info-value">{careDurationMin6Months}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Rechtlicher Hinweis bestätigt</div>
-                        <div class="info-value">{legalAcknowledgement}</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2 class="section-header">Versicherte Person</h2>
-                <div class="section-content">
-                    <div class="info-row">
-                        <div class="info-label">Name</div>
-                        <div class="info-value">{insuredName}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Geburtsdatum</div>
-                        <div class="info-value">{insuredBirthDate}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Telefon</div>
-                        <div class="info-value">{insuredPhone}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Versichertennummer</div>
-                        <div class="info-value">{insuranceNumber}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Adresse</div>
-                        <div class="info-value">{insuredAddress}</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2 class="section-header">Pflegende Person</h2>
-                <div class="section-content">
-                    <div class="info-row">
-                        <div class="info-label">Name</div>
-                        <div class="info-value">{caregiverName}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Beginn der Pflege</div>
-                        <div class="info-value">{caregiverStartDate}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Telefon</div>
-                        <div class="info-value">{caregiverPhone}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Adresse</div>
-                        <div class="info-value">{caregiverAddress}</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="section">
-                <h2 class="section-header">Ersatzpflege (Professionell)</h2>
-                <div class="section-content">
-                    <div class="info-row">
-                        <div class="info-label">Pflegeanbieter</div>
-                        <div class="info-value">{providerName}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Adresse</div>
-                        <div class="info-value">{providerAddress}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="footer">
-            <p>Erstellt von <a href="https://pflegital.de">Pflegital.de</a> - Ihr digitaler Pflegeassistent</p>
-            <p>Zwischenmenschliche Hilfe + Geborgenheit</p>
-        </div>
+    <div class="header">
+        <div class="logo">🤝 Pflegital.de</div>
+        <h1>Pflegeantrag Übersicht</h1>
+        <div class="subtitle">Antrag auf Verhinderungspflege</div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-title">Pflegeantrag Informationen</div>
+        <table>
+            <tr><td>Pflegeart</td><td>{careType}</td></tr>
+            <tr><td>Pflegegrad</td><td>{careLevel}</td></tr>
+            <tr><td>Pflegezeitraum</td><td>{careStart} – {careEnd}</td></tr>
+            <tr><td>Grund</td><td>{reason}</td></tr>
+            <tr><td>Pflege zu Hause</td><td>{isHomeCare}</td></tr>
+            <tr><td>Pflege länger als 6 Monate</td><td>{careDurationMin6Months}</td></tr>
+            <tr><td>Rechtlicher Hinweis bestätigt</td><td>{legalAcknowledgement}</td></tr>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <div class="table-title">Versicherte Person</div>
+        <table>
+            <tr><td>Name</td><td>{insuredName}</td></tr>
+            <tr><td>Geburtsdatum</td><td>{insuredBirthDate}</td></tr>
+            <tr><td>Telefon</td><td>{insuredPhone}</td></tr>
+            <tr><td>Versichertennummer</td><td>{insuranceNumber}</td></tr>
+            <tr><td>Adresse</td><td>{insuredAddress}</td></tr>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <div class="table-title">Pflegende Person</div>
+        <table>
+            <tr><td>Name</td><td>{caregiverName}</td></tr>
+            <tr><td>Beginn der Pflege</td><td>{caregiverStartDate}</td></tr>
+            <tr><td>Telefon</td><td>{caregiverPhone}</td></tr>
+            <tr><td>Adresse</td><td>{caregiverAddress}</td></tr>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <div class="table-title">Ersatzpflege (Professionell)</div>
+        <table>
+            <tr><td>Pflegeanbieter</td><td>{providerName}</td></tr>
+            <tr><td>Adresse</td><td>{providerAddress}</td></tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Erstellt von <a href="https://pflegital.de">Pflegital.de</a> - Ihr digitaler Pflegeassistent</p>
+        <p>Zwischenmenschliche Hilfe + Geborgenheit</p>
     </div>
 </body>
 </html>
