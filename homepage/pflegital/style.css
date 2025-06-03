@@ -46,6 +46,11 @@ header {
   outline: none;
 }
 
+/* Ausgelagertes CSS für das Logo-Bild */
+.logo img {
+  max-width: 120px;
+}
+
 @media (max-width: 768px) {
   .logo svg {
     max-width: 100px;
@@ -857,6 +862,29 @@ footer .footer-links a:hover {
   padding: 2rem 1.5rem;     /* etwas schmaleres Padding für Mobilgeräte */
   box-sizing: border-box;  /* Padding in die Höhe einrechnen */
 }
+
+.popup-content p:last-of-type {
+  margin-top: 1rem;
+}
+
+.popup-content .button-container {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+#knowledgePopup {
+  display: none;
+}
+
+#demo-chat {
+  padding: 2rem;
+  background: #FEFCEB;
+}
+
+#demo-chat h2 {
+  text-align: center;
+}
+
 .close-button {
   position: absolute;
   top: 1rem;
