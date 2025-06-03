@@ -29,7 +29,6 @@ public class WhatsAppRestClient {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
-
     /**
      * Sendet eine Antwortnachricht an einen WhatsApp-Benutzer.
      */
