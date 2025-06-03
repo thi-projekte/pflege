@@ -4,8 +4,12 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.slf4j.Logger;
+
+import de.pflegital.chatbot.tools.InsuranceNumberTool;
 import io.quarkus.security.Authenticated;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -19,19 +23,24 @@ public class AiResource {
     @Inject
     AiService aiService;
 
-    @Inject
-    FormDataPresenter formDataPresenter;
+
+    private final FormDataPresenter formDataPresenter;
+    private final InsuranceNumberTool insuranceNumberTool;
+    private final Map<String, FormData> sessions = new HashMap<>();
+    private static final Logger LOG = getLogger(AiResource.class);
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     @Inject
     SessionStore sessionStore;
-    private static final Logger LOG = getLogger(AiResource.class);
 
     @POST
     @Path("/start")
     public ChatResponse startChat() {
         String sessionId = UUID.randomUUID().toString();
-        FormData aiResponse = aiService.chatWithAiStructured("Start conversation.");
-        sessionStore.setFormData(sessionId, aiResponse);
+
+      String currentDate = LocalDate.now().format(DATE_FORMATTER);
+      FormData aiResponse = aiService.chatWithAiStructured("Start conversation.", currentDate);
+      sessionStore.setFormData(sessionId, aiResponse);
 
         try {
             LOG.info("Chat started: {}", aiResponse.getChatbotMessage());
@@ -56,8 +65,8 @@ public class AiResource {
         String prompt = "The current form data is: " + jsonFormData +
                 ". The user just said: '" + userInput + "'. Please update the missing fields accordingly.";
 
-        LOG.info("Prompt to AI: {}", prompt);
-        FormData updatedResponse = aiService.chatWithAiStructured(prompt);
+        String currentDate = LocalDate.now().format(DATE_FORMATTER);
+        FormData updatedResponse = getFormData(prompt, currentDate);
 
         if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
             updatedResponse.setChatbotMessage(
@@ -78,4 +87,16 @@ public class AiResource {
             throw new RuntimeException(e);
         }
     }
+
+    @Retry(maxRetries = 3)
+    protected FormData getFormData(String prompt, String currentDate) {
+        LOG.info("Prompt to AI: {}", prompt);
+        try {
+            return aiService.chatWithAiStructured(prompt, currentDate);
+        } catch (Exception e) {
+            LOG.error("Error getting form data: {}", e.getMessage());
+            throw new WebApplicationException(e);
+        }
+    }
 }
+
