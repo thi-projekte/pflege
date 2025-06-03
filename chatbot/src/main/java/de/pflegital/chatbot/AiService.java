@@ -9,6 +9,7 @@ import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 import io.quarkiverse.langchain4j.RegisterAiService;
 
+
 @RegisterAiService(tools = { InsuranceNumberTool.class, BirthdateTool.class, PeriodTool.class,
         RegularCareStartDateTool.class })
 public interface AiService {
@@ -114,5 +115,7 @@ public interface AiService {
 
             Antwortformat: Nur JSON
             """)
+
     FormData chatWithAiStructured(String userInput, @V("currentDate") String currentDate);
 }
+
