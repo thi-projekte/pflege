@@ -29,55 +29,6 @@ public class WhatsAppRestClient {
 
     private final HttpClient client = HttpClient.newHttpClient();
 
-    /**
-     * Startet eine neue Chat-Sitzung über die interne Chat-API.
-     */
-    public String startSession() {
-        try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8083/chat/start"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.noBody())
-                    .build();
-
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            Matcher matcher = Pattern.compile("\"sessionId\":\"([^\"]+)\"").matcher(response.body());
-            if (matcher.find()) {
-                return matcher.group(1);
-            }
-        } catch (IOException | InterruptedException e) {
-            LOGGER.severe("Fehler beim Starten der Sitzung: " + e.getMessage());
-            Thread.currentThread().interrupt();
-        }
-        return null;
-    }
-
-    /**
-     * Sendet eine Nachricht an den internen Chatbot und extrahiert die Antwort.
-     */
-    public String sendToReply(String sessionId, String userInput) {
-        try {
-            String url = "http://localhost:8083/chat/reply?sessionId=" + sessionId.trim();
-            String jsonBody = String.format("{\"userInput\": \"%s\"}", escapeJson(userInput));
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-                    .build();
-
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            Matcher matcher = Pattern.compile("\"chatbotMessage\":\"([^\"]*)\"").matcher(response.body());
-            return matcher.find() ? matcher.group(1) : null;
-
-        } catch (IOException | InterruptedException e) {
-            LOGGER.severe("Fehler beim Senden an Chatbot: " + e.getMessage());
-            Thread.currentThread().interrupt();
-            return null;
-        }
-    }
 
     /**
      * Sendet eine Antwortnachricht an einen WhatsApp-Benutzer.

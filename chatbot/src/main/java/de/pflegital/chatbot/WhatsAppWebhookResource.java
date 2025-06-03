@@ -73,19 +73,12 @@ public class WhatsAppWebhookResource {
 
                                     LOGGER.info("Message from " + fromWaid + ": " + messageText);
 
-                                    //String sessionId = whatsAppClient.startSession();
-                                    pflegebot.processUserInput(fromWaid,messageText);
-                                    ChatResponse replyText = pflegebot.processUserInput(fromWaid,messageText);
+                                    pflegebot.processUserInput(fromWaid, messageText);
+                                    ChatResponse replyText = pflegebot.processUserInput(fromWaid, messageText);
                                     LOGGER.info("REPLYTEXT MESSAGE: " + replyText.getMessage());
                                     if (replyText != null && !replyText.getMessage().isEmpty()) {
-                                            whatsAppClient.sendWhatsAppReply(fromWaid, replyText.getMessage());
-                                        }
-                                    /*if (sessionId != null) {
-                                        String replyText = whatsAppClient.sendToReply(sessionId, messageText);
-                                        if (replyText != null && !replyText.isEmpty()) {
-                                            whatsAppClient.sendWhatsAppReply(fromWaid, replyText);
-                                        }
-                                    }*/
+                                        whatsAppClient.sendWhatsAppReply(fromWaid, replyText.getMessage());
+                                    }
                                 }
                             }
                         }
