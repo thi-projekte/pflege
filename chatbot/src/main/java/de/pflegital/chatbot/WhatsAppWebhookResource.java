@@ -27,6 +27,7 @@ public class WhatsAppWebhookResource {
 
     @Inject
     AiService AiService;
+
     @Inject
     Pflegebot pflegebot;
 
@@ -76,7 +77,7 @@ public class WhatsAppWebhookResource {
                                     pflegebot.processUserInput(fromWaid, messageText);
                                     ChatResponse replyText = pflegebot.processUserInput(fromWaid, messageText);
                                     LOGGER.info("REPLYTEXT MESSAGE: " + replyText.getMessage());
-                                    if (replyText != null && !replyText.getMessage().isEmpty()) {
+                                    if (!replyText.getMessage().isEmpty()) {
                                         whatsAppClient.sendWhatsAppReply(fromWaid, replyText.getMessage());
                                     }
                                 }
