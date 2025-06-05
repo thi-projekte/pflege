@@ -13,6 +13,9 @@ public class WebhookTestProfile implements QuarkusTestProfile {
         config.put("quarkus.langchain4j.openai.api-key", "sk-test-key-not-real");
         // Add your webhook token
         config.put("whatsapp.verify.token", "winfprojekt");
+        config.put("whatsapp.api.token", "dummy-test-token");
+        config.put("whatsapp.phone.number.id", "dummy-test-phone-number-id");
+        config.put("whatsapp.api.version", "v22.0");
         return config;
     }
 }

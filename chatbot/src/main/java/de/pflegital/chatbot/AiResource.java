@@ -3,6 +3,8 @@ package de.pflegital.chatbot;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+
+import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
 
 import de.pflegital.chatbot.tools.InsuranceNumberTool;
@@ -23,9 +25,12 @@ public class AiResource {
     @Inject
     AiService aiService;
 
+    @Inject
+    FormDataPresenter formDataPresenter;
 
-    private final FormDataPresenter formDataPresenter;
-    private final InsuranceNumberTool insuranceNumberTool;
+    @Inject
+    InsuranceNumberTool insuranceNumberTool;
+
     private final Map<String, FormData> sessions = new HashMap<>();
     private static final Logger LOG = getLogger(AiResource.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -38,9 +43,9 @@ public class AiResource {
     public ChatResponse startChat() {
         String sessionId = UUID.randomUUID().toString();
 
-      String currentDate = LocalDate.now().format(DATE_FORMATTER);
-      FormData aiResponse = aiService.chatWithAiStructured("Start conversation.", currentDate);
-      sessionStore.setFormData(sessionId, aiResponse);
+        String currentDate = LocalDate.now().format(DATE_FORMATTER);
+        FormData aiResponse = aiService.chatWithAiStructured("Start conversation.", currentDate);
+        sessionStore.setFormData(sessionId, aiResponse);
 
         try {
             LOG.info("Chat started: {}", aiResponse.getChatbotMessage());
@@ -53,7 +58,7 @@ public class AiResource {
     @POST
     @Path("/reply")
     public ChatResponse processUserInput(@QueryParam("sessionId") String sessionId, String userInput) {
-        FormData session =  sessionStore.getFormData(sessionId);
+        FormData session = sessionStore.getFormData(sessionId);
         if (session == null) {
             throw new NotAuthorizedException("Sie sind nicht authorisiert.");
         }
@@ -99,4 +104,3 @@ public class AiResource {
         }
     }
 }
-
