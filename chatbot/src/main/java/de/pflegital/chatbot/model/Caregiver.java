@@ -29,9 +29,7 @@ public class Caregiver {
     }
 
     public boolean isRegularCareStartedDateValid() {
-        return regularCareStartedDate != null &&
-                (regularCareStartedDate.isBefore(LocalDate.now().minusMonths(6)) ||
-                        regularCareStartedDate.isEqual(LocalDate.now().minusMonths(6)));
+        return regularCareStartedDate != null;
     }
 
     public boolean isRegularCaregiverPhoneNumberValid() {
