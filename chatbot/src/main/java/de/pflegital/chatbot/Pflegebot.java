@@ -45,7 +45,7 @@ public class Pflegebot {
 
         LOG.info("Prompt to AI: {}", prompt);
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData updatedResponse = aiService.chatWithAiStructured(prompt, currentDate);
+        FormData updatedResponse = aiService.chatWithAiStructured(sessionId, prompt, currentDate);
 
         if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
             updatedResponse.setChatbotMessage(

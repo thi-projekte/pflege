@@ -37,7 +37,8 @@ class AiResourceTest {
         FormData mockFormData = new FormData();
         mockFormData.setCareLevel(3);
         mockFormData.setCareType(CareType.TAGEWEISE);
-        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString())).thenReturn(mockFormData);
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(mockFormData);
 
         sessionId = given()
                 .contentType(ContentType.JSON)
@@ -85,7 +86,7 @@ class AiResourceTest {
     void testCareLevelBelowTwo() {
         FormData mockFormData = new FormData();
         mockFormData.setCareLevel(1); // < 2
-        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(mockFormData);
 
         given()
@@ -106,8 +107,9 @@ class AiResourceTest {
         recipient.setInsuranceNumber("INVALID123");
         formData.setCareRecipient(recipient);
         formData.setCareLevel(3);
+        formData.setChatbotMessage("Versicherungsnummer scheint ungültig zu sein"); // <- Hinzugefügt
 
-        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(formData);
         Mockito.when(insuranceNumberTool.isValidSecurityNumber("INVALID123")).thenReturn(false);
 
@@ -124,7 +126,7 @@ class AiResourceTest {
 
     @Test
     void testAiServiceThrowsException() {
-        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenThrow(new RuntimeException("AI failure"));
 
         given()

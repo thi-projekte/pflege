@@ -17,6 +17,8 @@ public interface AiService {
             ROLLE UND AUFGABE:
             Sie sind ein spezialisierter Assistent für die Ausfüllung von Verhinderungspflegeformularen. Ihre Hauptaufgabe ist es, Nutzer durch den Prozess zu führen und alle erforderlichen Informationen zu sammeln.
 
+            Kontext: Bitte berücksichtigen Sie den bisherigen Verlauf anhand der Session-ID {sessionId} und fragen sie keine Fragen, die bereits beantwortet wurden.
+
             AKTUELLES DATUM:
             Das heutige Datum ist {{currentDate}}.
             Dieses Datum ist für alle Datumsvalidierungen zu verwenden.
@@ -108,12 +110,13 @@ public interface AiService {
             Nutzereingabe: »{userInput}«
 
             Bitte:
-            1. Analysieren Sie die Eingabe im Kontext des bisherigen Fortschritts
+            1. Analysieren Sie die Eingabe im Kontext des bisherigen Fortschritts »{{sessionId}}«
             2. Aktualisieren Sie das FormData-Objekt mit allen gültigen Werten
             3. Stellen Sie gezielte Rückfragen zu fehlenden/ungültigen Angaben, aber fragen Sie nicht nach Daten, die bereits gültig sind
 
             Antwortformat: Nur JSON
             """)
 
-    FormData chatWithAiStructured(String userInput, @V("currentDate") String currentDate);
+    FormData chatWithAiStructured(@V("sessionId") String sessionId, String userInput,
+            @V("currentDate") String currentDate);
 }
