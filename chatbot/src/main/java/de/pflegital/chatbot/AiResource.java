@@ -44,7 +44,7 @@ public class AiResource {
         String sessionId = UUID.randomUUID().toString();
 
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData aiResponse = aiService.chatWithAiStructured("Start conversation.", currentDate);
+        FormData aiResponse = aiService.chatWithAiStructured(sessionId, "Start conversation.", currentDate);
         sessionStore.setFormData(sessionId, aiResponse);
 
         try {
@@ -67,11 +67,23 @@ public class AiResource {
 
         // Prompt bauen mit aktuellem Zustand
         String jsonFormData = formDataPresenter.present(session);
-        String prompt = "The current form data is: " + jsonFormData +
-                ". The user just said: '" + userInput + "'. Please update the missing fields accordingly.";
+        String prompt = """
+                CONTEXT:
+                The user input is:
+                %s
+
+                USER INPUT:
+                %s
+
+                INSTRUCTION:
+                - Analyze the user input in the context of the above form data.
+                - Only ask for or correct information that is missing or invalid.
+                - Do not repeat or overwrite valid information.
+                - Respond ONLY with updated form data in JSON format.
+                """.formatted(jsonFormData, userInput);
 
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData updatedResponse = getFormData(prompt, currentDate);
+        FormData updatedResponse = getFormData(sessionId, prompt, currentDate);
 
         if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
             updatedResponse.setChatbotMessage(
@@ -94,10 +106,10 @@ public class AiResource {
     }
 
     @Retry(maxRetries = 3)
-    protected FormData getFormData(String prompt, String currentDate) {
+    protected FormData getFormData(String sessionId, String prompt, String currentDate) {
         LOG.info("Prompt to AI: {}", prompt);
         try {
-            return aiService.chatWithAiStructured(prompt, currentDate);
+            return aiService.chatWithAiStructured(sessionId, prompt, currentDate);
         } catch (Exception e) {
             LOG.error("Error getting form data: {}", e.getMessage());
             throw new WebApplicationException(e);
