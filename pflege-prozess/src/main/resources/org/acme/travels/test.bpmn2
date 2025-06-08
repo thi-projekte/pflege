@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_9Y88oCTgED69it9MdinVKQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_Q-3pACayED6WU4AsLiNU-w" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_messageItem" structureRef="org.acme.travels.model.FormData"/>
-  <bpmn2:collaboration id="_2CF76A0A-70FC-48EC-B303-3AF1FB75679D" name="Default Collaboration">
-    <bpmn2:participant id="_C6DEB068-8593-4B77-A3DB-9B1576230766" name="Pool Participant" processRef="formDataProcess"/>
+  <bpmn2:itemDefinition id="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_InMessageType" structureRef=""/>
+  <bpmn2:itemDefinition id="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_OutMessageType" structureRef=""/>
+  <bpmn2:message id="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_InMessage" itemRef="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_InMessageType"/>
+  <bpmn2:message id="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_OutMessage" itemRef="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_OutMessageType"/>
+  <bpmn2:interface id="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_ServiceInterface" name="" implementationRef="">
+    <bpmn2:operation id="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_ServiceOperation" name="" implementationRef="">
+      <bpmn2:inMessageRef>_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_InMessage</bpmn2:inMessageRef>
+      <bpmn2:outMessageRef>_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_OutMessage</bpmn2:outMessageRef>
+    </bpmn2:operation>
+  </bpmn2:interface>
+  <bpmn2:collaboration id="_CC957189-DDCC-4F46-873E-091A024C0711" name="Default Collaboration">
+    <bpmn2:participant id="_6DF175F4-9A6F-4E9E-A8F8-7278CC314BDF" name="Pool Participant" processRef="formDataProcess"/>
   </bpmn2:collaboration>
   <bpmn2:process id="formDataProcess" drools:packageName="org.acme.travels.model" drools:version="1.0" drools:adHoc="false" name="formDataProcess" isExecutable="true" processType="Public">
     <bpmn2:property id="message" itemSubjectRef="_messageItem" name="message"/>
     <bpmn2:sequenceFlow id="_93ECCE17-B491-44E6-9734-51527A812DF4" sourceRef="_D5318359-C748-4B77-B733-4621B51F664B" targetRef="_1AC09CAF-DFB4-4F0B-922A-102C6232AEC5"/>
+    <bpmn2:sequenceFlow id="_64C657A1-5949-4B44-B346-703F8C9DD86F" sourceRef="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916" targetRef="_D5318359-C748-4B77-B733-4621B51F664B"/>
     <bpmn2:sequenceFlow id="_3F8C75BF-98E4-40E4-96DB-ABD8FE26BB97" sourceRef="_0AE9359D-D5A3-425E-9034-12974523BE15" targetRef="_D5318359-C748-4B77-B733-4621B51F664B">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -15,12 +26,14 @@
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_995EDF8A-9FD2-40E3-ACDB-A5570749F104" sourceRef="_1AC09CAF-DFB4-4F0B-922A-102C6232AEC5" targetRef="_16F16D27-0C74-4801-837A-ACE8A293B3A1"/>
-    <bpmn2:sequenceFlow id="_937F7111-0B96-49AA-9DE5-B2FE1AB29A16" sourceRef="_66218022-724A-4B51-A718-B261BA170CAE" targetRef="_D5318359-C748-4B77-B733-4621B51F664B">
+    <bpmn2:sequenceFlow id="_401652C4-784D-4643-9CF3-4BA631D381D8" sourceRef="_66218022-724A-4B51-A718-B261BA170CAE" targetRef="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916"/>
+    <bpmn2:sequenceFlow id="_83D3B803-A53B-4387-983F-D9993BBDBCD9" name="Pflegekraft" sourceRef="_99431180-0606-459A-964F-3AECA7D5E54B" targetRef="_66218022-724A-4B51-A718-B261BA170CAE">
       <bpmn2:extensionElements>
-        <drools:metaData name="isAutoConnection.target">
-          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Pflegekraft]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return message.getReplacementCare().isProfessional() != false;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_8A73648D-2332-451B-BA72-E5F4FB38D9B6" name="Privatperson" sourceRef="_99431180-0606-459A-964F-3AECA7D5E54B" targetRef="_0AE9359D-D5A3-425E-9034-12974523BE15">
       <bpmn2:extensionElements>
@@ -30,15 +43,16 @@
       </bpmn2:extensionElements>
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return message.getReplacementCare().isProfessional() == false;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_83D3B803-A53B-4387-983F-D9993BBDBCD9" name="Pflegekraft" sourceRef="_99431180-0606-459A-964F-3AECA7D5E54B" targetRef="_66218022-724A-4B51-A718-B261BA170CAE">
+    <bpmn2:sequenceFlow id="flow1" sourceRef="StartEvent_1" targetRef="_99431180-0606-459A-964F-3AECA7D5E54B"/>
+    <bpmn2:serviceTask id="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916" drools:serviceimplementation="Java" drools:serviceinterface="" drools:serviceoperation="" name="Email an Sozialstation" implementation="Java" operationRef="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_ServiceOperation">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
-          <drools:metaValue><![CDATA[Pflegekraft]]></drools:metaValue>
+          <drools:metaValue><![CDATA[Email an Sozialstation]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return message.getReplacementCare().isProfessional() != false;]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="flow1" sourceRef="StartEvent_1" targetRef="_99431180-0606-459A-964F-3AECA7D5E54B"/>
+      <bpmn2:incoming>_401652C4-784D-4643-9CF3-4BA631D381D8</bpmn2:incoming>
+      <bpmn2:outgoing>_64C657A1-5949-4B44-B346-703F8C9DD86F</bpmn2:outgoing>
+    </bpmn2:serviceTask>
     <bpmn2:scriptTask id="_1AC09CAF-DFB4-4F0B-922A-102C6232AEC5" name="Antrag schicken" scriptFormat="http://www.java.com/java">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
@@ -50,8 +64,8 @@
       <bpmn2:script>System.out.print("-----------Antrag wird geschickt-------------------");</bpmn2:script>
     </bpmn2:scriptTask>
     <bpmn2:exclusiveGateway id="_D5318359-C748-4B77-B733-4621B51F664B" gatewayDirection="Converging">
-      <bpmn2:incoming>_937F7111-0B96-49AA-9DE5-B2FE1AB29A16</bpmn2:incoming>
       <bpmn2:incoming>_3F8C75BF-98E4-40E4-96DB-ABD8FE26BB97</bpmn2:incoming>
+      <bpmn2:incoming>_64C657A1-5949-4B44-B346-703F8C9DD86F</bpmn2:incoming>
       <bpmn2:outgoing>_93ECCE17-B491-44E6-9734-51527A812DF4</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:scriptTask id="_0AE9359D-D5A3-425E-9034-12974523BE15" name="Bestätigung Privatperson ist vorhanden" scriptFormat="http://www.java.com/java">
@@ -74,7 +88,7 @@
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:incoming>_83D3B803-A53B-4387-983F-D9993BBDBCD9</bpmn2:incoming>
-      <bpmn2:outgoing>_937F7111-0B96-49AA-9DE5-B2FE1AB29A16</bpmn2:outgoing>
+      <bpmn2:outgoing>_401652C4-784D-4643-9CF3-4BA631D381D8</bpmn2:outgoing>
       <bpmn2:script>System.out.println("-------------Pflegekraft wird organisiert-------------------------");</bpmn2:script>
     </bpmn2:scriptTask>
     <bpmn2:exclusiveGateway id="_99431180-0606-459A-964F-3AECA7D5E54B" name="Privatperson oder Pflegekraft?" gatewayDirection="Diverging">
@@ -84,8 +98,8 @@
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:incoming>flow1</bpmn2:incoming>
-      <bpmn2:outgoing>_83D3B803-A53B-4387-983F-D9993BBDBCD9</bpmn2:outgoing>
       <bpmn2:outgoing>_8A73648D-2332-451B-BA72-E5F4FB38D9B6</bpmn2:outgoing>
+      <bpmn2:outgoing>_83D3B803-A53B-4387-983F-D9993BBDBCD9</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:startEvent id="StartEvent_1" name="StartFormDataProcess">
       <bpmn2:extensionElements>
@@ -122,22 +136,27 @@
       <bpmndi:BPMNShape id="shape__1AC09CAF-DFB4-4F0B-922A-102C6232AEC5" bpmnElement="_1AC09CAF-DFB4-4F0B-922A-102C6232AEC5">
         <dc:Bounds height="102" width="154.0000000000001" x="843.930136146825" y="191.62016020408157"/>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__3C0213E4-80E7-40A8-8DDD-EE11BEE0A916" bpmnElement="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916">
+        <dc:Bounds height="102" width="154" x="614" y="356"/>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="edge_shape_StartEvent_1_to_shape__99431180-0606-459A-964F-3AECA7D5E54B" bpmnElement="flow1">
         <di:waypoint x="140" y="220"/>
+        <di:waypoint x="195" y="216"/>
+        <di:waypoint x="225" y="219"/>
         <di:waypoint x="281" y="220"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__99431180-0606-459A-964F-3AECA7D5E54B_to_shape__0AE9359D-D5A3-425E-9034-12974523BE15" bpmnElement="_8A73648D-2332-451B-BA72-E5F4FB38D9B6">
+        <di:waypoint x="309" y="220"/>
+        <di:waypoint x="529" y="220"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__99431180-0606-459A-964F-3AECA7D5E54B_to_shape__66218022-724A-4B51-A718-B261BA170CAE" bpmnElement="_83D3B803-A53B-4387-983F-D9993BBDBCD9">
         <di:waypoint x="281" y="220"/>
         <di:waypoint x="281" y="407"/>
         <di:waypoint x="370" y="407"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__99431180-0606-459A-964F-3AECA7D5E54B_to_shape__0AE9359D-D5A3-425E-9034-12974523BE15" bpmnElement="_8A73648D-2332-451B-BA72-E5F4FB38D9B6">
-        <di:waypoint x="309" y="220"/>
-        <di:waypoint x="529" y="220"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__66218022-724A-4B51-A718-B261BA170CAE_to_shape__D5318359-C748-4B77-B733-4621B51F664B" bpmnElement="_937F7111-0B96-49AA-9DE5-B2FE1AB29A16">
+      <bpmndi:BPMNEdge id="edge_shape__66218022-724A-4B51-A718-B261BA170CAE_to_shape__3C0213E4-80E7-40A8-8DDD-EE11BEE0A916" bpmnElement="_401652C4-784D-4643-9CF3-4BA631D381D8">
         <di:waypoint x="447" y="407"/>
-        <di:waypoint x="769" y="253"/>
+        <di:waypoint x="691" y="407"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__1AC09CAF-DFB4-4F0B-922A-102C6232AEC5_to_shape__16F16D27-0C74-4801-837A-ACE8A293B3A1" bpmnElement="_995EDF8A-9FD2-40E3-ACDB-A5570749F104">
         <di:waypoint x="920.9301361468251" y="242.62016020408157"/>
@@ -146,6 +165,10 @@
       <bpmndi:BPMNEdge id="edge_shape__0AE9359D-D5A3-425E-9034-12974523BE15_to_shape__D5318359-C748-4B77-B733-4621B51F664B" bpmnElement="_3F8C75BF-98E4-40E4-96DB-ABD8FE26BB97">
         <di:waypoint x="529" y="220"/>
         <di:waypoint x="741" y="225"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__3C0213E4-80E7-40A8-8DDD-EE11BEE0A916_to_shape__D5318359-C748-4B77-B733-4621B51F664B" bpmnElement="_64C657A1-5949-4B44-B346-703F8C9DD86F">
+        <di:waypoint x="691" y="407"/>
+        <di:waypoint x="769" y="253"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__D5318359-C748-4B77-B733-4621B51F664B_to_shape__1AC09CAF-DFB4-4F0B-922A-102C6232AEC5" bpmnElement="_93ECCE17-B491-44E6-9734-51527A812DF4">
         <di:waypoint x="769" y="225"/>
@@ -225,10 +248,30 @@
               </bpsim:UnitCost>
             </bpsim:CostParameters>
           </bpsim:ElementParameters>
+          <bpsim:ElementParameters elementRef="_3C0213E4-80E7-40A8-8DDD-EE11BEE0A916">
+            <bpsim:TimeParameters>
+              <bpsim:ProcessingTime>
+                <bpsim:NormalDistribution mean="0" standardDeviation="0"/>
+              </bpsim:ProcessingTime>
+            </bpsim:TimeParameters>
+            <bpsim:ResourceParameters>
+              <bpsim:Availability>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:Availability>
+              <bpsim:Quantity>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:Quantity>
+            </bpsim:ResourceParameters>
+            <bpsim:CostParameters>
+              <bpsim:UnitCost>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:UnitCost>
+            </bpsim:CostParameters>
+          </bpsim:ElementParameters>
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_9Y88oCTgED69it9MdinVKQ</bpmn2:source>
-    <bpmn2:target>_9Y88oCTgED69it9MdinVKQ</bpmn2:target>
+    <bpmn2:source>_Q-3pACayED6WU4AsLiNU-w</bpmn2:source>
+    <bpmn2:target>_Q-3pACayED6WU4AsLiNU-w</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>
