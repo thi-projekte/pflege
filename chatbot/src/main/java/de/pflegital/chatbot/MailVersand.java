@@ -1,198 +1,266 @@
 package de.pflegital.chatbot;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.resend.*;
+// Korrekte Imports für Ihre Model-Struktur
+import de.pflegital.chatbot.model.Address;
+import de.pflegital.chatbot.model.CareType;
+import de.pflegital.chatbot.model.Carerecipient;
+import de.pflegital.chatbot.model.Caregiver;
+import de.pflegital.chatbot.model.Period;
+import de.pflegital.chatbot.model.Reason;
+import de.pflegital.chatbot.model.ReplacementCare;
+import de.pflegital.chatbot.model.replacementcare.Provider;
+
+import com.resend.Resend;
 import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class MailVersand {
-    
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-    
-    public static void main(String[] args) {
-        // .env laden
+
+    // Für Kogito
+    public static void sendFormDataEmail(FormData formData, Dotenv dotenv) throws IOException, ResendException {
+        String htmlContent = generateHtmlEmail(formData);
+        sendEmail(htmlContent, dotenv);
+    }
+
+    // Für Test
+    public static void sendApplicationEmail(FormData formData) throws IOException, ResendException {
         Dotenv dotenv = Dotenv.configure()
                 .directory("chatbot")
                 .filename(".env")
                 .load();
-        
-        try {
-            String jsonString = loadJsonFromResources("ExampleFormData.json");
-            // JSON parsen
-            JsonNode rootNode = objectMapper.readTree(jsonString);
-            JsonNode formData = rootNode.get("formData");
-            
-            // HTML Email generieren
-            String htmlContent = generateHtmlEmail(formData);
-            
-            // Email versenden
-            sendEmail(dotenv, htmlContent);
-            
-        } catch (IOException e) {
-            System.err.println("Fehler beim Parsen des JSON: " + e.getMessage());
-            e.printStackTrace();
-        }
+        sendFormDataEmail(formData, dotenv);
     }
-    
-    private static String generateHtmlEmail(JsonNode formData) throws IOException {
-        // HTML Template aus Datei laden
-        // Stelle sicher, dass die Datei im Ressourcen-Ordner liegt (src/main/resources)
+
+    private static String generateHtmlEmail(FormData formData) throws IOException {
         String template = loadHtmlTemplate("chatbot/email-template.html");
-        
-        // Platzhalter mit Daten ersetzen
         Map<String, String> placeholders = createPlaceholderMap(formData);
-        
+
         String htmlContent = template;
         for (Map.Entry<String, String> entry : placeholders.entrySet()) {
             htmlContent = htmlContent.replace("{" + entry.getKey() + "}", entry.getValue());
         }
-        
         return htmlContent;
     }
     
-    private static Map<String, String> createPlaceholderMap(JsonNode formData) {
+    private static Map<String, String> createPlaceholderMap(FormData formData) {
         Map<String, String> placeholders = new HashMap<>();
-        
+
         // Allgemeine Informationen
-        placeholders.put("careType", getSafeString(formData, "careType"));
-        placeholders.put("careLevel", String.valueOf(formData.get("careLevel").asInt()));
-        placeholders.put("reason", getSafeString(formData, "reason"));
-        
+        placeholders.put("careType", Optional.ofNullable(formData.getCareType()).map(Object::toString).orElse(""));
+        placeholders.put("careLevel", Optional.ofNullable(formData.getCareLevel()).map(String::valueOf).orElse(""));
+        placeholders.put("reason", Optional.ofNullable(formData.getReason()).map(Object::toString).orElse(""));
+
         // Pflegezeitraum
-        JsonNode carePeriod = formData.get("carePeriod");
-        placeholders.put("careStart", formatDate(getSafeString(carePeriod, "careStart")));
-        placeholders.put("careEnd", formatDate(getSafeString(carePeriod, "careEnd")));
-        
+        Period carePeriod = formData.getCarePeriod();
+        if (carePeriod != null) {
+            // KORREKTUR: Getter-Namen an Period-Klasse angepasst
+            placeholders.put("careStart", formatDate(carePeriod.getCareStart()));
+            placeholders.put("careEnd", formatDate(carePeriod.getCareEnd()));
+        } else {
+            placeholders.put("careStart", "");
+            placeholders.put("careEnd", "");
+        }
+
         // Versicherte Person
-        JsonNode insuredPerson = formData.get("insuredPerson");
-        placeholders.put("insuredName", getSafeString(insuredPerson, "fullName"));
-        placeholders.put("insuredBirthDate", formatDate(getSafeString(insuredPerson, "birthDate")));
-        placeholders.put("insuredPhone", getSafeString(insuredPerson, "phoneNumber"));
-        placeholders.put("insuranceNumber", getSafeString(insuredPerson, "insuranceNumber"));
-        placeholders.put("insuredAddress", formatAddress(insuredPerson.get("insuredAddress")));
-        
+        Carerecipient careRecipient = formData.getCareRecipient();
+        if (careRecipient != null) {
+            placeholders.put("insuredName", careRecipient.getFullName());
+            placeholders.put("insuredBirthDate", formatDate(careRecipient.getBirthDate()));
+            placeholders.put("insuredPhone", careRecipient.getPhoneNumber());
+            placeholders.put("insuranceNumber", careRecipient.getInsuranceNumber());
+            placeholders.put("insuredAddress", formatAddress(careRecipient.getInsuredAddress()));
+        }
+
         // Pflegende Person
-        JsonNode caregiver = formData.get("caregiver");
-        placeholders.put("caregiverName", getSafeString(caregiver, "caregiverName"));
-        placeholders.put("caregiverStartDate", formatDate(getSafeString(caregiver, "careStartDate")));
-        placeholders.put("caregiverPhone", getSafeString(caregiver, "caregiverPhoneNumber"));
-        placeholders.put("caregiverAddress", formatAddress(caregiver.get("caregiverAddress")));
-        
+        Caregiver caregiver = formData.getCaregiver();
+        if (caregiver != null) {
+            placeholders.put("caregiverName", caregiver.getCaregiverName());
+            placeholders.put("caregiverStartDate", formatDate(caregiver.getCareStartDate()));
+            placeholders.put("caregiverPhone", caregiver.getCaregiverPhoneNumber());
+            placeholders.put("caregiverAddress", formatAddress(caregiver.getCaregiverAddress()));
+        }
+
         // Ersatzpflege
-        JsonNode replacementCare = formData.get("replacementCare");
+        ReplacementCare replacementCare = formData.getReplacementCare();
         String providerName = "";
         String providerAddress = "";
-        if (replacementCare.get("provider") != null) {
-            providerName = getSafeString(replacementCare.get("provider"), "providerName");
-            providerAddress = formatAddress(replacementCare.get("provider").get("providerAddress"));
+        if (replacementCare != null && replacementCare.getProvider() != null) {
+            Provider provider = replacementCare.getProvider();
+            providerName = provider.getProviderName();
+            providerAddress = formatAddress(provider.getProviderAddress());
         }
         placeholders.put("providerName", providerName);
         placeholders.put("providerAddress", providerAddress);
-        
+
         // Zusätzliche Angaben
-        placeholders.put("isHomeCare", formData.get("isHomeCare").asBoolean() ? "Ja" : "Nein");
-        placeholders.put("careDurationMin6Months", formData.get("careDurationMin6Months").asBoolean() ? "Ja" : "Nein");
-        placeholders.put("legalAcknowledgement", formData.get("legalAcknowledgement").asBoolean() ? "Ja" : "Nein");
-        
+        placeholders.put("isHomeCare", Optional.ofNullable(formData.getHomeCare()).map(b -> b ? "Ja" : "Nein").orElse("Nein"));
+        placeholders.put("careDurationMin6Months", Optional.ofNullable(formData.getCareDurationMin6Months()).map(b -> b ? "Ja" : "Nein").orElse("Nein"));
+        placeholders.put("legalAcknowledgement", Optional.ofNullable(formData.getLegalAcknowledgement()).map(b -> b ? "Ja" : "Nein").orElse("Nein"));
+
         return placeholders;
     }
-    
-    private static String loadHtmlTemplate(String fileName) throws IOException {
-        try (var inputStream = MailVersand.class.getClassLoader().getResourceAsStream(fileName)) {
-            if (inputStream == null) {
-                throw new IOException("HTML Template nicht gefunden: " + fileName);
-            }
-            
-            StringBuilder content = new StringBuilder();
-            try (var reader = new java.io.BufferedReader(new java.io.InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    content.append(line).append('\n');
-                }
-            }
-            
-            System.out.println("HTML Template erfolgreich geladen: " + fileName);
-            return content.toString();
-        }
-    }
-    
-    private static void sendEmail(Dotenv dotenv, String htmlContent) {
+
+    // Angepasste sendEmail-Methode, die Dotenv als Parameter erhält
+    private static void sendEmail(String htmlContent, Dotenv dotenv) throws ResendException {
         Resend resend = new Resend(dotenv.get("RESEND_API_KEY"));
-        String receiver = "nip6168@thi.de";
-        
+        String receiver = "adb7838@thi.de";
+
         CreateEmailOptions params = CreateEmailOptions.builder()
                 .from("Pflegital <test@pflegital.de>")
                 .to(receiver)
                 .subject("Antrag auf Verhinderungspflege - Pflegital.de")
                 .html(htmlContent)
                 .build();
-        
+
+        CreateEmailResponse data = resend.emails().send(params);
+        System.out.println("E-Mail erfolgreich versendet. ID: " + data.getId());
+    }
+
+    private static String loadHtmlTemplate(String fileName) throws IOException {
+        try (var inputStream = MailVersand.class.getClassLoader().getResourceAsStream(fileName)) {
+            if (inputStream == null) throw new IOException("HTML Template nicht gefunden: " + fileName);
+            StringBuilder content = new StringBuilder();
+            try (var reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) content.append(line).append('\n');
+            }
+            System.out.println("HTML Template erfolgreich geladen: " + fileName);
+            return content.toString();
+        }
+    }
+    
+    private static String formatAddress(Address address) {
+        if (address == null) return "";
+        return String.format("%s %s, %s %s", 
+            address.getStreet(), address.getHouseNumber(), address.getZip(), address.getCity()).trim();
+    }
+    
+    private static String formatDate(LocalDate date) {
+        if (date == null) return "";
         try {
-            CreateEmailResponse data = resend.emails().send(params);
-            System.out.println("Email erfolgreich versendet. ID: " + data.getId());
-        } catch (ResendException e) {
-            System.err.println("Fehler beim Versenden der Email: " + e.getMessage());
+            return date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        } catch (Exception e) {
+            return date.toString();
+        }
+    }
+
+    // --- Methoden nur für Testzwecke ---
+
+    public static void main(String[] args) {
+        System.out.println("Starte Testlauf für den E-Mail-Versand mit direktem FormData-Objekt...");
+        try {
+            // Direkte Erstellung des FormData-Objekts
+            FormData formData = createTestFormData();
+            
+            // Debug-Ausgabe
+            System.out.println("=== DEBUG: FormData Inhalt ===");
+            System.out.println("CareType: " + formData.getCareType());
+            System.out.println("CareLevel: " + formData.getCareLevel());
+            if (formData.getCareRecipient() != null) {
+                System.out.println("Versicherte Person: " + formData.getCareRecipient().getFullName());
+                System.out.println("Telefon: " + formData.getCareRecipient().getPhoneNumber());
+                System.out.println("Versicherungsnummer: " + formData.getCareRecipient().getInsuranceNumber());
+            }
+            if (formData.getCaregiver() != null) {
+                System.out.println("Pflegende Person: " + formData.getCaregiver().getCaregiverName());
+            }
+            if (formData.getReplacementCare() != null && formData.getReplacementCare().getProvider() != null) {
+                System.out.println("Anbieter: " + formData.getReplacementCare().getProvider().getProviderName());
+            }
+            
+            // E-Mail versenden
+            sendApplicationEmail(formData);
+            System.out.println("Testlauf erfolgreich abgeschlossen.");
+            
+        } catch (IOException | ResendException e) {
+            System.err.println("Fehler während des Testlaufs: " + e.getMessage());
             e.printStackTrace();
         }
     }
     
-    private static String getSafeString(JsonNode node, String fieldName) {
-        JsonNode fieldNode = node.get(fieldName);
-        return fieldNode != null && !fieldNode.isNull() ? fieldNode.asText() : "";
-    }
-    
-    private static String formatDate(String dateString) {
-        if (dateString == null || dateString.isEmpty()) {
-            return "";
-        }
-        try {
-            LocalDate date = LocalDate.parse(dateString);
-            return date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        } catch (Exception e) {
-            return dateString;
-        }
-    }
-    
-    private static String formatAddress(JsonNode addressNode) {
-        if (addressNode == null) {
-            return "";
-        }
+    /**
+     * Erstellt ein Test-FormData-Objekt mit Beispielwerten.
+     * Diese Methode dient nur zu Testzwecken und sollte nicht in der Produktion verwendet werden.
+     */
+    private static FormData createTestFormData() {
+        FormData formData = new FormData();
         
-        String street = getSafeString(addressNode, "street");
-        String houseNumber = addressNode.get("houseNumber") != null ? 
-            String.valueOf(addressNode.get("houseNumber").asInt()) : "";
-        String zip = addressNode.get("zip") != null ? 
-            String.valueOf(addressNode.get("zip").asInt()) : "";
-        String city = getSafeString(addressNode, "city");
+        // Grundlegende Informationen
+        formData.setCareType(CareType.STUNDENWEISE);
+        formData.setCareLevel(3);
+        formData.setReason(Reason.URLAUB);
+        formData.setHomeCare(true);
+        formData.setCareDurationMin6Months(true);
+        formData.setLegalAcknowledgement(true);
+        formData.setChatbotMessage("Test-Nachricht");
         
-        return String.format("%s %s, %s %s", street, houseNumber, zip, city).trim();
-    }
-    
-    private static String loadJsonFromResources(String fileName) throws IOException {
-        try (var inputStream = MailVersand.class.getClassLoader().getResourceAsStream(fileName)) {
-            if (inputStream == null) {
-                throw new IOException("Datei nicht gefunden: " + fileName);
-            }
-            
-            StringBuilder content = new StringBuilder();
-            try (var reader = new java.io.BufferedReader(new java.io.InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    content.append(line).append('\n');
-                }
-            }
-            
-            System.out.println("JSON-Datei erfolgreich geladen: " + fileName);
-            return content.toString();
-        }
+        // Pflegezeitraum
+        Period carePeriod = new Period();
+        carePeriod.setCareStart(LocalDate.of(2025, 11, 10));
+        carePeriod.setCareEnd(LocalDate.of(2025, 12, 21));
+        formData.setCarePeriod(carePeriod);
+        
+        // Versicherte Person (Care Recipient)
+        Carerecipient careRecipient = new Carerecipient();
+        careRecipient.setFullName("Max Mustermann");
+        careRecipient.setBirthDate(LocalDate.of(1970, 8, 9));
+        careRecipient.setPhoneNumber("0157 32352131");
+        careRecipient.setInsuranceNumber("985167234123");
+        
+        // Adresse der versicherten Person
+        Address insuredAddress = new Address();
+        insuredAddress.setStreet("Fraunhoferstraße");
+        insuredAddress.setHouseNumber(30);
+        insuredAddress.setZip("80469");
+        insuredAddress.setCity("München");
+        careRecipient.setInsuredAddress(insuredAddress);
+        
+        formData.setCareRecipient(careRecipient);
+        
+        // Pflegende Person (Caregiver)
+        Caregiver caregiver = new Caregiver();
+        caregiver.setCaregiverName("Manuel Meier");
+        caregiver.setCareStartDate(LocalDate.of(2025, 11, 10));
+        caregiver.setCaregiverPhoneNumber("0157 323512311");
+        
+        // Adresse der pflegenden Person
+        Address caregiverAddress = new Address();
+        caregiverAddress.setStreet("Fraunhoferstraße");
+        caregiverAddress.setHouseNumber(30);
+        caregiverAddress.setZip("80469");
+        caregiverAddress.setCity("München");
+        caregiver.setCaregiverAddress(caregiverAddress);
+        
+        formData.setCaregiver(caregiver);
+        
+        // Ersatzpflege
+        ReplacementCare replacementCare = new ReplacementCare();
+        Provider provider = new Provider();
+        provider.setProviderName("Professional Pflege GmbH");
+        
+        // Adresse des Anbieters
+        Address providerAddress = new Address();
+        providerAddress.setStreet("Esplanade");
+        providerAddress.setHouseNumber(12);
+        providerAddress.setZip("80469");
+        providerAddress.setCity("München");
+        provider.setProviderAddress(providerAddress);
+        
+        replacementCare.setProvider(provider);
+        formData.setReplacementCare(replacementCare);
+        
+        return formData;
     }
 }
