@@ -21,14 +21,12 @@ public class ReplacementCare {
     private PrivatePerson privatePerson;
 
     public boolean isValid() {
-        if (isProfessional)
-            return false;
         if (isProfessional) {
+            setPrivatePerson(null);
             return provider != null && provider.isValid();
         } else {
             return privatePerson != null && privatePerson.isValid();
         }
-
     }
 
     public boolean isProfessional() {
@@ -36,7 +34,12 @@ public class ReplacementCare {
     }
 
     public void setProfessional(boolean professional) {
-        isProfessional = professional;
+        this.isProfessional = professional;
+        if (professional) {
+            this.privatePerson = null;
+        } else {
+            this.provider = null;
+        }
     }
 
     public Provider getProvider() {
@@ -45,6 +48,8 @@ public class ReplacementCare {
 
     public void setProvider(Provider provider) {
         this.provider = provider;
+        this.isProfessional = true;
+        this.privatePerson = null;
     }
 
     public PrivatePerson getPrivatePerson() {
@@ -53,5 +58,7 @@ public class ReplacementCare {
 
     public void setPrivatePerson(PrivatePerson privatePerson) {
         this.privatePerson = privatePerson;
+        this.isProfessional = false;
+        this.provider = null;
     }
 }

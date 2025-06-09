@@ -54,7 +54,7 @@ public class Pflegebot {
 
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
-            updatedResponse.setChatbotMessage("Thank you! All required information has been collected.");
+            updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
             // FIXME: Start process here
         }
         sessionStore.setFormData(sessionId, updatedResponse);

@@ -68,18 +68,12 @@ public class AiResource {
         // Prompt bauen mit aktuellem Zustand
         String jsonFormData = formDataPresenter.present(session);
         String prompt = """
-                CONTEXT:
-                The user input is:
+                CONTEXT BEGIN
                 %s
+                CONTEXT END
 
                 USER INPUT:
                 %s
-
-                INSTRUCTION:
-                - Analyze the user input in the context of the above form data.
-                - Only ask for or correct information that is missing or invalid.
-                - Do not repeat or overwrite valid information.
-                - Respond ONLY with updated form data in JSON format.
                 """.formatted(jsonFormData, userInput);
 
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
@@ -92,7 +86,7 @@ public class AiResource {
 
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
-            updatedResponse.setChatbotMessage("Thank you! All required information has been collected.");
+            updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
             // FIXME: Start process here
         }
         sessionStore.setFormData(sessionId, updatedResponse);
