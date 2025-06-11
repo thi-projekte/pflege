@@ -1,200 +1,156 @@
 package org.acme.travels.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.resend.*;
+// Korrekte Imports für Ihre Model-Struktur
+import org.acme.travels.model.Address;
+import org.acme.travels.model.CareType;
+import org.acme.travels.model.Carerecipient;
+import org.acme.travels.model.Caregiver;
+import org.acme.travels.model.Period;
+import org.acme.travels.model.Reason;
+import org.acme.travels.model.ReplacementCare;
+import org.acme.travels.model.replacementcare.Provider;
+import org.acme.travels.model.FormData;
+
+import com.resend.Resend;
 import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 import io.github.cdimascio.dotenv.Dotenv;
+import jakarta.enterprise.context.ApplicationScoped;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-
+@ApplicationScoped
 public class MailVersand {
-    
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-    
-    public static void main(String[] args) {
-        // .env laden
-        Dotenv dotenv = Dotenv.configure()
-                .directory("chatbot")
-                .filename(".env")
-                .load();
-        
-        try {
-            String jsonString = loadJsonFromResources("ExampleFormData.json");
-            // JSON parsen
-            JsonNode rootNode = objectMapper.readTree(jsonString);
-            JsonNode formData = rootNode.get("formData");
-            
-            // HTML Email generieren
-            String htmlContent = generateHtmlEmail(formData);
-            
-            // Email versenden
-            sendEmail(dotenv, htmlContent);
-            
-        } catch (IOException e) {
-            System.err.println("Fehler beim Parsen des JSON: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-    
-    private static String generateHtmlEmail(JsonNode formData) throws IOException {
-        // HTML Template aus Datei laden
-        // Stelle sicher, dass die Datei im Ressourcen-Ordner liegt (src/main/resources)
+
+    public void sendFormDataEmail(FormData formData) throws IOException, ResendException {
+    Dotenv dotenv = Dotenv.load(); // Lädt automatisch aus .env im Projekt-Root
+
+    String htmlContent = generateHtmlEmail(formData);
+    sendEmail(htmlContent, dotenv);
+}
+
+    private  String generateHtmlEmail(FormData formData) throws IOException {
         String template = loadHtmlTemplate("chatbot/email-template.html");
-        
-        // Platzhalter mit Daten ersetzen
         Map<String, String> placeholders = createPlaceholderMap(formData);
-        
+
         String htmlContent = template;
         for (Map.Entry<String, String> entry : placeholders.entrySet()) {
             htmlContent = htmlContent.replace("{" + entry.getKey() + "}", entry.getValue());
         }
-        
         return htmlContent;
     }
     
-    private static Map<String, String> createPlaceholderMap(JsonNode formData) {
+    private  Map<String, String> createPlaceholderMap(FormData formData) {
         Map<String, String> placeholders = new HashMap<>();
-        
+
         // Allgemeine Informationen
-        placeholders.put("careType", getSafeString(formData, "careType"));
-        placeholders.put("careLevel", String.valueOf(formData.get("careLevel").asInt()));
-        placeholders.put("reason", getSafeString(formData, "reason"));
-        
+        placeholders.put("careType", Optional.ofNullable(formData.getCareType()).map(Object::toString).orElse(""));
+        placeholders.put("careLevel", Optional.ofNullable(formData.getCareLevel()).map(String::valueOf).orElse(""));
+        placeholders.put("reason", Optional.ofNullable(formData.getReason()).map(Object::toString).orElse(""));
+
         // Pflegezeitraum
-        JsonNode carePeriod = formData.get("carePeriod");
-        placeholders.put("careStart", formatDate(getSafeString(carePeriod, "careStart")));
-        placeholders.put("careEnd", formatDate(getSafeString(carePeriod, "careEnd")));
-        
+        Period carePeriod = formData.getCarePeriod();
+        if (carePeriod != null) {
+            // KORREKTUR: Getter-Namen an Period-Klasse angepasst
+            placeholders.put("careStart", formatDate(carePeriod.getCareStart()));
+            placeholders.put("careEnd", formatDate(carePeriod.getCareEnd()));
+        } else {
+            placeholders.put("careStart", "");
+            placeholders.put("careEnd", "");
+        }
+
         // Versicherte Person
-        JsonNode insuredPerson = formData.get("insuredPerson");
-        placeholders.put("insuredName", getSafeString(insuredPerson, "fullName"));
-        placeholders.put("insuredBirthDate", formatDate(getSafeString(insuredPerson, "birthDate")));
-        placeholders.put("insuredPhone", getSafeString(insuredPerson, "phoneNumber"));
-        placeholders.put("insuranceNumber", getSafeString(insuredPerson, "insuranceNumber"));
-        placeholders.put("insuredAddress", formatAddress(insuredPerson.get("insuredAddress")));
-        
+        Carerecipient careRecipient = formData.getCareRecipient();
+        if (careRecipient != null) {
+            placeholders.put("insuredName", careRecipient.getFullName());
+            placeholders.put("insuredBirthDate", formatDate(careRecipient.getBirthDate()));
+            placeholders.put("insuredPhone", careRecipient.getPhoneNumber());
+            placeholders.put("insuranceNumber", careRecipient.getInsuranceNumber());
+            placeholders.put("insuredAddress", formatAddress(careRecipient.getInsuredAddress()));
+        }
+
         // Pflegende Person
-        JsonNode caregiver = formData.get("caregiver");
-        placeholders.put("caregiverName", getSafeString(caregiver, "caregiverName"));
-        placeholders.put("caregiverStartDate", formatDate(getSafeString(caregiver, "careStartDate")));
-        placeholders.put("caregiverPhone", getSafeString(caregiver, "caregiverPhoneNumber"));
-        placeholders.put("caregiverAddress", formatAddress(caregiver.get("caregiverAddress")));
-        
+        Caregiver caregiver = formData.getCaregiver();
+        if (caregiver != null) {
+            placeholders.put("caregiverName", caregiver.getCaregiverName());
+            placeholders.put("caregiverStartDate", formatDate(caregiver.getCareStartDate()));
+            placeholders.put("caregiverPhone", caregiver.getCaregiverPhoneNumber());
+            placeholders.put("caregiverAddress", formatAddress(caregiver.getCaregiverAddress()));
+        }
+
         // Ersatzpflege
-        JsonNode replacementCare = formData.get("replacementCare");
+        ReplacementCare replacementCare = formData.getReplacementCare();
         String providerName = "";
         String providerAddress = "";
-        if (replacementCare.get("provider") != null) {
-            providerName = getSafeString(replacementCare.get("provider"), "providerName");
-            providerAddress = formatAddress(replacementCare.get("provider").get("providerAddress"));
+        if (replacementCare != null && replacementCare.getProvider() != null) {
+            Provider provider = replacementCare.getProvider();
+            providerName = provider.getProviderName();
+            providerAddress = formatAddress(provider.getProviderAddress());
         }
         placeholders.put("providerName", providerName);
         placeholders.put("providerAddress", providerAddress);
-        
+
         // Zusätzliche Angaben
-        placeholders.put("isHomeCare", formData.get("isHomeCare").asBoolean() ? "Ja" : "Nein");
-        placeholders.put("careDurationMin6Months", formData.get("careDurationMin6Months").asBoolean() ? "Ja" : "Nein");
-        placeholders.put("legalAcknowledgement", formData.get("legalAcknowledgement").asBoolean() ? "Ja" : "Nein");
-        
+        placeholders.put("isHomeCare", Optional.ofNullable(formData.getHomeCare()).map(b -> b ? "Ja" : "Nein").orElse("Nein"));
+        placeholders.put("careDurationMin6Months", Optional.ofNullable(formData.getCareDurationMin6Months()).map(b -> b ? "Ja" : "Nein").orElse("Nein"));
+        placeholders.put("legalAcknowledgement", Optional.ofNullable(formData.getLegalAcknowledgement()).map(b -> b ? "Ja" : "Nein").orElse("Nein"));
+
         return placeholders;
     }
-    
-    private static String loadHtmlTemplate(String fileName) throws IOException {
-        try (InputStream inputStream = MailVersand.class.getClassLoader().getResourceAsStream(fileName)) {
-            if (inputStream == null) {
-                throw new IOException("HTML Template nicht gefunden: " + fileName);
-            }
-            
-            StringBuilder content = new StringBuilder();
-            try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    content.append(line).append('\n');
-                }
-            }
-            
-            System.out.println("HTML Template erfolgreich geladen: " + fileName);
-            return content.toString();
-        }
-    }
-    
-    private static void sendEmail(Dotenv dotenv, String htmlContent) {
+
+    // Angepasste sendEmail-Methode, die Dotenv als Parameter erhält
+    private  void sendEmail(String htmlContent, Dotenv dotenv) throws ResendException {
         Resend resend = new Resend(dotenv.get("RESEND_API_KEY"));
-        String receiver = "nip6168@thi.de";
-        
+        String receiver = "adb7838@thi.de";
+
         CreateEmailOptions params = CreateEmailOptions.builder()
                 .from("Pflegital <test@pflegital.de>")
                 .to(receiver)
                 .subject("Antrag auf Verhinderungspflege - Pflegital.de")
                 .html(htmlContent)
                 .build();
-        
-        try {
-            CreateEmailResponse data = resend.emails().send(params);
-            System.out.println("Email erfolgreich versendet. ID: " + data.getId());
-        } catch (ResendException e) {
-            System.err.println("Fehler beim Versenden der Email: " + e.getMessage());
-            e.printStackTrace();
-        }
+
+        CreateEmailResponse data = resend.emails().send(params);
+        System.out.println("E-Mail erfolgreich versendet. ID: " + data.getId());
     }
-    
-    private static String getSafeString(JsonNode node, String fieldName) {
-        JsonNode fieldNode = node.get(fieldName);
-        return fieldNode != null && !fieldNode.isNull() ? fieldNode.asText() : "";
-    }
-    
-    private static String formatDate(String dateString) {
-        if (dateString == null || dateString.isEmpty()) {
-            return "";
-        }
-        try {
-            LocalDate date = LocalDate.parse(dateString);
-            return date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        } catch (Exception e) {
-            return dateString;
-        }
-    }
-    
-    private static String formatAddress(JsonNode addressNode) {
-        if (addressNode == null) {
-            return "";
-        }
-        
-        String street = getSafeString(addressNode, "street");
-        String houseNumber = addressNode.get("houseNumber") != null ? 
-            String.valueOf(addressNode.get("houseNumber").asInt()) : "";
-        String zip = addressNode.get("zip") != null ? 
-            String.valueOf(addressNode.get("zip").asInt()) : "";
-        String city = getSafeString(addressNode, "city");
-        
-        return String.format("%s %s, %s %s", street, houseNumber, zip, city).trim();
-    }
-    
-    private static String loadJsonFromResources(String fileName) throws IOException {
+
+    private String loadHtmlTemplate(String fileName) throws IOException {
         try (InputStream inputStream = MailVersand.class.getClassLoader().getResourceAsStream(fileName)) {
-            if (inputStream == null) {
-                throw new IOException("Datei nicht gefunden: " + fileName);
-            }
-            
+            if (inputStream == null) throw new IOException("HTML Template nicht gefunden: " + fileName);
             StringBuilder content = new StringBuilder();
-            try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(inputStream, java.nio.charset.StandardCharsets.UTF_8))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
                 String line;
-                while ((line = reader.readLine()) != null) {
-                    content.append(line).append('\n');
-                }
+                while ((line = reader.readLine()) != null) content.append(line).append('\n');
             }
-            
-            System.out.println("JSON-Datei erfolgreich geladen: " + fileName);
+            System.out.println("HTML Template erfolgreich geladen: " + fileName);
             return content.toString();
         }
     }
+    
+    private  String formatAddress(Address address) {
+        if (address == null) return "";
+        return String.format("%s %s, %s %s", 
+            address.getStreet(), address.getHouseNumber(), address.getZip(), address.getCity()).trim();
+    }
+    
+    private  String formatDate(LocalDate date) {
+        if (date == null) return "";
+        try {
+            return date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        } catch (Exception e) {
+            return date.toString();
+        }
+    }
+
+  
 }
