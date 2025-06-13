@@ -9,20 +9,20 @@ const mockCareData = [
   {
     id: "mock-id-1",
     taskId: "mock-task-1",
-    name: "Maria Schmidt",
-    geburtsdatum: "10.03.1945",
-    adresse: "Hauptstraße 123, 10115 Berlin",
+    name: "Max Mustermann", 
+    geburtsdatum: "01.01.1950", 
+    adresse: "Musterstraße 1, 12345 Musterstadt", 
     grund: "Urlaub",
     originalMessage: {
       reason: "URLAUB",
       careRecipient: {
-        fullName: "Maria Schmidt",
-        birthDate: "1945-03-10",
+        fullName: "Max Mustermann",
+        birthDate: "1950-01-01",
         insuredAddress: {
-          street: "Hauptstraße",
-          houseNumber: 123,
-          city: "Berlin",
-          zip: "10115"
+          street: "Musterstraße",
+          houseNumber: 1,
+          city: "Musterstadt",
+          zip: "12345"
         }
       }
     }
@@ -30,10 +30,275 @@ const mockCareData = [
   {
     id: "mock-id-2",
     taskId: "mock-task-2",
-    name: "Klaus Müller",
-    geburtsdatum: "21.07.1938",
-    adresse: "Bergstraße 45, 70565 Stuttgart",
-    grund: "Krankheit"
+    name: "Erika Musterfrau", 
+    geburtsdatum: "15.03.1945", 
+    adresse: "Beispielweg 7, 54321 Beispielstadt", 
+    grund: "Urlaub",
+    originalMessage: {
+      reason: "URLAUB",
+      careRecipient: {
+        fullName: "Erika Musterfrau",
+        birthDate: "1945-03-15",
+        insuredAddress: {
+          street: "Beispielweg",
+          houseNumber: 7,
+          city: "Beispielstadt",
+          zip: "54321"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-3",
+    taskId: "mock-task-3",
+    name: "Hans Müller", 
+    geburtsdatum: "22.07.1938", 
+    adresse: "Allee 3, 76543 Stadt", 
+    grund: "Urlaub",
+    originalMessage: {
+      reason: "URLAUB",
+      careRecipient: {
+        fullName: "Hans Müller",
+        birthDate: "1938-07-22",
+        insuredAddress: {
+          street: "Allee",
+          houseNumber: 3,
+          city: "Stadt",
+          zip: "76543"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-4",
+    taskId: "mock-task-4",
+    name: "Susie Sorglos", 
+    geburtsdatum: "02.11.1958", 
+    adresse: "Sorglosstraße 5, 85055 Sorglosstadt", 
+    grund: "Urlaub",
+    originalMessage: {
+      reason: "URLAUB",
+      careRecipient: {
+        fullName: "Susie Sorglos",
+        birthDate: "1958-11-02",
+        insuredAddress: {
+          street: "Sorglosstraße",
+          houseNumber: 5,
+          city: "Sorglosstadt",
+          zip: "85055"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-5",
+    taskId: "mock-task-5",
+    name: "Maxi Musterfrau", 
+    geburtsdatum: "14.03.1966", 
+    adresse: "Musterstraße 1, 85049 Musterdorf", 
+    grund: "Krankheit",
+    originalMessage: {
+      reason: "KRANKHEIT",
+      careRecipient: {
+        fullName: "Maxi Musterfrau",
+        birthDate: "1966-03-14",
+        insuredAddress: {
+          street: "Musterstraße",
+          houseNumber: 1,
+          city: "Musterdorf",
+          zip: "85049"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-6",
+    taskId: "mock-task-6",
+    name: "Laura Lebensfreude", 
+    geburtsdatum: "23.07.1954", 
+    adresse: "Sonnenweg 12, 85051 Lebensbrunn", 
+    grund: "Urlaub",
+    originalMessage: {
+      reason: "URLAUB",
+      careRecipient: {
+        fullName: "Laura Lebensfreude",
+        birthDate: "1954-07-23",
+        insuredAddress: {
+          street: "Sonnenweg",
+          houseNumber: 12,
+          city: "Lebensbrunn",
+          zip: "85051"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-7",
+    taskId: "mock-task-7",
+    name: "Tom Tatendrang", 
+    geburtsdatum: "09.01.1973", 
+    adresse: "Neulandstraße 3, 85055 Tatental", 
+    grund: "Krankheit",
+    originalMessage: {
+      reason: "KRANKHEIT",
+      careRecipient: {
+        fullName: "Tom Tatendrang",
+        birthDate: "1973-01-09",
+        insuredAddress: {
+          street: "Neulandstraße",
+          houseNumber: 3,
+          city: "Tatental",
+          zip: "85055"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-8",
+    taskId: "mock-task-8",
+    name: "Anna Alltag", 
+    geburtsdatum: "30.06.1959", 
+    adresse: "Alltagsgasse 7, 85053 Alltagsheim", 
+    grund: "Urlaub",
+    originalMessage: {
+      reason: "URLAUB",
+      careRecipient: {
+        fullName: "Anna Alltag",
+        birthDate: "1959-06-30",
+        insuredAddress: {
+          street: "Alltagsgasse",
+          houseNumber: 7,
+          city: "Alltagsheim",
+          zip: "85053"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-9",
+    taskId: "mock-task-9",
+    name: "Felix Frohsinn", 
+    geburtsdatum: "19.10.1947", 
+    adresse: "Frohsinnweg 9, 85049 Frohlingen", 
+    grund: "Krankheit",
+    originalMessage: {
+      reason: "KRANKHEIT",
+      careRecipient: {
+        fullName: "Felix Frohsinn",
+        birthDate: "1947-10-19",
+        insuredAddress: {
+          street: "Frohsinnweg",
+          houseNumber: 9,
+          city: "Frohlingen",
+          zip: "85049"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-10",
+    taskId: "mock-task-10",
+    name: "Clara Klarblick", 
+    geburtsdatum: "05.12.1951", 
+    adresse: "Klarblickstraße 4, 85050 Klarsicht", 
+    grund: "Urlaub",
+    originalMessage: {
+      reason: "URLAUB",
+      careRecipient: {
+        fullName: "Clara Klarblick",
+        birthDate: "1951-12-05",
+        insuredAddress: {
+          street: "Klarblickstraße",
+          houseNumber: 4,
+          city: "Klarsicht",
+          zip: "85050"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-11",
+    taskId: "mock-task-11",
+    name: "Jonas Jubel", 
+    geburtsdatum: "11.08.1962", 
+    adresse: "Jubelallee 2, 85057 Jubelstadt", 
+    grund: "Krankheit",
+    originalMessage: {
+      reason: "KRANKHEIT",
+      careRecipient: {
+        fullName: "Jonas Jubel",
+        birthDate: "1962-08-11",
+        insuredAddress: {
+          street: "Jubelallee",
+          houseNumber: 2,
+          city: "Jubelstadt",
+          zip: "85057"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-12",
+    taskId: "mock-task-12",
+    name: "Emma Energie", 
+    geburtsdatum: "27.09.1955", 
+    adresse: "Energieplatz 6, 85052 Energetika", 
+    grund: "Urlaub",
+    originalMessage: {
+      reason: "URLAUB",
+      careRecipient: {
+        fullName: "Emma Energie",
+        birthDate: "1955-09-27",
+        insuredAddress: {
+          street: "Energieplatz",
+          houseNumber: 6,
+          city: "Energetika",
+          zip: "85052"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-13",
+    taskId: "mock-task-13",
+    name: "Leo Lichtblick", 
+    geburtsdatum: "16.04.1949", 
+    adresse: "Lichtblickstraße 8, 85054 Lichtfeld", 
+    grund: "Krankheit",
+    originalMessage: {
+      reason: "KRANKHEIT",
+      careRecipient: {
+        fullName: "Leo Lichtblick",
+        birthDate: "1949-04-16",
+        insuredAddress: {
+          street: "Lichtblickstraße",
+          houseNumber: 8,
+          city: "Lichtfeld",
+          zip: "85054"
+        }
+      }
+    }
+  },
+  {
+    id: "mock-id-14",
+    taskId: "mock-task-14",
+    name: "Dirty Dörthe", 
+    geburtsdatum: "03.02.1957", 
+    adresse: "Problemlosweg 10, 85048 Problembach", 
+    grund: "Urlaub",
+    originalMessage: {
+      reason: "URLAUB",
+      careRecipient: {
+        fullName: "Dirty Dörthe",
+        birthDate: "1957-02-03",
+        insuredAddress: {
+          street: "Problemlosweg",
+          houseNumber: 10,
+          city: "Problembach",
+          zip: "85048"
+        }
+      }
+    }
   }
 ];
 
