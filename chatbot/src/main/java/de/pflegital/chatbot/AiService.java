@@ -46,24 +46,24 @@ public interface AiService {
 
                         DATENERFASSUNG in dieser Reihenfolge ohne Sprünge zwischen den Schritten von 1 bis 20:
 
-            Schritt 1. **Carerecipient** Name & Geburtsdatum (Geburtsdatum validieren mit BirthdateTool)
-            Schritt 2. **Carerecipient** Versicherungsnummer (validieren mit InsuranceNumberTool)
-            Schritt 3. **Carerecipient** Adresse (Straße, Hausnummer, PLZ, Stadt – validieren mit AddressTool)
-            Schritt 4. **Carerecipient** Telefonnummer (optional)
-            Schritt 5. **Caretype** Stundenweise oder Tageweise
-            Schritt 6. **Caretype** Grund: Urlaub oder Sonstiges
-            Schritt 7. **CareLevel** Pflegegrad (mindestens 2 erforderlich, einzelne Zahlen werden als Pflegegrad akzeptiert)
-            Schritt 8. **Caregiver** Name (Wie lautet der Name der regulären Pflegekraft?)
-            Schritt 9. **Caregiver** Pflegebeginn (validieren mit RegularCareStartDateTool – muss mindestens 6 Monate in der Vergangenheit liegen)
-            Schritt 10. **Caregiver** Adresse (Wie lautet die Adresse der regulären Pflegekraft? – validieren mit AddressTool)
-            Schritt 11. **Period** Zeitraum der Verhinderungspflege (Start- und Enddatum, Startdatum: {{currentDate}} oder später, maximal 42 Tage Dauer, validieren mit PeriodTool)
-            Schritt 12. **ReplacementCare** Ersatzpflege in der Verhinderungspflege
-            Schritt 13. Wird die Verhinderungspflege durch einen professionellen Dienstleister oder durch eine private Person durchgeführt? (entweder / oder) ! Wichtig! Frage diese Frage nur ein einziges Mal!
-            Schritt 14. Falls die Verhinderungspfelge durch professionellen Dienstleister durchgeführt wird: Name des Dienstleisters, Falls die Verhinderungspflege durch eine private Person durchgeführt wird: Name der privaten Person
-            Schritt 15. Falls die Verhinderungspfelge durch professionellen Dienstleister durchgeführt wird: Adresse des Dienstleisters, Falls die Verhinderungspflege durch eine private Person durchgeführt wird: Adresse der privaten Person (validieren mit AddressTool)
-            Schritt 16. Telefonnummer des Dienstleisters oder der privaten Person *(optional, nur einmal fragen)
-            Schritt 17. Überspringen, Falls die Verhinderungspfelge durch professionellen Dienstleister durchgeführt wird **isRelative** Verwandtschaftsverhältnis *(nur bei privater Person)  (ja/nein)
-            Schritt 18. **isHomeCare** "Bitte bestätigen Sie, dass die Pflege zu Hause durchgeführt wird! (ja/nein)
+             Schritt 1. Wird die Verhinderungspflege durch einen professionellen Dienstleister oder durch eine private Person durchgeführt? (entweder / oder) ! Wichtig! Frage diese Frage nur ein einziges Mal!
+            Schritt 2. Falls die Verhinderungspfelge durch professionellen Dienstleister durchgeführt wird: Name des Dienstleisters, Falls die Verhinderungspflege durch eine private Person durchgeführt wird: Name der privaten Person
+            Schritt 3. Falls die Verhinderungspfelge durch professionellen Dienstleister durchgeführt wird: Adresse des Dienstleisters, Falls die Verhinderungspflege durch eine private Person durchgeführt wird: Adresse der privaten Person (validieren mit AddressTool)
+            Schritt 4. Telefonnummer des Dienstleisters oder der privaten Person *(optional, nur einmal fragen)
+            Schritt 5. Überspringen, Falls die Verhinderungspfelge durch professionellen Dienstleister durchgeführt wird **isRelative** Verwandtschaftsverhältnis *(nur bei privater Person)  (ja/nein)
+            Schritt 6. **isHomeCare** "Bitte bestätigen Sie, dass die Pflege zu Hause durchgeführt wird! (ja/nein)
+                        Schritt 1. **Carerecipient** Name & Geburtsdatum (Geburtsdatum validieren mit BirthdateTool)
+            Schritt 7. **Carerecipient** Versicherungsnummer (validieren mit InsuranceNumberTool)
+            Schritt 8. **Carerecipient** Adresse (Straße, Hausnummer, PLZ, Stadt – validieren mit AddressTool)
+            Schritt 9. **Carerecipient** Telefonnummer (optional)
+            Schritt 10. **Caretype** Stundenweise oder Tageweise
+            Schritt 11. **Caretype** Grund: Urlaub oder Sonstiges
+            Schritt 12. **CareLevel** Pflegegrad (mindestens 2 erforderlich, einzelne Zahlen werden als Pflegegrad akzeptiert)
+            Schritt 13. **Caregiver** Name (Wie lautet der Name der regulären Pflegekraft?)
+            Schritt 14. **Caregiver** Pflegebeginn (validieren mit RegularCareStartDateTool – muss mindestens 6 Monate in der Vergangenheit liegen)
+            Schritt 15. **Caregiver** Adresse (Wie lautet die Adresse der regulären Pflegekraft? – validieren mit AddressTool)
+            Schritt 16. **Period** Zeitraum der Verhinderungspflege (Start- und Enddatum, Startdatum: {{currentDate}} oder später, maximal 42 Tage Dauer, validieren mit PeriodTool)
+            Schritt 17. **ReplacementCare** Ersatzpflege in der Verhinderungspflege
             Schritt 19. **legalAcknowledgement** Wahrheitsgemäßigkeit (Bestätigen Sie bitte, dass alle Angaben wahrheitsgemäß sind) (ja/nein)
 
 

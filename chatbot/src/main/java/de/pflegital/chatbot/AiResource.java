@@ -2,11 +2,19 @@ package de.pflegital.chatbot;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
 
+import de.pflegital.chatbot.model.Address;
+import de.pflegital.chatbot.model.ReplacementCare;
+import de.pflegital.chatbot.model.replacementcare.PrivatePerson;
 import de.pflegital.chatbot.tools.InsuranceNumberTool;
 import io.quarkus.security.Authenticated;
 
@@ -24,6 +32,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class AiResource {
     @Inject
     AiService aiService;
+
+    @Inject
+    AiService2 aiService2;
 
     @Inject
     FormDataPresenter formDataPresenter;
@@ -52,6 +63,20 @@ public class AiResource {
             return new ChatResponse(sessionId, aiResponse);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @POST
+    @Path("/callChatbot")
+    public String callChatbot(String request) {
+        try {
+            LOG.info("Processing request: {}", request);
+            String response = aiService2.processRequest(request);
+            LOG.info("AI response: {}", response);
+            return response;
+        } catch (Exception e) {
+            LOG.error("Error processing request: {}", e.getMessage());
+            throw new WebApplicationException("Error processing request", e);
         }
     }
 
@@ -85,18 +110,43 @@ public class AiResource {
         }
 
         // Wenn vollständig: andere Antwort setzen
-        if (updatedResponse.isComplete()) {
+        if (!updatedResponse.isComplete()) {
+            Address adress = new Address();
+            adress.setCity("city");
+            adress.setHouseNumber(1);
+            adress.setStreet("street");
+            adress.setZip("12345");
+            
+            PrivatePerson privatePerson = new PrivatePerson();
+            privatePerson.setHasExpenses(true);
+            privatePerson.setPrivatePersonName("name");
+            privatePerson.setPrivatePersonAddress(adress);
+            privatePerson.setPrivatePersonPhone("01573232312");
+            privatePerson.setRelative(true);
+            privatePerson.setSameHousehold(true);
+            
+            ReplacementCare replacementCare = new ReplacementCare();
+            replacementCare.setPrivatePerson(privatePerson);
+            replacementCare.setProvider(null);
+            replacementCare.setProfessional(false);
+            
+            updatedResponse.setReplacementCare(replacementCare);
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
-            // FIXME: Start process here
-        }
-        sessionStore.setFormData(sessionId, updatedResponse);
+            try {
+                startBpmnProcess(updatedResponse);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            sessionStore.setFormData(sessionId, updatedResponse);
 
-        try {
-            LOG.info("AI response: {}", updatedResponse.getChatbotMessage());
-            return new ChatResponse(sessionId, updatedResponse);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            try {
+                LOG.info("AI response: {}", updatedResponse.getChatbotMessage());
+                return new ChatResponse(sessionId, updatedResponse);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
+        return null;
     }
 
     @Retry(maxRetries = 3)
@@ -107,6 +157,29 @@ public class AiResource {
         } catch (Exception e) {
             LOG.error("Error getting form data: {}", e.getMessage());
             throw new WebApplicationException(e);
+        }
+    }
+
+    public void startBpmnProcess(FormData finalFormData) {
+        Client client = ClientBuilder.newClient();
+
+        try {
+            WebTarget target = client.target("http://localhost:8083/formDataProcess");
+            Map<String, Object> requestBody = Map.of("message", finalFormData);
+
+            try (Response response = target.request()
+                    .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {
+
+                int status = response.getStatus();
+                if (status != 200 && status != 201) {
+                    LOG.error("Prozessstart fehlgeschlagen. Status: {}", response.getStatus());
+                }  
+                LOG.info("BPMN-Prozess erfolgreich gestartet");
+            }
+        } catch (Exception e) {
+            LOG.error("Fehler beim Aufruf des BPMN-Prozesses", e);
+        } finally {
+            client.close();
         }
     }
 }

@@ -25,6 +25,9 @@ class AiResourceTest {
     AiService aiService;
 
     @InjectMock
+    AiService2 aiService2;
+
+    @InjectMock
     InsuranceNumberTool insuranceNumberTool;
 
     private String sessionId;
@@ -137,6 +140,43 @@ class AiResourceTest {
                 .post("/chat/reply")
                 .then()
                 .statusCode(500); // WebApplicationException bei Fehler
+    }
+
+    @Test
+    void testCallChatbot() {
+        // Mock AI Service response
+        String mockResponse = "Dies ist eine Testantwort";
+        Mockito.when(aiService2.processRequest(Mockito.anyString()))
+                .thenReturn(mockResponse);
+
+        // Test the endpoint
+        given()
+                .contentType(ContentType.JSON)
+                .body("Test request")
+                .when()
+                .post("/chat/callChatbot")
+                .then()
+                .statusCode(200)
+                .body(equalTo(mockResponse));
+
+        // Verify AI service was called
+        Mockito.verify(aiService2).processRequest("Test request");
+    }
+
+    @Test
+    void testCallChatbotWithError() {
+        // Mock AI Service to throw exception
+        Mockito.when(aiService2.processRequest(Mockito.anyString()))
+                .thenThrow(new RuntimeException("AI processing error"));
+
+        // Test the endpoint
+        given()
+                .contentType(ContentType.JSON)
+                .body("Test request")
+                .when()
+                .post("/chat/callChatbot")
+                .then()
+                .statusCode(500);
     }
 
 }
