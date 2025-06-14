@@ -72,9 +72,12 @@ public class AiResource {
                 %s
                 CONTEXT END
 
-                USER INPUT:
+                PREVIOUS QUESTION BY AI:
                 %s
-                """.formatted(jsonFormData, userInput);
+
+                ANSWER BY USER:
+                %s
+                """.formatted(jsonFormData, session.getChatbotMessage(), userInput);
 
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
         FormData updatedResponse = getFormData(sessionId, prompt, currentDate);
