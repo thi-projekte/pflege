@@ -96,7 +96,7 @@ public class AiResource {
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
             // Prozess starten:
-            startBpmnProcess(updatedResponse);
+            startBpmnProcess(updatedResponse, sessionId);
         }
         sessionStore.setFormData(sessionId, updatedResponse);
 
@@ -119,12 +119,15 @@ public class AiResource {
         }
     }
 
-    public void startBpmnProcess(FormData finalFormData) {
+    public void startBpmnProcess(FormData finalFormData, String waId) {
         Client client = ClientBuilder.newClient();
 
         try {
             WebTarget target = client.target("http://localhost:8083/formDataProcess");
-            Map<String, Object> requestBody = Map.of("message", finalFormData);
+            Map<String, Object> requestBody = Map.of(
+                "message", finalFormData,
+                "waId", waId
+            );
 
             try (Response response = target.request()
                     .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {
@@ -133,7 +136,7 @@ public class AiResource {
                 if (status != 200 && status != 201) {
                     LOG.error("Prozessstart fehlgeschlagen. Status: {}", response.getStatus());
                 }
-                LOG.info("BPMN-Prozess erfolgreich gestartet");
+                LOG.info("BPMN-Prozess erfolgreich gestartet für WAID: {}", waId);
             }
         } catch (Exception e) {
             LOG.error("Fehler beim Aufruf des BPMN-Prozesses", e);
