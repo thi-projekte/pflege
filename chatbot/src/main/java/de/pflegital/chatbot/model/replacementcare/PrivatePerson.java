@@ -23,10 +23,6 @@ public class PrivatePerson {
     @Description("Indicates whether the private caregiver is related to the insured person. Required field.")
     private Boolean isRelative;
 
-    @JsonProperty("relationDescription")
-    @Description("Description of the relation to the insured person. Required if isRelative is true.")
-    private String relationDescription;
-
     @JsonProperty("isSameHousehold")
     @Description("Indicates whether the caregiver lives in the same household as the insured person. Required field.")
     private Boolean isSameHousehold;
@@ -35,10 +31,6 @@ public class PrivatePerson {
     @Description("Indicates whether the caregiver had any expenses. Required field.")
     private Boolean hasExpenses;
 
-    @JsonProperty("expenseDescription")
-    @Description("Description of the expenses incurred. Required if hasExpenses is true.")
-    private String expenseDescription;
-
     public boolean isValid() {
         if (privatePersonName == null || privatePersonName.trim().isEmpty())
             return false;
@@ -46,13 +38,9 @@ public class PrivatePerson {
             return false;
         if (isRelative == null)
             return false;
-        if (isRelative && (relationDescription == null || relationDescription.trim().isEmpty()))
-            return false;
         if (isSameHousehold == null)
             return false;
         if (hasExpenses == null)
-            return false;
-        if (hasExpenses && (expenseDescription == null || expenseDescription.trim().isEmpty()))
             return false;
         return privatePersonPhone == null || privatePersonPhone.matches("^[+\\d][\\d\\s\\-/]{3,}$");
     }
@@ -89,14 +77,6 @@ public class PrivatePerson {
         isRelative = relative;
     }
 
-    public String getRelationDescription() {
-        return relationDescription;
-    }
-
-    public void setRelationDescription(String relationDescription) {
-        this.relationDescription = relationDescription;
-    }
-
     public Boolean getSameHousehold() {
         return isSameHousehold;
     }
@@ -111,13 +91,5 @@ public class PrivatePerson {
 
     public void setHasExpenses(Boolean hasExpenses) {
         this.hasExpenses = hasExpenses;
-    }
-
-    public String getExpenseDescription() {
-        return expenseDescription;
-    }
-
-    public void setExpenseDescription(String expenseDescription) {
-        this.expenseDescription = expenseDescription;
     }
 }

@@ -1,24 +1,101 @@
-# Pflegital AI-Chatbot
+# 🧠 Pflegital AI-Chatbot
 
-### Applikation starten:
-    1. cd chatbot 
-    2. .env Datei konfigurieren
-        QUARKUS_LANGCHAIN4J_OPENAI_API_KEY=YOUR_API_KEY
-        X_QUARKUS_OIDC_AUTH-SERVER-URL=https://...
-        X_QUARKUS_OIDC_CREDENTIALS_SECRET=YOUR_CREDENTIALS
-        X_QUARKUS_OIDC_CLIENT_ID=OIDC_CLIENT
-    3. mvn clean install
-    4. mvn quarkus:dev oder quarkus dev
-    5. "d" im Terminal drücken um Quarkus Dev UI zu öffnen, REST-Endpoints unter http://localhost:8080.
+Ein intelligenter Chatbot zur Unterstützung bei der Beantragung der **Verhinderungspflege**. Der Bot führt Nutzer:innen Schritt für Schritt durch das Formular und verwendet validierende Tools, um korrekte Eingaben sicherzustellen.
 
-### Endpunkte, mit OAuth2 / OIDC geschützt (in Prod)
-    /chat/reply   -    POST (consumes: application/json) (produces:application/json)
-    /chat/start   -    POST (consumes: application/json) (produces:application/json)
+---
 
-### Endpunkte in Swagger UI testen
-    um 401 Not Authorized Fehler zu vermeiden, muss man in der DevUI auf Keycloak Provider drücken, sich mit dem Testaccount einloggen, und dann anschließend die Swagger UI über die DevUI aufrufen
+## 📚 Inhaltsverzeichnis
 
-### Formatierung
+- [🚀 Schnellstart](#-schnellstart)
+- [🔐 API-Endpunkte](#-api-endpunkte)
+- [🧪 API testen mit Swagger UI](#-api-testen-mit-swagger-ui)
+- [🎨 Code-Formatierung](#-code-formatierung)
+- [✅ Tests & Testabdeckung](#-tests--testabdeckung)
+- [🛠️ Tools-Verzeichnis](#-tools-verzeichnis)
+- [🧰 Verwendete Technologien](#-verwendete-technologien)
+
+## 🚀 Schnellstart
+
+```bash
+# 1. Projektverzeichnis wechseln
+cd chatbot
+
+# 2. Umgebungsvariablen konfigurieren (.env Datei)
+QUARKUS_LANGCHAIN4J_OPENAI_API_KEY={YOUR_API_KEY}
+
+# 3. Projekt bauen
+mvn clean install
+
+# 4. Anwendung im Dev-Modus starten
+mvn quarkus:dev
+# oder mit Quarkus CLI
+quarkus dev
+```
+
+👉 Drücke `d` im Terminal, um die **Quarkus Dev UI** zu öffnen:  
+[http://localhost:8080](http://localhost:8080)
+
+---
+
+## 🔐 API-Endpunkte
+
+Diese Endpunkte sind in Produktion mit **OAuth2 / OIDC** geschützt:
+
+| Methode | Pfad        | Beschreibung                        |
+|--------|-------------|-------------------------------------|
+| POST   | `/chat/reply` | Chat-Nachricht senden               |
+| POST   | `/chat/start` | Chat-Session initialisieren         |
+
+---
+
+## 🧪 API testen mit Swagger UI
+
+1. Dev UI öffnen (`d` im Terminal).
+2. **Keycloak Provider** auswählen und mit dem Test-Account einloggen.
+3. Anschließend Swagger UI über Dev UI aufrufen.
+4. Jetzt kannst du die geschützten Endpunkte testen (kein 401-Fehler mehr).
+
+---
+
+## 🎨 Code-Formatierung
+
 ```bash
 mvn formatter:format
 ```
+
+---
+
+## ✅ Tests & Testabdeckung
+Die Tests befinden sich hier:
+```
+chatbot/src/test
+```
+Testabdeckung mit JaCoCo prüfen:
+```bash
+mvn verify
+```
+
+➡️ Öffne anschließend den Bericht unter:
+```
+/target/jacoco-report
+```
+
+---
+
+## 🛠️ Tools-Verzeichnis
+
+Die Validierungslogik befindet sich hier:
+```
+chatbot/src/main/java/de/pflegital/chatbot/tools
+```
+
+---
+
+## 🧰 Verwendete Technologien
+
+![Java](https://img.shields.io/badge/Java-Language-007396?style=for-the-badge&logo=java&logoColor=white)
+![Quarkus](https://img.shields.io/badge/Quarkus-Framework-red?style=for-the-badge&logo=quarkus)
+![LangChain4j](https://img.shields.io/badge/LangChain4j-LLM-green?style=for-the-badge)
+![Keycloak](https://img.shields.io/badge/Keycloak-Auth-0066CC?style=for-the-badge&logo=keycloak&logoColor=white)
+![Maven](https://img.shields.io/badge/Maven-Build--Tool-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white)
+![JaCoCo](https://img.shields.io/badge/JaCoCo-Test--Coverage-brightgreen?style=for-the-badge)

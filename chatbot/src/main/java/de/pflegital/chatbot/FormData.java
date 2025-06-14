@@ -55,7 +55,7 @@ public class FormData {
     private Caregiver caregiver;
 
     @JsonProperty("replacementCare")
-    @Description("Details of the person or organization providing the replacement care. Can be a professional provider or a private person.")
+    @Description("Details of the person or organization providing the replacement care. Contains information wheter a professional provider is wanted  or a private person.")
     private ReplacementCare replacementCare;
 
     @JsonProperty("isHomeCare")
