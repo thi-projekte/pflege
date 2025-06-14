@@ -9,7 +9,11 @@ public class WaId {
 
     
 
-    public void setWaid(String waId) {
+    public WaId(String waId) {
+        this.waId = waId;
+    }
+
+    public void setWaId(String waId) {
         this.waId = waId;
     }
 

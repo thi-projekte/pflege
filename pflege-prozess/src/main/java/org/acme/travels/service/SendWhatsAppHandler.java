@@ -2,7 +2,8 @@ package org.acme.travels.service;
  
 import jakarta.enterprise.context.ApplicationScoped;
 import org.acme.travels.model.FormData;
- 
+import org.acme.travels.model.WaId;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -13,13 +14,13 @@ public class SendWhatsAppHandler {
  
     public final String WHATSAPP_API_URL = "http://localhost:8084/chat/callChatbot";
  
-    public void sendToWhatsApp(FormData formData) {
+    public void sendToWhatsApp(FormData formData, WaId waId) {
         
         try {
             
             String jsonPayload = String.format(
                 "{\"request\": \"Bitte weise die Plegekraft Max Meier hinzu \", \"whatsAppNumber\": \"%s\"}",
-                "<<yourNumber in format 49157......>>"
+                waId
             );
  
             HttpRequest request = HttpRequest.newBuilder()
