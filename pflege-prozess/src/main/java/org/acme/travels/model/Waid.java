@@ -2,19 +2,19 @@ package org.acme.travels.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Waid {
+public class WaId {
 
-    @JsonProperty("waid")
-    private String waid;
+    @JsonProperty("waId")
+    private String waId;
 
     
 
-    public void setWaid(String waid) {
-        this.waid = waid;
+    public void setWaid(String waId) {
+        this.waId = waId;
     }
 
-    public String getWaid() {
-        return waid;
+    public String getWaId() {
+        return waId;
     }
 
 }
