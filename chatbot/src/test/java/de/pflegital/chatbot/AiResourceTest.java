@@ -31,7 +31,7 @@ class AiResourceTest {
         FormData mockFormData = new FormData();
         mockFormData.setCareLevel(3);
         mockFormData.setCareType(CareType.TAGEWEISE);
-        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString())).thenReturn(mockFormData);
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString())).thenReturn(mockFormData);
 
         sessionId = given()
                 .contentType(ContentType.JSON)
@@ -48,7 +48,6 @@ class AiResourceTest {
 
     @Test
     void testReplyChat() {
-
         Response response = given()
                 .contentType(ContentType.JSON)
                 .queryParam(SESSION_ID, sessionId)
