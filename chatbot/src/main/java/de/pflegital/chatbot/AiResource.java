@@ -2,7 +2,12 @@ package de.pflegital.chatbot;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
@@ -90,7 +95,8 @@ public class AiResource {
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
-            // FIXME: Start process here
+            // Prozess starten:
+            startBpmnProcess(updatedResponse);
         }
         sessionStore.setFormData(sessionId, updatedResponse);
 
@@ -110,6 +116,29 @@ public class AiResource {
         } catch (Exception e) {
             LOG.error("Error getting form data: {}", e.getMessage());
             throw new WebApplicationException(e);
+        }
+    }
+
+    public void startBpmnProcess(FormData finalFormData) {
+        Client client = ClientBuilder.newClient();
+
+        try {
+            WebTarget target = client.target("http://localhost:8083/formDataProcess");
+            Map<String, Object> requestBody = Map.of("message", finalFormData);
+
+            try (Response response = target.request()
+                    .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {
+
+                int status = response.getStatus();
+                if (status != 200 && status != 201) {
+                    LOG.error("Prozessstart fehlgeschlagen. Status: {}", response.getStatus());
+                }
+                LOG.info("BPMN-Prozess erfolgreich gestartet");
+            }
+        } catch (Exception e) {
+            LOG.error("Fehler beim Aufruf des BPMN-Prozesses", e);
+        } finally {
+            client.close();
         }
     }
 }

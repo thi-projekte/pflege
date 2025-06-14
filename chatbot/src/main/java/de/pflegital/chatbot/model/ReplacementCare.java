@@ -11,7 +11,6 @@ public class ReplacementCare {
     @Description("True if the care is provided by a professional service provider, otherwise false.")
     private boolean isProfessional;
 
-
     @JsonProperty("privatePerson")
     @Description("Details about the private person providing the replacement care. Only required if isProfessional is false.")
     private PrivatePerson privatePerson;
@@ -37,6 +36,7 @@ public class ReplacementCare {
     public boolean isProfessional() {
         return isProfessional;
     }
+
     public void setIsProfessional(boolean isProfessional) {
         this.isProfessional = isProfessional;
     }

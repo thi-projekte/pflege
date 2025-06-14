@@ -3,9 +3,16 @@ package de.pflegital.chatbot;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import org.slf4j.Logger;
 
@@ -55,7 +62,8 @@ public class Pflegebot {
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
-            // FIXME: Start process here
+            // Prozess starten:
+            startBpmnProcess(updatedResponse);
         }
         sessionStore.setFormData(sessionId, updatedResponse);
 
@@ -64,6 +72,29 @@ public class Pflegebot {
             return new ChatResponse(sessionId, updatedResponse);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void startBpmnProcess(FormData finalFormData) {
+        Client client = ClientBuilder.newClient();
+
+        try {
+            WebTarget target = client.target("http://localhost:8083/formDataProcess");
+            Map<String, Object> requestBody = Map.of("message", finalFormData);
+
+            try (Response response = target.request()
+                    .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {
+
+                int status = response.getStatus();
+                if (status != 200 && status != 201) {
+                    LOG.error("Prozessstart fehlgeschlagen. Status: {}", response.getStatus());
+                }
+                LOG.info("BPMN-Prozess erfolgreich gestartet");
+            }
+        } catch (Exception e) {
+            LOG.error("Fehler beim Aufruf des BPMN-Prozesses", e);
+        } finally {
+            client.close();
         }
     }
 }
