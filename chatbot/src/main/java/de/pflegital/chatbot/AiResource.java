@@ -12,6 +12,9 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
 
+import de.pflegital.chatbot.model.Address;
+import de.pflegital.chatbot.model.ReplacementCare;
+import de.pflegital.chatbot.model.replacementcare.PrivatePerson;
 import de.pflegital.chatbot.tools.InsuranceNumberTool;
 import io.quarkus.security.Authenticated;
 
@@ -93,10 +96,28 @@ public class AiResource {
         }
 
         // Wenn vollständig: andere Antwort setzen
-        if (updatedResponse.isComplete()) {
+        if (!updatedResponse.isComplete()) {
+            Address adress = new Address();
+            adress.setCity("city");
+            adress.setHouseNumber(1);
+            adress.setStreet("street");
+            adress.setZip("12345");
+            
+            PrivatePerson privatePerson = new PrivatePerson();
+            privatePerson.setHasExpenses(true);
+            privatePerson.setPrivatePersonName("name");
+            privatePerson.setPrivatePersonAddress(adress);
+            privatePerson.setPrivatePersonPhone("01573232312");
+            privatePerson.setRelative(true);
+            privatePerson.setSameHousehold(true);
+            
+            ReplacementCare replacementCare = new ReplacementCare();
+            replacementCare.setPrivatePerson(privatePerson);
+            replacementCare.setIsProfessional(false);
+            
+            updatedResponse.setReplacementCare(replacementCare);
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
-            // Prozess starten:
-            startBpmnProcess(updatedResponse, sessionId);
+            startBpmnProcess(updatedResponse, "<12345678819>");
         }
         sessionStore.setFormData(sessionId, updatedResponse);
 
@@ -126,7 +147,8 @@ public class AiResource {
             WebTarget target = client.target("http://localhost:8083/formDataProcess");
             Map<String, Object> requestBody = Map.of(
                 "message", finalFormData,
-                "waId", waId
+                "waId", waId,
+                "waid", waId
             );
 
             try (Response response = target.request()

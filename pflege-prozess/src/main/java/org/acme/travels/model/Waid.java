@@ -7,9 +7,14 @@ public class WaId {
     @JsonProperty("waId")
     private String waId;
 
+    public WaId() {
+    }
     
+    public WaId(String waId) {
+        this.waId = waId;
+    }
 
-    public void setWaid(String waId) {
+    public void setWaId(String waId) {
         this.waId = waId;
     }
 
