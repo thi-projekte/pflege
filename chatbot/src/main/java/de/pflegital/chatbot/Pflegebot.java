@@ -45,10 +45,18 @@ public class Pflegebot {
 
         LOG.info("User writes: {}", userInput);
 
-        // Prompt bauen mit aktuellem Zustand
         String jsonFormData = formDataPresenter.present(session);
-        String prompt = "The current form data is: " + jsonFormData + ". The user just said: '" + userInput
-                + "'. Please update the missing fields accordingly.";
+        String prompt = """
+                CONTEXT BEGIN
+                %s
+                CONTEXT END
+
+                PREVIOUS QUESTION BY AI:
+                %s
+
+                ANSWER BY USER:
+                %s
+                """.formatted(jsonFormData, session.getChatbotMessage(), userInput);
 
         LOG.info("Prompt to AI: {}", prompt);
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
@@ -59,7 +67,6 @@ public class Pflegebot {
                     "Die Verhinderungspflege steht erst ab Pflegegrad 2 zur Verfügung. Bitte prüfen Sie Ihre Angaben.");
         }
 
-        // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
             // Prozess starten:
