@@ -13,6 +13,11 @@ public class InsuranceNumberTool {
     @Tool("Ermittelt ob eine Versicherungsnummer gültig ist oder nicht.")
     public boolean isValidSecurityNumber(String versicherungsnummer) {
 
+        if (versicherungsnummer == null || versicherungsnummer.trim().isEmpty()) {
+            LOG.error("Die Versicherungsnummer ist leer!");
+            return false;
+        }
+
         // Leerzeichen entfernen
         versicherungsnummer = versicherungsnummer.replaceAll("\\s+", "").trim();
 
