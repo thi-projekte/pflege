@@ -1,6 +1,6 @@
 # Kogito Travel Agency - base version
 
-## Description
+## Description-Test
 
 During this workshop we will create a software system for a startup travel agency called Kogito Travel Agency. The first iteration of the system will consist of a set of services that are able to deal with travel requests and the booking of hotels and flights.
 

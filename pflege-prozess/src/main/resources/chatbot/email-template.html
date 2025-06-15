@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pflegeantrag Übersicht - Pflegital.de</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #FEFCEB; /* Use the same background color as the website */
+            color: #5E5043; /* Use the same text color as the website */
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #FEFCEB; /* Make the background transparent */
+        }
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        .subtitle {
+            font-style: italic;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            /*margin-top: 20px;*/
+        }
+        th, td {
+            border: 2px solid #ddd; /* Thicker border */
+            padding: 0.4em 0.4em; /* Reduced padding */
+            text-align: left;
+            /*line-height: 1.4; /* Adjust line height for better spacing */
+            width: 30%; 
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .table-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px; /* Reduced margin */
+            background-color: #F49B62; /* Use the specified orange color */
+            color: black; /* Set font color to black */
+            padding: 8px;
+        }
+        .table-container {
+            margin-top: 20px; /* Add margin to separate tables */
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 0.8em;
+            color: #666;
+        }
+        .footer a {
+            color: #F49B62;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🤝 Pflegital.de</div>
+        <h1>Pflegeantrag Übersicht</h1>
+        <div class="subtitle">Antrag auf Verhinderungspflege</div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-title">Pflegeantrag Informationen</div>
+        <table>
+            <tr><td>Pflegeart</td><td>{careType}</td></tr>
+            <tr><td>Pflegegrad</td><td>{careLevel}</td></tr>
+            <tr><td>Pflegezeitraum</td><td>{careStart} – {careEnd}</td></tr>
+            <tr><td>Grund</td><td>{reason}</td></tr>
+            <tr><td>Pflege zu Hause</td><td>{isHomeCare}</td></tr>
+            <tr><td>Pflege länger als 6 Monate</td><td>{careDurationMin6Months}</td></tr>
+            <tr><td>Rechtlicher Hinweis bestätigt</td><td>{legalAcknowledgement}</td></tr>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <div class="table-title">Versicherte Person</div>
+        <table>
+            <tr><td>Name</td><td>{insuredName}</td></tr>
+            <tr><td>Geburtsdatum</td><td>{insuredBirthDate}</td></tr>
+            <tr><td>Telefon</td><td>{insuredPhone}</td></tr>
+            <tr><td>Versichertennummer</td><td>{insuranceNumber}</td></tr>
+            <tr><td>Adresse</td><td>{insuredAddress}</td></tr>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <div class="table-title">Pflegende Person</div>
+        <table>
+            <tr><td>Name</td><td>{caregiverName}</td></tr>
+            <tr><td>Beginn der Pflege</td><td>{caregiverStartDate}</td></tr>
+            <tr><td>Telefon</td><td>{caregiverPhone}</td></tr>
+            <tr><td>Adresse</td><td>{caregiverAddress}</td></tr>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <div class="table-title">Ersatzpflege (Professionell)</div>
+        <table>
+            <tr><td>Pflegeanbieter</td><td>{providerName}</td></tr>
+            <tr><td>Adresse</td><td>{providerAddress}</td></tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Erstellt von <a href="https://pflegital.de">Pflegital.de</a> - Ihr digitaler Pflegeassistent</p>
+        <p>Zwischenmenschliche Hilfe + Geborgenheit</p>
+    </div>
+</body>
+</html>
