@@ -24,9 +24,9 @@
   <modelVersion>4.0.0</modelVersion>
  <groupId>de.pflegital</groupId>
 
-  <artifactId>kogito-travel-agency-example-basic</artifactId>
+  <artifactId>PflegeProzess</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>Kogito Example :: Travel Agency :: Basic</name>
+  <name>PflegeProzess</name>
   <properties>
     <compiler-plugin.version>3.14.0</compiler-plugin.version>
     <maven.compiler.release>21</maven.compiler.release>
