@@ -15,11 +15,11 @@ public class SendWhatsAppHandler {
     public final String WHATSAPP_API_URL = "http://localhost:8084/chat/callChatbot";
  
     public void sendToWhatsApp(FormData formData, WaId waId) {
-        
+       
         try {
             System.out.println("Versuche Nachricht an " + waId + "zu senden");
             String jsonPayload = String.format(
-                "{\"request\": \"Bitte weise die Plegekraft Max Meier hinzu \", \"whatsAppNumber\": \"%s\"}",
+                "{\"request\": \"Bitte sage der Person, dass die Plegekraft Max Meier für die Verhinderungspflege zugewiesen wurde. \", \"whatsAppNumber\": \"%s\"}",
                 waId
             );
  
