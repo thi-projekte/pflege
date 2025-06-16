@@ -67,6 +67,7 @@ public class AiResource {
         }
     }
 
+    @POST
     @Path("/callChatbot")
     public String callChatbot(ChatbotRequest request) {
         try {
@@ -145,7 +146,7 @@ public class AiResource {
             
             updatedResponse.setReplacementCare(replacementCare);
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
-            startBpmnProcess(updatedResponse, "<12345678819>");
+            startBpmnProcess(updatedResponse, "123123");
         }
         sessionStore.setFormData(sessionId, updatedResponse);
 

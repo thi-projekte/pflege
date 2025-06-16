@@ -43,7 +43,7 @@ public class WhatsAppRestClient {
                         }
                     }
                     """, recipientWaid, escapeJson(messageText));
-
+            LOGGER.info("bis hier mit Nummer " + recipientWaid + "und text " + messageText);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://graph.facebook.com/" + whatsappApiVersion + "/" + whatsappPhoneNumberId
                             + "/messages"))
