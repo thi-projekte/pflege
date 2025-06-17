@@ -17,7 +17,6 @@ import io.quarkus.security.Authenticated;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -36,7 +35,12 @@ public class AiResource {
     @Inject
     InsuranceNumberTool insuranceNumberTool;
 
-    private final Map<String, FormData> sessions = new HashMap<>();
+    @Inject
+    WhatsAppRestClient whatsAppRestClient;
+
+    @Inject
+    ProcessRequestAiService processRequestAiService;
+
     private static final Logger LOG = getLogger(AiResource.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -60,6 +64,28 @@ public class AiResource {
         }
     }
 
+    @POST
+    @Path("/callChatbot")
+    public String callChatbot(ChatbotRequest request) {
+        try {
+            LOG.info("Processing request: {}", request.getRequest());
+            String response = processRequestAiService.processRequest(request.getRequest());
+            LOG.info("AI response: {}", response);
+
+                try {
+                    whatsAppRestClient.sendWhatsAppReply("4915732352131", response);
+                    LOG.info("WhatsApp message sent to: {}", request.getWhatsAppNumber());
+                } catch (Exception e) {
+                    LOG.error("Error sending WhatsApp message: {}", e.getMessage());
+                }
+            
+
+            return response;
+        } catch (Exception e) {
+            LOG.error("Error processing request: {}", e.getMessage());
+            throw new WebApplicationException("Error processing request", e);
+        }
+    }
     @POST
     @Path("/reply")
     public ChatResponse processUserInput(@QueryParam("sessionId") String sessionId, String userInput) {
@@ -96,7 +122,7 @@ public class AiResource {
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
             // Prozess starten:
-            startBpmnProcess(updatedResponse);
+            startBpmnProcess(updatedResponse, sessionId);
         }
         sessionStore.setFormData(sessionId, updatedResponse);
 
@@ -119,12 +145,16 @@ public class AiResource {
         }
     }
 
-    public void startBpmnProcess(FormData finalFormData) {
+    public void startBpmnProcess(FormData finalFormData, String waId) {
         Client client = ClientBuilder.newClient();
 
         try {
             WebTarget target = client.target("http://localhost:8083/formDataProcess");
-            Map<String, Object> requestBody = Map.of("message", finalFormData);
+            Map<String, Object> requestBody = Map.of(
+                "message", finalFormData,
+                "waId", waId,
+                "waid", waId
+            );
 
             try (Response response = target.request()
                     .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {
@@ -133,7 +163,7 @@ public class AiResource {
                 if (status != 200 && status != 201) {
                     LOG.error("Prozessstart fehlgeschlagen. Status: {}", response.getStatus());
                 }
-                LOG.info("BPMN-Prozess erfolgreich gestartet");
+                LOG.info("BPMN-Prozess erfolgreich gestartet für WAID: {}", waId);
             }
         } catch (Exception e) {
             LOG.error("Fehler beim Aufruf des BPMN-Prozesses", e);

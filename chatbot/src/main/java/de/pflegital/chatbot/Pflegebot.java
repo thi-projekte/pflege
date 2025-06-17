@@ -31,14 +31,14 @@ public class Pflegebot {
 
     private final Logger LOG = org.slf4j.LoggerFactory.getLogger(Pflegebot.class);
 
-    public ChatResponse processUserInput(String sessionId, String userInput) {
-        LOG.info("IM PFLEGEBOT: {}", sessionId);
-        if (sessionStore.getFormData(sessionId) == null) {
+    public ChatResponse processUserInput(String waId, String userInput) {
+        LOG.info("IM PFLEGEBOT: {}", waId);
+        if (sessionStore.getFormData(waId) == null) {
             FormData aiResponse = new FormData();
-            sessionStore.setFormData(sessionId, aiResponse);
+            sessionStore.setFormData(waId, aiResponse);
         }
-        FormData session = sessionStore.getFormData(sessionId);
-        LOG.info("SessionID: {}", session);
+        FormData session = sessionStore.getFormData(waId);
+        LOG.info(" sessionId = waId: {}", session);
         if (session == null) {
             throw new NotAuthorizedException("Sie sind nicht authorisiert.");
         }
@@ -60,7 +60,7 @@ public class Pflegebot {
 
         LOG.info("Prompt to AI: {}", prompt);
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData updatedResponse = aiService.chatWithAiStructured(sessionId, prompt, currentDate);
+        FormData updatedResponse = aiService.chatWithAiStructured(waId, prompt, currentDate);
 
         if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
             updatedResponse.setChatbotMessage(
@@ -70,24 +70,27 @@ public class Pflegebot {
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
             // Prozess starten:
-            startBpmnProcess(updatedResponse);
+            startBpmnProcess(updatedResponse, waId);
         }
-        sessionStore.setFormData(sessionId, updatedResponse);
+        sessionStore.setFormData(waId, updatedResponse);
 
         try {
             LOG.info("AI response: {}", updatedResponse.getChatbotMessage());
-            return new ChatResponse(sessionId, updatedResponse);
+            return new ChatResponse(waId, updatedResponse);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void startBpmnProcess(FormData finalFormData) {
+    public void startBpmnProcess(FormData finalFormData, String waId) {
         Client client = ClientBuilder.newClient();
 
         try {
             WebTarget target = client.target("http://localhost:8083/formDataProcess");
-            Map<String, Object> requestBody = Map.of("message", finalFormData);
+            Map<String, Object> requestBody = Map.of(
+                "message", finalFormData,
+                "waId", waId
+            );
 
             try (Response response = target.request()
                     .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {
@@ -96,7 +99,7 @@ public class Pflegebot {
                 if (status != 200 && status != 201) {
                     LOG.error("Prozessstart fehlgeschlagen. Status: {}", response.getStatus());
                 }
-                LOG.info("BPMN-Prozess erfolgreich gestartet");
+                LOG.info("BPMN-Prozess erfolgreich gestartet für WAID: {}", waId);
             }
         } catch (Exception e) {
             LOG.error("Fehler beim Aufruf des BPMN-Prozesses", e);
