@@ -72,13 +72,12 @@ public class AiResource {
             String response = processRequestAiService.processRequest(request.getRequest());
             LOG.info("AI response: {}", response);
 
-                try {
-                    whatsAppRestClient.sendWhatsAppReply("4915732352131", response);
-                    LOG.info("WhatsApp message sent to: {}", request.getWhatsAppNumber());
-                } catch (Exception e) {
-                    LOG.error("Error sending WhatsApp message: {}", e.getMessage());
-                }
-            
+            try {
+                whatsAppRestClient.sendWhatsAppReply("4915732352131", response);
+                LOG.info("WhatsApp message sent to: {}", request.getWhatsAppNumber());
+            } catch (Exception e) {
+                LOG.error("Error sending WhatsApp message: {}", e.getMessage());
+            }
 
             return response;
         } catch (Exception e) {
@@ -86,6 +85,7 @@ public class AiResource {
             throw new WebApplicationException("Error processing request", e);
         }
     }
+
     @POST
     @Path("/reply")
     public ChatResponse processUserInput(@QueryParam("sessionId") String sessionId, String userInput) {
@@ -151,10 +151,9 @@ public class AiResource {
         try {
             WebTarget target = client.target("http://localhost:8083/formDataProcess");
             Map<String, Object> requestBody = Map.of(
-                "message", finalFormData,
-                "waId", waId,
-                "waid", waId
-            );
+                    "message", finalFormData,
+                    "waId", waId,
+                    "waid", waId);
 
             try (Response response = target.request()
                     .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {

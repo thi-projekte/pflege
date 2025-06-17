@@ -27,4 +27,4 @@ public class ChatbotRequest {
     public void setWhatsAppNumber(String whatsAppNumber) {
         this.whatsAppNumber = whatsAppNumber;
     }
-} 
+}

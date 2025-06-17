@@ -88,9 +88,8 @@ public class Pflegebot {
         try {
             WebTarget target = client.target("http://localhost:8083/formDataProcess");
             Map<String, Object> requestBody = Map.of(
-                "message", finalFormData,
-                "waId", waId
-            );
+                    "message", finalFormData,
+                    "waId", waId);
 
             try (Response response = target.request()
                     .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {

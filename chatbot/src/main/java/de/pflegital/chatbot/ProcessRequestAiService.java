@@ -7,7 +7,7 @@ import io.quarkiverse.langchain4j.RegisterAiService;
 
 @RegisterAiService
 public interface ProcessRequestAiService {
-    
+
     @SystemMessage("""
             ROLLE UND AUFGABE:
             Sie sind ein spezialisierter Assistent für die Verarbeitung von Prozessanfragen.
@@ -15,7 +15,7 @@ public interface ProcessRequestAiService {
             """)
     @UserMessage("""
             Verarbeite die folgende Anfrage: {request}
-            
+
             Antwortformat: Nur den Antworttext
             """)
     String processRequest(@V("request") String request);
