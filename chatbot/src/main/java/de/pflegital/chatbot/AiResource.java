@@ -2,7 +2,12 @@ package de.pflegital.chatbot;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
@@ -12,7 +17,6 @@ import io.quarkus.security.Authenticated;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,7 +35,12 @@ public class AiResource {
     @Inject
     InsuranceNumberTool insuranceNumberTool;
 
-    private final Map<String, FormData> sessions = new HashMap<>();
+    @Inject
+    WhatsAppRestClient whatsAppRestClient;
+
+    @Inject
+    ProcessRequestAiService processRequestAiService;
+
     private static final Logger LOG = getLogger(AiResource.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -44,7 +53,7 @@ public class AiResource {
         String sessionId = UUID.randomUUID().toString();
 
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData aiResponse = aiService.chatWithAiStructured("Start conversation.", currentDate);
+        FormData aiResponse = aiService.chatWithAiStructured(sessionId, "Start conversation.", currentDate);
         sessionStore.setFormData(sessionId, aiResponse);
 
         try {
@@ -52,6 +61,28 @@ public class AiResource {
             return new ChatResponse(sessionId, aiResponse);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @POST
+    @Path("/callChatbot")
+    public String callChatbot(ChatbotRequest request) {
+        try {
+            LOG.info("Processing request: {}", request.getRequest());
+            String response = processRequestAiService.processRequest(request.getRequest());
+            LOG.info("AI response: {}", response);
+
+            try {
+                whatsAppRestClient.sendWhatsAppReply("4915732352131", response);
+                LOG.info("WhatsApp message sent to: {}", request.getWhatsAppNumber());
+            } catch (Exception e) {
+                LOG.error("Error sending WhatsApp message: {}", e.getMessage());
+            }
+
+            return response;
+        } catch (Exception e) {
+            LOG.error("Error processing request: {}", e.getMessage());
+            throw new WebApplicationException("Error processing request", e);
         }
     }
 
@@ -67,11 +98,20 @@ public class AiResource {
 
         // Prompt bauen mit aktuellem Zustand
         String jsonFormData = formDataPresenter.present(session);
-        String prompt = "The current form data is: " + jsonFormData +
-                ". The user just said: '" + userInput + "'. Please update the missing fields accordingly.";
+        String prompt = """
+                CONTEXT BEGIN
+                %s
+                CONTEXT END
+
+                PREVIOUS QUESTION BY AI:
+                %s
+
+                ANSWER BY USER:
+                %s
+                """.formatted(jsonFormData, session.getChatbotMessage(), userInput);
 
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData updatedResponse = getFormData(prompt, currentDate);
+        FormData updatedResponse = getFormData(sessionId, prompt, currentDate);
 
         if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
             updatedResponse.setChatbotMessage(
@@ -80,8 +120,9 @@ public class AiResource {
 
         // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
-            updatedResponse.setChatbotMessage("Thank you! All required information has been collected.");
-            // FIXME: Start process here
+            updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
+            // Prozess starten:
+            startBpmnProcess(updatedResponse, sessionId);
         }
         sessionStore.setFormData(sessionId, updatedResponse);
 
@@ -94,13 +135,39 @@ public class AiResource {
     }
 
     @Retry(maxRetries = 3)
-    protected FormData getFormData(String prompt, String currentDate) {
+    protected FormData getFormData(String sessionId, String prompt, String currentDate) {
         LOG.info("Prompt to AI: {}", prompt);
         try {
-            return aiService.chatWithAiStructured(prompt, currentDate);
+            return aiService.chatWithAiStructured(sessionId, prompt, currentDate);
         } catch (Exception e) {
             LOG.error("Error getting form data: {}", e.getMessage());
             throw new WebApplicationException(e);
+        }
+    }
+
+    public void startBpmnProcess(FormData finalFormData, String waId) {
+        Client client = ClientBuilder.newClient();
+
+        try {
+            WebTarget target = client.target("http://localhost:8083/formDataProcess");
+            Map<String, Object> requestBody = Map.of(
+                    "message", finalFormData,
+                    "waId", waId,
+                    "waid", waId);
+
+            try (Response response = target.request()
+                    .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {
+
+                int status = response.getStatus();
+                if (status != 200 && status != 201) {
+                    LOG.error("Prozessstart fehlgeschlagen. Status: {}", response.getStatus());
+                }
+                LOG.info("BPMN-Prozess erfolgreich gestartet für WAID: {}", waId);
+            }
+        } catch (Exception e) {
+            LOG.error("Fehler beim Aufruf des BPMN-Prozesses", e);
+        } finally {
+            client.close();
         }
     }
 }
