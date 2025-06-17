@@ -27,8 +27,8 @@ class AiResourceTest {
     @InjectMock
     InsuranceNumberTool insuranceNumberTool;
 
-    private String sessionId;
-    private static final String SESSION_ID = "sessionId";
+    private String memoryId;
+    private static final String SESSION_ID = "memoryId";
     private static final Logger LOG = getLogger(AiResource.class);
 
     @BeforeEach
@@ -40,7 +40,7 @@ class AiResourceTest {
         Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(mockFormData);
 
-        sessionId = given()
+        memoryId = given()
                 .contentType(ContentType.JSON)
                 .body("{}")
                 .when()
@@ -57,7 +57,7 @@ class AiResourceTest {
     void testReplyChat() {
         Response response = given()
                 .contentType(ContentType.JSON)
-                .queryParam(SESSION_ID, sessionId)
+                .queryParam(SESSION_ID, memoryId)
                 .body("Pflegegrad und Art")
                 .when()
                 .post("/chat/reply")
@@ -91,7 +91,7 @@ class AiResourceTest {
 
         given()
                 .contentType(ContentType.JSON)
-                .queryParam(SESSION_ID, sessionId)
+                .queryParam(SESSION_ID, memoryId)
                 .body("Pflegegrad 1")
                 .when()
                 .post("/chat/reply")
@@ -115,7 +115,7 @@ class AiResourceTest {
 
         given()
                 .contentType(ContentType.JSON)
-                .queryParam(SESSION_ID, sessionId)
+                .queryParam(SESSION_ID, memoryId)
                 .body("Test mit ungültiger Versicherung")
                 .when()
                 .post("/chat/reply")
@@ -131,7 +131,7 @@ class AiResourceTest {
 
         given()
                 .contentType(ContentType.JSON)
-                .queryParam(SESSION_ID, sessionId)
+                .queryParam(SESSION_ID, memoryId)
                 .body("Trigger Fehler")
                 .when()
                 .post("/chat/reply")
