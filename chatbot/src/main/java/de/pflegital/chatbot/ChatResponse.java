@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ChatResponse {
 
-    @JsonProperty("sessionId")
-    private String sessionId;
+    @JsonProperty("memoryId")
+    private String memoryId;
 
     @JsonProperty("message")
     private String message;
@@ -16,18 +16,18 @@ public class ChatResponse {
     public ChatResponse() {
     }
 
-    public ChatResponse(String sessionId, FormData formData) {
-        this.sessionId = sessionId;
+    public ChatResponse(String memoryId, FormData formData) {
+        this.memoryId = memoryId;
         this.message = formData.getChatbotMessage();
         this.formData = formData;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getMemoryId() {
+        return memoryId;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setMemoryId(String memoryId) {
+        this.memoryId = memoryId;
     }
 
     public String getMessage() {

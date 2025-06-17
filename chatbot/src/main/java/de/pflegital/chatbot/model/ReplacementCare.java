@@ -11,14 +11,16 @@ public class ReplacementCare {
     @Description("True if the care is provided by a professional service provider, otherwise false.")
     private boolean isProfessional;
 
-    @JsonProperty("privatePerson")
-    @Description("Details about the private person providing the replacement care. Only required if isProfessional is false.")
     private PrivatePerson privatePerson;
+
+    @JsonProperty("privatePerson")
+    public PrivatePerson getPrivatePersonForSerialization() {
+        return isProfessional ? null : privatePerson;
+    }
 
     public boolean isValid() {
         if (isProfessional) {
-            setPrivatePerson(null);
-            return true;
+            return true; // privatePerson ist ignoriert
         } else {
             return privatePerson != null && privatePerson.isValid();
         }
@@ -29,8 +31,10 @@ public class ReplacementCare {
     }
 
     public void setPrivatePerson(PrivatePerson privatePerson) {
+        if (isProfessional && privatePerson != null) {
+            throw new IllegalStateException("Cannot set privatePerson when isProfessional is true.");
+        }
         this.privatePerson = privatePerson;
-        this.isProfessional = false;
     }
 
     public boolean isProfessional() {
@@ -39,5 +43,8 @@ public class ReplacementCare {
 
     public void setIsProfessional(boolean isProfessional) {
         this.isProfessional = isProfessional;
+        if (isProfessional) {
+            this.privatePerson = null;
+        }
     }
 }

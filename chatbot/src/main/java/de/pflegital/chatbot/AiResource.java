@@ -50,15 +50,15 @@ public class AiResource {
     @POST
     @Path("/start")
     public ChatResponse startChat() {
-        String sessionId = UUID.randomUUID().toString();
+        String memoryId = UUID.randomUUID().toString();
 
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData aiResponse = aiService.chatWithAiStructured(sessionId, "Start conversation.", currentDate);
-        sessionStore.setFormData(sessionId, aiResponse);
+        FormData aiResponse = aiService.chatWithAiStructured(memoryId, "Start conversation.", currentDate);
+        sessionStore.setFormData(memoryId, aiResponse);
 
         try {
             LOG.info("Chat started: {}", aiResponse.getChatbotMessage());
-            return new ChatResponse(sessionId, aiResponse);
+            return new ChatResponse(memoryId, aiResponse);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -73,7 +73,7 @@ public class AiResource {
             LOG.info("AI response: {}", response);
 
             try {
-                whatsAppRestClient.sendWhatsAppReply("4915732352131", response);
+                whatsAppRestClient.sendWhatsAppReply(request.getWhatsAppNumber(), response);
                 LOG.info("WhatsApp message sent to: {}", request.getWhatsAppNumber());
             } catch (Exception e) {
                 LOG.error("Error sending WhatsApp message: {}", e.getMessage());
@@ -88,8 +88,8 @@ public class AiResource {
 
     @POST
     @Path("/reply")
-    public ChatResponse processUserInput(@QueryParam("sessionId") String sessionId, String userInput) {
-        FormData session = sessionStore.getFormData(sessionId);
+    public ChatResponse processUserInput(@QueryParam("memoryId") String memoryId, String userInput) {
+        FormData session = sessionStore.getFormData(memoryId);
         if (session == null) {
             throw new NotAuthorizedException("Sie sind nicht authorisiert.");
         }
@@ -111,7 +111,7 @@ public class AiResource {
                 """.formatted(jsonFormData, session.getChatbotMessage(), userInput);
 
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData updatedResponse = getFormData(sessionId, prompt, currentDate);
+        FormData updatedResponse = getFormData(memoryId, prompt, currentDate);
 
         if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
             updatedResponse.setChatbotMessage(
@@ -122,23 +122,23 @@ public class AiResource {
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
             // Prozess starten:
-            startBpmnProcess(updatedResponse, sessionId);
+            startBpmnProcess(updatedResponse, memoryId);
         }
-        sessionStore.setFormData(sessionId, updatedResponse);
+        sessionStore.setFormData(memoryId, updatedResponse);
 
         try {
             LOG.info("AI response: {}", updatedResponse.getChatbotMessage());
-            return new ChatResponse(sessionId, updatedResponse);
+            return new ChatResponse(memoryId, updatedResponse);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Retry(maxRetries = 3)
-    protected FormData getFormData(String sessionId, String prompt, String currentDate) {
+    protected FormData getFormData(String memoryId, String prompt, String currentDate) {
         LOG.info("Prompt to AI: {}", prompt);
         try {
-            return aiService.chatWithAiStructured(sessionId, prompt, currentDate);
+            return aiService.chatWithAiStructured(memoryId, prompt, currentDate);
         } catch (Exception e) {
             LOG.error("Error getting form data: {}", e.getMessage());
             throw new WebApplicationException(e);
