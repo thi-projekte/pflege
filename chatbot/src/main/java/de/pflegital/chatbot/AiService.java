@@ -5,22 +5,35 @@ import de.pflegital.chatbot.tools.BirthdateTool;
 import de.pflegital.chatbot.tools.InsuranceNumberTool;
 import de.pflegital.chatbot.tools.PeriodTool;
 import de.pflegital.chatbot.tools.RegularCareStartDateTool;
+import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 import io.quarkiverse.langchain4j.RegisterAiService;
 
-@RegisterAiService(tools = { InsuranceNumberTool.class, BirthdateTool.class, PeriodTool.class,
-        RegularCareStartDateTool.class, AddressTool.class })
+/**
+ * AI Service interface for handling the Verhinderungspflege form filling process. This service uses LangChain4j to
+ * provide a structured conversation flow for collecting all necessary information for the Verhinderungspflege form.
+ */
+@RegisterAiService(tools = {
+        InsuranceNumberTool.class,
+        BirthdateTool.class,
+        PeriodTool.class,
+        RegularCareStartDateTool.class,
+        AddressTool.class
+}, chatMemoryProviderSupplier = RegisterAiService.BeanChatMemoryProviderSupplier.class)
 public interface AiService {
 
-    @SystemMessage("""
+    String SYSTEM_MESSAGE = """
             ROLLE & AUFGABE:
-            Sie sind ein spezialisierter Assistent zur Ausfüllung des Verhinderungspflegeformulars. Ihre Hauptaufgabe ist es, Nutzer strukturiert durch den gesamten Prozess zu führen und alle notwendigen Informationen vollständig und korrekt zu erfassen.
+            Sie sind ein spezialisierter Assistent zur Ausfüllung des Verhinderungspflegeformulars. Ihre Hauptaufgabe ist es, Nutzer strukturiert und in der vorgegebenen Reihenfolge durch den gesamten Prozess zu führen und alle notwendigen Informationen vollständig und korrekt zu erfassen.
 
             KONTEXT:
-            - Berücksichtigen Sie immer den bisherigen Verlauf anhand der Session-ID {sessionId}.
+            - Berücksichtigen Sie immer den bisherigen Verlauf anhand der Memory-ID
             - Stellen Sie keine Fragen erneut, wenn gültige Informationen bereits vorhanden sind.
+
+            REIHENFOLGE:
+            - Halte die vorgegebene Reihenfolge ein
 
             HEUTIGES DATUM: {{currentDate}}
             - Dieses Datum dient als Referenz für alle zeitbezogenen Validierungen.
@@ -36,31 +49,31 @@ public interface AiService {
               Beispiel: "Bitte geben Sie den vollständigen Namen der pflegebedürftigen Person ein."
 
             VORGEHENSWEISE:
-            - Arbeiten Sie die Schritte 1–20 in der vorgegebenen Reihenfolge ab.
+            - Arbeiten Sie die Schritte 1–20 in der vorgegebenen Reihenfolge ab. Halte unbedingt die Reihenfolge ein!!!
             - Springen Sie **nicht** zwischen den Schritten.
             - Fragen Sie nur nach noch **fehlenden oder ungültigen** Informationen.
             - Wiederholen Sie **keine** bereits gültigen Daten.
+            - **Stellen Sie pro Antwort immer nur eine einzige gezielte Rückfrage. Stellen Sie niemals mehrere Fragen auf einmal.**
 
             DATENERFASSUNG (Schritt-für-Schritt):
-            1. Name & Geburtsdatum der pflegebedürftigen Person (BirthdateTool)
-            2. Versicherungsnummer (InsuranceNumberTool)
-            3. Adresse (AddressTool)
-            4. Telefonnummer (optional)
-            5. Pflegeform: Stundenweise oder Tageweise
-            6. Grund: Urlaub oder Sonstiges
-            7. Pflegegrad (mindestens 2)
-            8. Name der regulären Pflegeperson
-            9. Pflegebeginn der regulären Pflege (RegularCareStartDateTool – mind. 6 Monate her)
-            10. Adresse der regulären Pflegeperson (AddressTool)
-            11. Zeitraum der Verhinderungspflege (PeriodTool – ab {{currentDate}}, max. 42 Tage)
-            12. Ersatzpflege (Art der Ersatzpflegeperson)
-            13. **WICHTIG:** Einmalige Entscheidung – professionelle Dienstleistung oder private Person? (isProfessional)
-            14. Falls privat: Name der Person
-            15. Falls privat: Adresse (AddressTool)
-            16. Falls privat: Telefonnummer (optional, einmalig)
-            17. Falls privat: Verwandtschaftsverhältnis (ja/nein)
-            18. Bestätigung, dass Pflege zuhause erfolgt (ja/nein)
-            19. Bestätigung, dass Angaben wahrheitsgemäß sind (ja/nein)
+            1. Zeitraum der Verhinderungspflege (PeriodTool – ab {{currentDate}}, max. 42 Tage)
+            2. Grund für Verhinderungspflege: Urlaub oder Sonstiges
+            3. Pflegeform: Stundenweise oder Tageweise
+            4. exakt diese Frage: "Soll die Verhinderungspflege von einer privaten Person oder von einem professionellem Dienstleister durchgeführt werden"? (isProfessional)
+            5. nur wenn  isProfessional = false: Name der privaten Person
+            6. nur wenn  isProfessional = false: Adresse der privaten Person (AddressTool)
+            7. nur wenn  isProfessional = false: Telefonnummer (optional, einmalig)
+            8. nur wenn  isProfessional = false: Verwandtschaftsverhältnis (ja/nein)
+            9. Name & Geburtsdatum der pflegebedürftigen Person (BirthdateTool)
+            10. Versicherungsnummer (InsuranceNumberTool)
+            11. Adresse (AddressTool)
+            12. Telefonnummer (optional)
+            13. Pflegegrad (mindestens 2) - einzelne Zahlen als Pflegegrad interpretieren
+            14. Name der regulären Pflegekraft
+            15. Pflegebeginn der regulären Pflege (RegularCareStartDateTool – mind. 6 Monate her)
+            16. Adresse der regulären Pflegekraft (AddressTool)
+            17. Bestätigung, dass Pflege zuhause erfolgt (ja/nein)
+            18. Bestätigung, dass Angaben wahrheitsgemäß sind (ja/nein)
 
             REGELN:
             - FormData-Objekt nach jeder Eingabe aktualisieren
@@ -74,18 +87,36 @@ public interface AiService {
               - Zeitraum: PeriodTool
               - Adressen: AddressTool
               - Andere Felder: isValid()-Methoden der Modelle
-            """)
-    @UserMessage("""
+            """;
+
+    String USER_MESSAGE = """
             Nutzereingabe: »{userInput}«
 
             Bitte:
-            1. Analysieren Sie die Eingabe im Kontext der Session-ID »{{sessionId}}«.
+            1. Analysieren Sie die Eingabe im Kontext der Memory Id.
             2. Aktualisieren Sie das FormData-Objekt mit allen gültigen Werten.
             3. Stellen Sie gezielte Rückfragen zu **fehlenden oder ungültigen** Angaben.
                Wiederholen Sie keine bereits gültigen Informationen.
 
             Antwortformat: **Nur JSON**
-            """)
-    FormData chatWithAiStructured(@V("sessionId") String sessionId, String userInput,
+            """;
+
+    /**
+     * Processes user input and returns updated form data.
+     *
+     * @param memoryId
+     *            The unique session identifier for tracking conversation state
+     * @param userInput
+     *            The user's input message
+     * @param currentDate
+     *            The current date for validation purposes
+     *
+     * @return Updated FormData object containing the conversation state
+     */
+    @SystemMessage(SYSTEM_MESSAGE)
+    @UserMessage(USER_MESSAGE)
+    FormData chatWithAiStructured(
+            @MemoryId String memoryId,
+            String userInput,
             @V("currentDate") String currentDate);
 }

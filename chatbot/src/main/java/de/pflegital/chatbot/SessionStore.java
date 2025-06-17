@@ -9,11 +9,11 @@ import java.util.Map;
 public class SessionStore {
     private final Map<String, FormData> sessions = new HashMap<>();
 
-    public FormData getFormData(String sessionId) {
-        return sessions.get(sessionId);
+    public FormData getFormData(String memoryId) {
+        return sessions.get(memoryId);
     }
 
-    public void setFormData(String sessionId, FormData formData) {
-        sessions.put(sessionId, formData);
+    public void setFormData(String memoryId, FormData formData) {
+        sessions.put(memoryId, formData);
     }
 }
