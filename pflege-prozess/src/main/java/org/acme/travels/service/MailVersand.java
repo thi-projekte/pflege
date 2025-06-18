@@ -8,7 +8,6 @@ import org.acme.travels.model.Caregiver;
 import org.acme.travels.model.Period;
 import org.acme.travels.model.Reason;
 import org.acme.travels.model.ReplacementCare;
-import org.acme.travels.model.replacementcare.Provider;
 import org.acme.travels.model.FormData;
 
 import com.resend.Resend;
@@ -90,15 +89,8 @@ public class MailVersand {
 
         // Ersatzpflege
         ReplacementCare replacementCare = formData.getReplacementCare();
-        String providerName = "";
-        String providerAddress = "";
-        if (replacementCare != null && replacementCare.getProvider() != null) {
-            Provider provider = replacementCare.getProvider();
-            providerName = provider.getProviderName();
-            providerAddress = formatAddress(provider.getProviderAddress());
-        }
-        placeholders.put("providerName", providerName);
-        placeholders.put("providerAddress", providerAddress);
+
+        // Todo: replacementcare richtig stellen
 
         // Zusätzliche Angaben
         placeholders.put("isHomeCare", Optional.ofNullable(formData.getHomeCare()).map(b -> b ? "Ja" : "Nein").orElse("Nein"));
