@@ -2,12 +2,9 @@ package org.acme.travels.service;
 
 // Korrekte Imports für Ihre Model-Struktur
 import org.acme.travels.model.Address;
-import org.acme.travels.model.CareType;
 import org.acme.travels.model.Carerecipient;
 import org.acme.travels.model.Caregiver;
 import org.acme.travels.model.Period;
-import org.acme.travels.model.Reason;
-import org.acme.travels.model.ReplacementCare;
 import org.acme.travels.model.FormData;
 
 import com.resend.Resend;
@@ -88,7 +85,7 @@ public class MailVersand {
         }
 
         // Ersatzpflege
-        ReplacementCare replacementCare = formData.getReplacementCare();
+      
 
         // Todo: replacementcare richtig stellen
 

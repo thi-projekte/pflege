@@ -74,7 +74,6 @@ public class WhatsAppWebhookResource {
 
                                     LOGGER.info("Message from " + fromWaid + ": " + messageText);
 
-                                    pflegebot.processUserInput(fromWaid, messageText);
                                     ChatResponse replyText = pflegebot.processUserInput(fromWaid, messageText);
                                     LOGGER.info("REPLYTEXT MESSAGE: " + replyText.getMessage());
                                     if (!replyText.getMessage().isEmpty()) {

@@ -36,6 +36,7 @@ public class Pflegebot {
         if (sessionStore.getFormData(waId) == null) {
             FormData aiResponse = new FormData();
             sessionStore.setFormData(waId, aiResponse);
+            LOG.info("New empty form data created");
         }
         FormData session = sessionStore.getFormData(waId);
         LOG.info(" sessionId = waId: {}", session);

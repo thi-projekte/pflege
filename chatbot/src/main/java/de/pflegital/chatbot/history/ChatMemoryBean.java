@@ -7,11 +7,12 @@ import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@RequestScoped
+@ApplicationScoped
 public class ChatMemoryBean implements ChatMemoryProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(ChatMemoryBean.class);
@@ -25,7 +26,7 @@ public class ChatMemoryBean implements ChatMemoryProvider {
                 id -> {
                     LOG.info("Neues ChatMemory wird angelegt für memoryId: {}", id);
                     return MessageWindowChatMemory.builder()
-                            .maxMessages(20)
+                            .maxMessages(120)
                             .id(memoryId)
                             .build();
                 });
