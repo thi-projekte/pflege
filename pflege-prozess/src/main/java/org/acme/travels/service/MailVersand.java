@@ -41,7 +41,8 @@ public class MailVersand {
 
         String htmlContent = template;
         for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-            htmlContent = htmlContent.replace("{" + entry.getKey() + "}", entry.getValue());
+            String value = entry.getValue() != null ? entry.getValue() : "";
+            htmlContent = htmlContent.replace("{" + entry.getKey() + "}", value);
         }
         return htmlContent;
     }

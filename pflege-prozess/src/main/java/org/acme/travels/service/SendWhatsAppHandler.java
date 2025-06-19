@@ -20,9 +20,10 @@ public class SendWhatsAppHandler {
             
             String jsonPayload = String.format(
                 "{\"request\": \"Bitte weise die Plegekraft Max Meier hinzu \", \"whatsAppNumber\": \"%s\"}",
-                waId
+                waId.getWaId()
             );
  
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(WHATSAPP_API_URL))
                     .header("Content-Type", "application/json")
@@ -32,7 +33,7 @@ public class SendWhatsAppHandler {
             HttpClient.newHttpClient()
                     .sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> {
-                        System.out.println("WhatsApp API Antwort: " + response.body());
+                        System.out.println("WhatsApp API Antwort, nachdem versucht wird an nummer: " + waId + "zu schicken:" + response.body());
                     })
                     .exceptionally(e -> {
                         System.err.println("Fehler beim Senden an WhatsApp API: " + e.getMessage());
