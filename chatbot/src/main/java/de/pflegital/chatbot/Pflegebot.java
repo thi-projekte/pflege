@@ -2,7 +2,6 @@ package de.pflegital.chatbot;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -10,73 +9,44 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import org.slf4j.Logger;
 
+
 @ApplicationScoped
 public class Pflegebot {
-    @Inject
-    SessionStore sessionStore;
-
     @Inject
     AiService aiService;
 
     @Inject
-    FormDataPresenter formDataPresenter;
+    SessionStore sessionStore;
 
+    private static final Logger LOG = getLogger(Pflegebot.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private String currentDate = LocalDate.now().format(DATE_FORMATTER);
 
-    private final Logger LOG = org.slf4j.LoggerFactory.getLogger(Pflegebot.class);
 
     public ChatResponse processUserInput(String waId, String userInput) {
-        LOG.info("IM PFLEGEBOT: {}", waId);
-        if (sessionStore.getFormData(waId) == null) {
+        FormData currentFormData = sessionStore.getFormData(waId);
+        if (currentFormData == null) {
             FormData aiResponse = new FormData();
             sessionStore.setFormData(waId, aiResponse);
-            LOG.info("New empty form data created");
-        }
-        FormData session = sessionStore.getFormData(waId);
-        LOG.info(" sessionId = waId: {}", session);
-        if (session == null) {
-            throw new NotAuthorizedException("Sie sind nicht authorisiert.");
-        }
+        } 
 
-        LOG.info("User writes: {}", userInput);
-
-        String jsonFormData = formDataPresenter.present(session);
-        String prompt = """
-                CONTEXT BEGIN
-                %s
-                CONTEXT END
-
-                PREVIOUS QUESTION BY AI:
-                %s
-
-                ANSWER BY USER:
-                %s
-                """.formatted(jsonFormData, session.getChatbotMessage(), userInput);
-
-        LOG.info("Prompt to AI: {}", prompt);
-        String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData updatedResponse = aiService.chatWithAiStructured(waId, prompt, currentDate);
-
-        if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
-            updatedResponse.setChatbotMessage(
-                    "Die Verhinderungspflege steht erst ab Pflegegrad 2 zur Verfügung. Bitte prüfen Sie Ihre Angaben.");
-        }
+        FormData updatedResponse = aiService.chatWithAiStructured(waId, userInput, currentDate);
 
         if (updatedResponse.isComplete()) {
-            updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
-            // Prozess starten:
+            updatedResponse.setChatbotMessage("✅ Danke! Es wurden alle benötigten Informationen gesammelt! Ich werde Sie über die nächsten Schritte informieren, sobald es möglich ist.");
             startBpmnProcess(updatedResponse, waId);
         }
         sessionStore.setFormData(waId, updatedResponse);
 
         try {
-            LOG.info("AI response: {}", updatedResponse.getChatbotMessage());
             return new ChatResponse(waId, updatedResponse);
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -17,10 +17,7 @@ public class FormData {
                 reason != null &&
                 careRecipient != null && careRecipient.isValid() &&
                 caregiver != null && caregiver.isValid() &&
-                replacementCare != null && replacementCare.isValid() &&
-                isHomeCare != null && isHomeCare &&
-                careDurationMin6Months != null && careDurationMin6Months &&
-                legalAcknowledgement != null && legalAcknowledgement;
+                replacementCare != null && replacementCare.isValid();
     }
 
     @JsonProperty("chatbotMessage")
@@ -58,17 +55,6 @@ public class FormData {
     @Description("Details of the person or organization providing the replacement care. Contains information wheter a professional provider is wanted  or a private person.")
     private ReplacementCare replacementCare;
 
-    @JsonProperty("isHomeCare")
-    @Description("Indicates whether the care takes place at home. Must be true.")
-    private Boolean isHomeCare;
-
-    @JsonProperty("careDurationMin6Months")
-    @Description("Indicates whether care has been provided for at least 6 months. Required field.")
-    private Boolean careDurationMin6Months;
-
-    @JsonProperty("legalAcknowledgement")
-    @Description("Confirmation that the provided information is truthful. Must be true.")
-    private Boolean legalAcknowledgement;
 
     // Getter & Setter
 
@@ -126,30 +112,6 @@ public class FormData {
 
     public void setConversationPartner(ConversationPartner conversationPartner) {
         this.conversationPartner = conversationPartner;
-    }
-
-    public Boolean getLegalAcknowledgement() {
-        return legalAcknowledgement;
-    }
-
-    public void setLegalAcknowledgement(Boolean legalAcknowledgement) {
-        this.legalAcknowledgement = legalAcknowledgement;
-    }
-
-    public Boolean getCareDurationMin6Months() {
-        return careDurationMin6Months;
-    }
-
-    public void setCareDurationMin6Months(Boolean careDurationMin6Months) {
-        this.careDurationMin6Months = careDurationMin6Months;
-    }
-
-    public Boolean getHomeCare() {
-        return isHomeCare;
-    }
-
-    public void setHomeCare(Boolean homeCare) {
-        isHomeCare = homeCare;
     }
 
     public ReplacementCare getReplacementCare() {
