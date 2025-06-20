@@ -38,15 +38,15 @@ public class Pflegebot {
             sessionStore.setFormData(waId, aiResponse);
             LOG.info("New empty form data created");
         }
-        FormData session = sessionStore.getFormData(waId);
-        LOG.info(" sessionId = waId: {}", session);
-        if (session == null) {
+        FormData lastFormData = sessionStore.getFormData(waId);
+        LOG.info(" sessionId = waId: {}", waId);
+        if (lastFormData == null) {
             throw new NotAuthorizedException("Sie sind nicht authorisiert.");
         }
 
         LOG.info("User writes: {}", userInput);
 
-        String jsonFormData = formDataPresenter.present(session);
+      /*   String jsonFormData = formDataPresenter.present(session);
         String prompt = """
                 CONTEXT BEGIN
                 %s
@@ -57,11 +57,11 @@ public class Pflegebot {
 
                 ANSWER BY USER:
                 %s
-                """.formatted(jsonFormData, session.getChatbotMessage(), userInput);
+                """.formatted(jsonFormData, session.getChatbotMessage(), userInput); */
 
-        LOG.info("Prompt to AI: {}", prompt);
+   /*      LOG.info("Prompt to AI: {}", prompt); */
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData updatedResponse = aiService.chatWithAiStructured(waId, prompt, currentDate);
+        FormData updatedResponse = aiService.chatWithAiStructured(waId, userInput, currentDate, lastFormData );
 
         if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
             updatedResponse.setChatbotMessage(
