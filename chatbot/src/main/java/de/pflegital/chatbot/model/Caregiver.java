@@ -43,6 +43,9 @@ public class Caregiver {
                 && isRegularCaregiverPhoneNumberValid();
     }
 
+    public Caregiver() {
+        
+    }
     // Getter & Setter
 
     public LocalDate getRegularCareStartedDate() {

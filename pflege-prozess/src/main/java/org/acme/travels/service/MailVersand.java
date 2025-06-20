@@ -49,7 +49,6 @@ public class MailVersand {
     
     private  Map<String, String> createPlaceholderMap(FormData formData) {
         Map<String, String> placeholders = new HashMap<>();
-
         // Allgemeine Informationen
         placeholders.put("careType", Optional.ofNullable(formData.getCareType()).map(Object::toString).orElse(""));
         placeholders.put("careLevel", Optional.ofNullable(formData.getCareLevel()).map(String::valueOf).orElse(""));
@@ -101,7 +100,7 @@ public class MailVersand {
     // Angepasste sendEmail-Methode, die Dotenv als Parameter erhält
     private  void sendEmail(String htmlContent, Dotenv dotenv) throws ResendException {
         Resend resend = new Resend(dotenv.get("RESEND_API_KEY"));
-        String receiver = "adb7838@thi.de";
+        String receiver = "dal6986@thi.de";
 
         CreateEmailOptions params = CreateEmailOptions.builder()
                 .from("Pflegital <test@pflegital.de>")

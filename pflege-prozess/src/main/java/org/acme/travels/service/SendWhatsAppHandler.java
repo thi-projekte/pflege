@@ -2,6 +2,7 @@ package org.acme.travels.service;
  
 import jakarta.enterprise.context.ApplicationScoped;
 import org.acme.travels.model.FormData;
+import org.acme.travels.model.Sozidata;
 import org.acme.travels.model.WaId;
 
 import java.net.URI;
@@ -14,12 +15,20 @@ public class SendWhatsAppHandler {
  
     public final String WHATSAPP_API_URL = "http://localhost:8084/chat/callChatbot";
  
-    public void sendToWhatsApp(FormData formData, WaId waId) {
+    public void sendToWhatsApp(FormData formData, WaId waId, Sozidata sozidata) {
         
         try {
-            
+            // Pflegekraft-Name aus dem FormData extrahieren
+            String pflegekraftName = null;
+            if (formData != null && formData.getCaregiver() != null && formData.getCaregiver().getCaregiverName() != null) {
+                pflegekraftName = formData.getCaregiver().getCaregiverName();
+            } else {
+                pflegekraftName = "(unbekannt)";
+            }
+
             String jsonPayload = String.format(
-                "{\"request\": \"Bitte weise die Plegekraft Max Meier hinzu \", \"whatsAppNumber\": \"%s\"}",
+                "{\"request\": \"Bitte weise die Pflegekraft %s hinzu\", \"whatsAppNumber\": \"%s\"}",
+                pflegekraftName,
                 waId.getWaId()
             );
  
