@@ -1,6 +1,8 @@
-package de.pflegital.chatbot;
+package de.pflegital.chatbot.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.pflegital.chatbot.FormData;
 
 public class ChatResponse {
 

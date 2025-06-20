@@ -1,4 +1,4 @@
-package de.pflegital.chatbot;
+package de.pflegital.chatbot.api;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -12,11 +12,18 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
 
-import de.pflegital.chatbot.tools.InsuranceNumberTool;
-import io.quarkus.security.Authenticated;
+import de.pflegital.chatbot.FormData;
+import de.pflegital.chatbot.SessionStore;
+import de.pflegital.chatbot.model.ChatResponse;
+import de.pflegital.chatbot.services.AiService;
+import de.pflegital.chatbot.services.ProcessRequestAiService;
+import de.pflegital.chatbot.services.WhatsAppRestClient;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.store.memory.chat.ChatMemoryStore;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,11 +36,6 @@ public class AiResource {
     @Inject
     AiService aiService;
 
-    @Inject
-    FormDataPresenter formDataPresenter;
-
-    @Inject
-    InsuranceNumberTool insuranceNumberTool;
 
     @Inject
     WhatsAppRestClient whatsAppRestClient;
@@ -41,9 +43,12 @@ public class AiResource {
     @Inject
     ProcessRequestAiService processRequestAiService;
 
+    @Inject
+    ChatMemoryStore chatMemoryStore;
+
     private static final Logger LOG = getLogger(AiResource.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
+    private static final String currentDate = LocalDate.now().format(DATE_FORMATTER);
     @Inject
     SessionStore sessionStore;
 
@@ -51,8 +56,6 @@ public class AiResource {
     @Path("/start")
     public ChatResponse startChat() {
         String memoryId = UUID.randomUUID().toString();
-
-        String currentDate = LocalDate.now().format(DATE_FORMATTER);
         FormData aiResponse = aiService.chatWithAiStructured(memoryId, "Start conversation.", currentDate);
         sessionStore.setFormData(memoryId, aiResponse);
 
@@ -64,61 +67,20 @@ public class AiResource {
         }
     }
 
-    @POST
-    @Path("/callChatbot")
-    public String callChatbot(ChatbotRequest request) {
-        try {
-            LOG.info("Processing request: {}", request.getRequest());
-            String response = processRequestAiService.processRequest(request.getRequest());
-            LOG.info("AI response: {}", response);
-
-            try {
-                whatsAppRestClient.sendWhatsAppReply(request.getWhatsAppNumber(), response);
-                LOG.info("WhatsApp message sent to: {}", request.getWhatsAppNumber());
-            } catch (Exception e) {
-                LOG.error("Error sending WhatsApp message: {}", e.getMessage());
-            }
-
-            return response;
-        } catch (Exception e) {
-            LOG.error("Error processing request: {}", e.getMessage());
-            throw new WebApplicationException("Error processing request", e);
-        }
-    }
-
+    
     @POST
     @Path("/reply")
     public ChatResponse processUserInput(@QueryParam("memoryId") String memoryId, String userInput) {
-        FormData session = sessionStore.getFormData(memoryId);
-        if (session == null) {
+        FormData currentFormData = sessionStore.getFormData(memoryId);
+        if (currentFormData == null) {
             throw new NotAuthorizedException("Sie sind nicht authorisiert.");
         }
-
         LOG.info("User writes: {}", userInput);
 
-        // Prompt bauen mit aktuellem Zustand
-        String jsonFormData = formDataPresenter.present(session);
-        String prompt = """
-                CONTEXT BEGIN
-                %s
-                CONTEXT END
+        List<ChatMessage> memory = chatMemoryStore.getMessages(memoryId);
+        LOG.info("Memory has {} items", memory.size());
+        FormData updatedResponse = getFormData(memoryId, userInput, currentDate);
 
-                PREVIOUS QUESTION BY AI:
-                %s
-
-                ANSWER BY USER:
-                %s
-                """.formatted(jsonFormData, session.getChatbotMessage(), userInput);
-
-        String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData updatedResponse = getFormData(memoryId, prompt, currentDate);
-
-        if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
-            updatedResponse.setChatbotMessage(
-                    "Die Verhinderungspflege steht erst ab Pflegegrad 2 zur Verfügung. Bitte prüfen Sie Ihre Angaben.");
-        }
-
-        // Wenn vollständig: andere Antwort setzen
         if (updatedResponse.isComplete()) {
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
             // Prozess starten:
