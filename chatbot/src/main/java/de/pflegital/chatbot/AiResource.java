@@ -53,7 +53,7 @@ public class AiResource {
         String memoryId = UUID.randomUUID().toString();
 
         String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData aiResponse = aiService.chatWithAiStructured(memoryId, "Start conversation.", currentDate, new FormData());
+        FormData aiResponse = aiService.chatWithAiStructured(memoryId, "Start conversation.", currentDate);
         sessionStore.setFormData(memoryId, aiResponse);
 
         try {
@@ -138,7 +138,7 @@ public class AiResource {
     protected FormData getFormData(String memoryId, String prompt, String currentDate) {
         LOG.info("Prompt to AI: {}", prompt);
         try {
-            return aiService.chatWithAiStructured(memoryId, prompt, currentDate, new FormData());
+            return aiService.chatWithAiStructured(memoryId, prompt, currentDate);
         } catch (Exception e) {
             LOG.error("Error getting form data: {}", e.getMessage());
             throw new WebApplicationException(e);
