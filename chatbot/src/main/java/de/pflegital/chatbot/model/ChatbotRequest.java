@@ -1,4 +1,4 @@
-package de.pflegital.chatbot;
+package de.pflegital.chatbot.model;
 
 public class ChatbotRequest {
     private String request;

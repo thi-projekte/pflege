@@ -1,4 +1,4 @@
-package de.pflegital.chatbot;
+package de.pflegital.chatbot.api;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -12,6 +12,12 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
 
+import de.pflegital.chatbot.FormData;
+import de.pflegital.chatbot.SessionStore;
+import de.pflegital.chatbot.model.ChatResponse;
+import de.pflegital.chatbot.services.AiService;
+import de.pflegital.chatbot.services.ProcessRequestAiService;
+import de.pflegital.chatbot.services.WhatsAppRestClient;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.store.memory.chat.ChatMemoryStore;
 
@@ -61,28 +67,7 @@ public class AiResource {
         }
     }
 
-    @POST
-    @Path("/callChatbot")
-    public String callChatbot(ChatbotRequest request) {
-        try {
-            LOG.info("Processing request: {}", request.getRequest());
-            String response = processRequestAiService.processRequest(request.getRequest());
-            LOG.info("AI response: {}", response);
-
-            try {
-                whatsAppRestClient.sendWhatsAppReply(request.getWhatsAppNumber(), response);
-                LOG.info("WhatsApp message sent to: {}", request.getWhatsAppNumber());
-            } catch (Exception e) {
-                LOG.error("Error sending WhatsApp message: {}", e.getMessage());
-            }
-
-            return response;
-        } catch (Exception e) {
-            LOG.error("Error processing request: {}", e.getMessage());
-            throw new WebApplicationException("Error processing request", e);
-        }
-    }
-
+    
     @POST
     @Path("/reply")
     public ChatResponse processUserInput(@QueryParam("memoryId") String memoryId, String userInput) {

@@ -8,8 +8,11 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import de.pflegital.chatbot.api.AiResource;
 import de.pflegital.chatbot.model.CareType;
 import de.pflegital.chatbot.model.Carerecipient;
+import de.pflegital.chatbot.services.AiService;
 import de.pflegital.chatbot.tools.InsuranceNumberTool;
 
 import org.slf4j.Logger;

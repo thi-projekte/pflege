@@ -1,7 +1,12 @@
-package de.pflegital.chatbot;
+package de.pflegital.chatbot.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.pflegital.chatbot.Pflegebot;
+import de.pflegital.chatbot.model.ChatResponse;
+import de.pflegital.chatbot.services.AiService;
+import de.pflegital.chatbot.services.WhatsAppRestClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;

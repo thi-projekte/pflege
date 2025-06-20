@@ -8,6 +8,10 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import de.pflegital.chatbot.model.ChatResponse;
+import de.pflegital.chatbot.services.WhatsAppRestClient;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 

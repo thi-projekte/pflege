@@ -1,5 +1,6 @@
-package de.pflegital.chatbot;
+package de.pflegital.chatbot.services;
 
+import de.pflegital.chatbot.FormData;
 import de.pflegital.chatbot.tools.AddressTool;
 import de.pflegital.chatbot.tools.BirthdateTool;
 import de.pflegital.chatbot.tools.InsuranceNumberTool;

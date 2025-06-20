@@ -1,4 +1,4 @@
-package de.pflegital.chatbot;
+package de.pflegital.chatbot.services;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
