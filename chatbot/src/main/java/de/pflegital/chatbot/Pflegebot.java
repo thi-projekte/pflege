@@ -17,94 +17,89 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 @ApplicationScoped
-public class Pflegebot {
-    @Inject
-    SessionStore sessionStore;
+public class Pflegebot
+{
+	@Inject
+	SessionStore sessionStore;
 
-    @Inject
-    AiService aiService;
+	@Inject
+	AiService aiService;
 
-    @Inject
-    FormDataPresenter formDataPresenter;
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+	private final Logger LOG = org.slf4j.LoggerFactory.getLogger(Pflegebot.class);
 
-    private final Logger LOG = org.slf4j.LoggerFactory.getLogger(Pflegebot.class);
+	public ChatResponse processUserInput(String waId, String userInput)
+	{
+		LOG.info("IM PFLEGEBOT: {}", waId);
+		if (sessionStore.getFormData(waId) == null)
+		{
+			FormData aiResponse = new FormData();
+			sessionStore.setFormData(waId, aiResponse);
+			LOG.info("New empty form data created");
+		}
 
-    public ChatResponse processUserInput(String waId, String userInput) {
-        LOG.info("IM PFLEGEBOT: {}", waId);
-        if (sessionStore.getFormData(waId) == null) {
-            FormData aiResponse = new FormData();
-            sessionStore.setFormData(waId, aiResponse);
-            LOG.info("New empty form data created");
-        }
-        FormData lastFormData = sessionStore.getFormData(waId);
-        LOG.info(" sessionId = waId: {}", waId);
-        if (lastFormData == null) {
-            throw new NotAuthorizedException("Sie sind nicht authorisiert.");
-        }
+		FormData lastFormData = sessionStore.getFormData(waId);
+		LOG.info(" sessionId = waId: {}", waId);
+		if (lastFormData == null)
+		{
+			throw new NotAuthorizedException("Sie sind nicht authorisiert.");
+		}
 
-        LOG.info("User writes: {}", userInput);
+		LOG.info("User writes: {}", userInput);
 
-      /*   String jsonFormData = formDataPresenter.present(session);
-        String prompt = """
-                CONTEXT BEGIN
-                %s
-                CONTEXT END
+		String currentDate = LocalDate.now().format(DATE_FORMATTER);
+		FormData updatedResponse = aiService.chatWithAiStructured(waId, userInput, currentDate, lastFormData);
 
-                PREVIOUS QUESTION BY AI:
-                %s
+		if (updatedResponse.isComplete())
+		{
+			updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
+			// Prozess starten:
+			startBpmnProcess(updatedResponse, waId);
+		}
+		sessionStore.setFormData(waId, updatedResponse);
 
-                ANSWER BY USER:
-                %s
-                """.formatted(jsonFormData, session.getChatbotMessage(), userInput); */
+		try
+		{
+			LOG.info("AI response: {}", updatedResponse.getChatbotMessage());
+			return new ChatResponse(waId, updatedResponse);
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
 
-   /*      LOG.info("Prompt to AI: {}", prompt); */
-        String currentDate = LocalDate.now().format(DATE_FORMATTER);
-        FormData updatedResponse = aiService.chatWithAiStructured(waId, userInput, currentDate, lastFormData );
+	public void startBpmnProcess(FormData finalFormData, String waId)
+	{
+		Client client = ClientBuilder.newClient();
 
-        if (updatedResponse.getCareLevel() != null && updatedResponse.getCareLevel() < 2) {
-            updatedResponse.setChatbotMessage(
-                    "Die Verhinderungspflege steht erst ab Pflegegrad 2 zur Verfügung. Bitte prüfen Sie Ihre Angaben.");
-        }
+		try
+		{
+			WebTarget target = client.target("http://localhost:8083/formDataProcess");
+			Map<String, Object> requestBody = Map.of(
+				"message", finalFormData,
+				"waId", waId);
 
-        if (updatedResponse.isComplete()) {
-            updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
-            // Prozess starten:
-            startBpmnProcess(updatedResponse, waId);
-        }
-        sessionStore.setFormData(waId, updatedResponse);
+			try (Response response = target.request()
+				.post(Entity.entity(requestBody, MediaType.APPLICATION_JSON)))
+			{
 
-        try {
-            LOG.info("AI response: {}", updatedResponse.getChatbotMessage());
-            return new ChatResponse(waId, updatedResponse);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void startBpmnProcess(FormData finalFormData, String waId) {
-        Client client = ClientBuilder.newClient();
-
-        try {
-            WebTarget target = client.target("http://localhost:8083/formDataProcess");
-            Map<String, Object> requestBody = Map.of(
-                    "message", finalFormData,
-                    "waId", waId);
-
-            try (Response response = target.request()
-                    .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {
-
-                int status = response.getStatus();
-                if (status != 200 && status != 201) {
-                    LOG.error("Prozessstart fehlgeschlagen. Status: {}", response.getStatus());
-                }
-                LOG.info("BPMN-Prozess erfolgreich gestartet für WAID: {}", waId);
-            }
-        } catch (Exception e) {
-            LOG.error("Fehler beim Aufruf des BPMN-Prozesses", e);
-        } finally {
-            client.close();
-        }
-    }
+				int status = response.getStatus();
+				if (status != 200 && status != 201)
+				{
+					LOG.error("Prozessstart fehlgeschlagen. Status: {}", response.getStatus());
+				}
+				LOG.info("BPMN-Prozess erfolgreich gestartet für WAID: {}", waId);
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error("Fehler beim Aufruf des BPMN-Prozesses", e);
+		}
+		finally
+		{
+			client.close();
+		}
+	}
 }

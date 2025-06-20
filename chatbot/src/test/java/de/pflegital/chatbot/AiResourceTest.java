@@ -29,7 +29,7 @@ class AiResourceTest {
 
     private String memoryId;
     private static final String SESSION_ID = "memoryId";
-    private static final Logger LOG = getLogger(AiResource.class);
+    private static final Logger LOG = getLogger(AiResourceTest.class);
 
     @BeforeEach
     void setUp() {
@@ -37,7 +37,7 @@ class AiResourceTest {
         FormData mockFormData = new FormData();
         mockFormData.setCareLevel(3);
         mockFormData.setCareType(CareType.TAGEWEISE);
-        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), new FormData()))
                 .thenReturn(mockFormData);
 
         memoryId = given()
@@ -86,7 +86,7 @@ class AiResourceTest {
     void testCareLevelBelowTwo() {
         FormData mockFormData = new FormData();
         mockFormData.setCareLevel(1); // < 2
-        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), new FormData()))
                 .thenReturn(mockFormData);
 
         given()
@@ -109,7 +109,7 @@ class AiResourceTest {
         formData.setCareLevel(3);
         formData.setChatbotMessage("Versicherungsnummer scheint ungültig zu sein"); // <- Hinzugefügt
 
-        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), new FormData()))
                 .thenReturn(formData);
         Mockito.when(insuranceNumberTool.isValidSecurityNumber("INVALID123")).thenReturn(false);
 
@@ -126,7 +126,7 @@ class AiResourceTest {
 
     @Test
     void testAiServiceThrowsException() {
-        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(aiService.chatWithAiStructured(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), new FormData()))
                 .thenThrow(new RuntimeException("AI failure"));
 
         given()

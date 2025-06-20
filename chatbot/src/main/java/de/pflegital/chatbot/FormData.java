@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.pflegital.chatbot.model.*;
 import dev.langchain4j.model.output.structured.Description;
+import org.eclipse.microprofile.openapi.annotations.media.DependentSchema;
 
 public class FormData {
 
@@ -24,6 +25,7 @@ public class FormData {
     }
 
     @JsonProperty("chatbotMessage")
+    @Description("The message from the chatbot as the next question to fill out the form")
     private String chatbotMessage;
 
     @JsonProperty("conversationPartner")
