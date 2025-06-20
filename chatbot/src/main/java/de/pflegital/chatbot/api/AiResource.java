@@ -36,7 +36,6 @@ public class AiResource {
     @Inject
     AiService aiService;
 
-
     @Inject
     WhatsAppRestClient whatsAppRestClient;
 
@@ -67,7 +66,6 @@ public class AiResource {
         }
     }
 
-    
     @POST
     @Path("/reply")
     public ChatResponse processUserInput(@QueryParam("memoryId") String memoryId, String userInput) {

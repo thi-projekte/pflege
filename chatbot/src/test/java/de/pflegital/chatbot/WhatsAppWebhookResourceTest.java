@@ -101,7 +101,7 @@ class WhatsAppWebhookResourceTest {
                 .body("status", equalTo("EVENT_RECEIVED"));
 
         // Verify the bot was called to process the message
-        Mockito.verify(pflegebot, Mockito.times(1)) 
+        Mockito.verify(pflegebot, Mockito.times(1))
                 .processUserInput(Mockito.eq("491234567890"), Mockito.eq("Hello, this is a test message"));
 
         // Verify a reply was sent

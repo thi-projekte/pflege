@@ -45,4 +45,4 @@ public class ProcessWebhookResource {
             throw new WebApplicationException("Error processing request", e);
         }
     }
-} 
+}

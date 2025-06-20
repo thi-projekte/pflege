@@ -32,4 +32,4 @@ public class FormDataCompleted {
         }
         return "Alle erforderlichen Felder sind ausgefüllt und gültig!";
     }
-} 
+}

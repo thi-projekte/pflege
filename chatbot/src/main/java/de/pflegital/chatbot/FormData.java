@@ -55,7 +55,6 @@ public class FormData {
     @Description("Details of the person or organization providing the replacement care. Contains information wheter a professional provider is wanted  or a private person.")
     private ReplacementCare replacementCare;
 
-
     // Getter & Setter
 
     public CareType getCareType() {
