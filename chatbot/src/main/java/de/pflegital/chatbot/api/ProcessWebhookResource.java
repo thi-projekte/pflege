@@ -13,7 +13,7 @@ import de.pflegital.chatbot.model.ChatbotRequest;
 import de.pflegital.chatbot.services.ProcessRequestAiService;
 import de.pflegital.chatbot.services.WhatsAppRestClient;
 
-@Path("/callChatbot")
+@Path("/process-webhook")
 public class ProcessWebhookResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProcessWebhookResource.class);

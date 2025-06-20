@@ -12,7 +12,7 @@ import java.net.http.HttpResponse;
 @ApplicationScoped
 public class SendWhatsAppHandler {
  
-    public final String WHATSAPP_API_URL = "http://localhost:8084/chat/callChatbot";
+    public final String WHATSAPP_API_URL = "http://localhost:8084/process-webhook";
  
     public void sendToWhatsApp(FormData formData, WaId waId) {
         
