@@ -74,4 +74,15 @@ public class Caregiver {
     public void setCaregiverAddress(Address caregiverAddress) {
         this.caregiverAddress = caregiverAddress;
     }
+
+    @Override
+public String toString() {
+    return "Caregiver{" +
+            "caregiverName='" + caregiverName + '\'' +
+            ", caregiverPhoneNumber='" + caregiverPhoneNumber + '\'' +
+            ", caregiverAddress=" + caregiverAddress +
+            ", careStartedDate='" + careStartedDate + '\'' +
+            '}';
+}
+
 }

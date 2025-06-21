@@ -153,4 +153,24 @@ public class FormData {
     public void setCaregiver(Caregiver caregiver) {
         this.caregiver = caregiver;
     }
+
+    @Override
+public String toString() {
+    return "FormData{" +
+            "chatbotMessage='" + chatbotMessage + '\'' +
+            ", conversationPartner=" + conversationPartner +
+            ", careType=" + careType +
+            ", careLevel=" + careLevel +
+            ", carePeriod=" + carePeriod +
+            ", reason=" + reason +
+            ", careRecipient=" + careRecipient +
+            ", caregiver=" + caregiver +
+            ", replacementCare=" + replacementCare +
+            ", isHomeCare=" + isHomeCare +
+            ", careDurationMin6Months=" + careDurationMin6Months +
+            ", legalAcknowledgement=" + legalAcknowledgement +
+            '}';
+}
+
+
 }
