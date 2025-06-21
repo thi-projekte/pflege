@@ -514,7 +514,9 @@ export default function OverviewTable() {
         updatedMessage.caregiver.caregiverPhoneNumberValid = true;
         
         // Log the request payload
-        const requestBody = updatedMessage;
+        const requestBody = {
+          message: updatedMessage
+        };
         console.log("Request body:", JSON.stringify(requestBody));
         
         // Make the POST request with the full message body
