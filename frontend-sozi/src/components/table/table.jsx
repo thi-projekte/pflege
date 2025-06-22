@@ -304,10 +304,10 @@ const mockCareData = [
 
 // Care staff data
 const dummyPflegekraefte = [
-  { id: 1, name: "Anna Müller", avatarUrl: "" },
-  { id: 2, name: "Peter Schmidt", avatarUrl: "" },
-  { id: 3, name: "Sabine Becker", avatarUrl: "" },
-  { id: 4, name: "Michael Weber", avatarUrl: "" }
+  { id: 1, name: "Anna Müller", avatarUrl: "", email: "adb7838@thi.de"},
+  { id: 2, name: "Peter Schmidt", avatarUrl: "", email: "adb7838@thi.de"},
+  { id: 3, name: "Sabine Becker", avatarUrl: "", email: "adb7838@thi.de"},
+  { id: 4, name: "Michael Weber", avatarUrl: "", email: "adb7838@thi.de"}
 ];
 
 export default function OverviewTable() {
@@ -489,6 +489,8 @@ export default function OverviewTable() {
         
         // Update caregiver with selected staff details
         updatedMessage.caregiver.caregiverName = sel.name;
+        updatedMessage.caregiver.caregiverEmail = sel.email;
+        updatedMessage.caregiver.caregiverEmailValid = true;
         updatedMessage.caregiver.caregiverNameValid = true;
         updatedMessage.caregiver.valid = true;
         

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 
 public class Caregiver {
+    @JsonProperty("caregiverEmail")
+    private String caregiverEmail;
 
     @JsonProperty("careStartedDate")
    
@@ -70,6 +72,14 @@ public class Caregiver {
     public Address getCaregiverAddress() {
         return caregiverAddress;
     }
+    public String getCaregiverEmail() {
+    return caregiverEmail;
+    }
+
+public void setCaregiverEmail(String caregiverEmail) {
+    this.caregiverEmail = caregiverEmail;
+    }
+        
 
     public void setCaregiverAddress(Address caregiverAddress) {
         this.caregiverAddress = caregiverAddress;

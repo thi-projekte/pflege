@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pflegezuweisung - Pflegital.de</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #FEFCEB;
+            color: #5E5043;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #FEFCEB;
+        }
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        .subtitle {
+            font-style: italic;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 2px solid #ddd;
+            padding: 0.4em 0.4em;
+            text-align: left;
+            width: 30%;
+        }
+        .table-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            background-color: #F49B62;
+            color: black;
+            padding: 8px;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🤝 Pflegital.de</div>
+        <h1>Pflegezuweisung Pflegekraft: {caregiverName}</h1>
+        <div class="subtitle">Auszug der Pflegenden Person</div>
+    </div>
+
+    <!-- Pflegeinformationen -->
+    <div class="table-container">
+        <div class="table-title">Pflegeinformationen</div>
+        <table>
+            <tr><td>Name</td><td>{insuredName}</td></tr>
+            <tr><td>Pflegeart</td><td>{careType}</td></tr>
+            <tr><td>Pflegegrad</td><td>{careLevel}</td></tr>
+            <tr><td>Pflegezeitraum</td><td>{careStart} – {careEnd}</td></tr>
+            <tr><td>Adresse</td><td>{insuredAddress}</td></tr>
+            <tr><td>Telefon</td><td>{insuredPhone}</td></tr>
+        </table>
+    </div>
+
+    <!-- Pflegende Person -->
+    <div class="table-container">
+        <div class="table-title">Ihre Daten</div>
+        <table>
+            <tr><td>Name</td><td>{caregiverName}</td></tr>
+            <tr><td>Beginn der Pflege</td><td>{caregiverStartDate}</td></tr>
+            <tr><td>Telefon</td><td>{caregiverPhone}</td></tr>
+        </table>
+    </div>
+</body>
+</html>
