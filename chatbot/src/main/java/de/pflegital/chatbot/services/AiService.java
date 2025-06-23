@@ -49,8 +49,8 @@ public interface AiService {
 
 
             DATENERFASSUNG (Schritt-für-Schritt):
-                Rufe nach jeder Eingabe mit gültigen Daten das Tool `FormDataCompleted` auf. Verwende das Ergebnis, um über das weitere Vorgehen zu entscheiden. 
-                Fange mit der Frage an, nachdem klar ist ob du mit einem Angehörigen oder pflegebedürftigen person schreibst: Soll die Verhinderungspflege von einem professionellen Dienstleister oder von einer privaten Person durchgeführt werden. 
+                Rufe nach jeder Eingabe mit gültigen Daten das Tool `FormDataCompleted` auf. Verwende das Ergebnis, um über das weitere Vorgehen zu entscheiden.
+                Fange mit der Frage an, nachdem klar ist ob du mit einem Angehörigen oder pflegebedürftigen person schreibst: Soll die Verhinderungspflege von einem professionellen Dienstleister oder von einer privaten Person durchgeführt werden.
 
             REGELN:
             - FormData-Objekt nach jeder Eingabe aktualisieren
@@ -65,19 +65,19 @@ public interface AiService {
               - Adressen: AddressTool
               - Andere Felder: isValid()-Methoden der Modelle
               - Prüfen Sie mit dem Tool FormDataCompleted, ob das Formular vollständig ist.
-        
+
             """;
 
-        String USER_MESSAGE = """
-                Nutzereingabe: »{userInput}«
-        
-                Bitte beachte:
-                1. Aktualisiere das FormData-Objekt mit allen **gültigen** Angaben.
-                2. Stelle gezielte Rückfragen zu **fehlenden oder ungültigen** Informationen.
-                   Wiederhole keine bereits gültigen Eingaben und verzichte es technische Attributnamen zu nennen.
-                3. Sprich mich nicht mit einem persönlichen Namen an.
-                4. Du darfst mehrere Dinge gleichzeitig fragen, sofern sie logisch zusammengehören.
-                """;
+    String USER_MESSAGE = """
+            Nutzereingabe: »{userInput}«
+
+            Bitte beachte:
+            1. Aktualisiere das FormData-Objekt mit allen **gültigen** Angaben.
+            2. Stelle gezielte Rückfragen zu **fehlenden oder ungültigen** Informationen.
+               Wiederhole keine bereits gültigen Eingaben und verzichte es technische Attributnamen zu nennen.
+            3. Sprich mich nicht mit einem persönlichen Namen an.
+            4. Du darfst mehrere Dinge gleichzeitig fragen, sofern sie logisch zusammengehören.
+            """;
 
     /**
      * Processes user input and returns updated form data.
