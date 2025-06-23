@@ -18,13 +18,13 @@ public class SendWhatsAppHandler {
         
         try {
             
-            String caregiverName = "Unbekannt";
-            if (formData != null && formData.getCaregiver() != null && formData.getCaregiver().getCaregiverName() != null) {
-                caregiverName = formData.getCaregiver().getCaregiverName();
+            String professionalCareGiverName = "Unbekannt";
+            if (formData != null && formData.getReplacementCareCareGiver() != null && formData.getReplacementCareCareGiver().getRegularCaregiverName() != null) {
+                professionalCareGiverName = formData.getReplacementCareCareGiver().getRegularCaregiverName();
             }
             String jsonPayload = String.format(
                 "{\"request\": \"Bitte weise die Pflegekraft %s hinzu \", \"whatsAppNumber\": \"%s\"}",
-                caregiverName,
+                professionalCareGiverName,
                 waId.getWaId()
             );
  

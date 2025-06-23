@@ -16,4 +16,8 @@ public class SessionStore {
     public void setFormData(String memoryId, FormData formData) {
         sessions.put(memoryId, formData);
     }
+
+    public void removeFormData(String memoryId) {
+        sessions.remove(memoryId);
+    }
 }

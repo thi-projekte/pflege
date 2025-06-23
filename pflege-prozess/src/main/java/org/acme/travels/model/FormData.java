@@ -3,6 +3,7 @@ package org.acme.travels.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.acme.travels.model.*;
+import org.acme.travels.model.replacementcare.ReplacementCareCareGiver;
 
 
 public class FormData {
@@ -56,7 +57,18 @@ public class FormData {
   
     private Boolean legalAcknowledgement;
 
+    @JsonProperty("professionalCareGiverName")
+    private ReplacementCareCareGiver replacementCareCareGiver;
+
     // Getter & Setter
+
+    public ReplacementCareCareGiver  getReplacementCareCareGiver() {
+        return replacementCareCareGiver;
+    }
+
+    public void setReplacementCareCareGiver(ReplacementCareCareGiver replacementCareCareGiver) {
+        this.replacementCareCareGiver = replacementCareCareGiver;
+    }
 
     public CareType getCareType() {
         return careType;

@@ -5,7 +5,7 @@ import dev.langchain4j.model.output.structured.Description;
 
 import java.time.LocalDate;
 
-// regular Caregiver
+// regular Caregiver, not the one for replacement care. To be filled out by Chatbot
 public class Caregiver {
 
     @JsonProperty("regularCareStartedDate")

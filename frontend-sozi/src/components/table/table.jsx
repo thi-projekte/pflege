@@ -483,37 +483,11 @@ export default function OverviewTable() {
         console.log("Original message:", JSON.stringify(item.originalMessage));
         
         // Create or update caregiver information
-        if (!updatedMessage.caregiver) {
-          updatedMessage.caregiver = {};
-        }
-        
-        // Update caregiver with selected staff details
-        updatedMessage.caregiver.caregiverName = sel.name;
-        updatedMessage.caregiver.caregiverEmail = sel.email;
-        updatedMessage.caregiver.caregiverEmailValid = true;
-        updatedMessage.caregiver.caregiverNameValid = true;
-        updatedMessage.caregiver.valid = true;
-        
-        // Default values for other required fields if they don't exist
-        if (!updatedMessage.caregiver.caregiverAddress) {
-          updatedMessage.caregiver.caregiverAddress = {
-            street: "Pflegestraße",
-            houseNumber: 1,
-            city: "Berlin",
-            zip: "10115",
-            streetValid: true,
-            houseNumberValid: true,
-            zipValid: true,
-            cityValid: true,
-            valid: true
-          };
-        }
-        
-        // Set other required fields
-        updatedMessage.caregiver.careStartedDate = new Date().toISOString().split('T')[0];
-        updatedMessage.caregiver.careStartedDateValid = true;
-        updatedMessage.caregiver.caregiverPhoneNumber = "030123456789";
-        updatedMessage.caregiver.caregiverPhoneNumberValid = true;
+        if (!updatedMessage.replacementCare) updatedMessage.replacementCare = {};
+        updatedMessage.professionalCareGiverName = { 
+          replacementCareCaregiver: sel.name, 
+          replacementCareCaregiverEmail: sel.email 
+        };
         
         // Log the request payload
         const requestBody = {

@@ -1,8 +1,7 @@
-package de.pflegital.chatbot.model.replacementcare;
+package de.pflegital.chatbot.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.pflegital.chatbot.model.Address;
 import dev.langchain4j.model.output.structured.Description;
 
 public class PrivatePerson {

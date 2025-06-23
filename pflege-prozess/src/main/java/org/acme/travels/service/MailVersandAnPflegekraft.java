@@ -90,6 +90,17 @@ public class MailVersandAnPflegekraft {
         placeholders.put("careDurationMin6Months", Optional.ofNullable(formData.getCareDurationMin6Months()).map(b -> b ? "Ja" : "Nein").orElse("Nein"));
         placeholders.put("legalAcknowledgement", Optional.ofNullable(formData.getLegalAcknowledgement()).map(b -> b ? "Ja" : "Nein").orElse("Nein"));
 
+        // Ersatzpflegekraft (ReplacementCareCareGiver)
+        if (formData.getReplacementCareCareGiver() != null) {
+            org.acme.travels.model.replacementcare.ReplacementCareCareGiver replacementCareGiver =
+                formData.getReplacementCareCareGiver();
+            placeholders.put("replacementCareCaregiverName", replacementCareGiver.getRegularCaregiverName());
+            placeholders.put("replacementCareCaregiverEmail", replacementCareGiver.getEmail());
+        } else {
+            placeholders.put("replacementCareCaregiverName", "");
+            placeholders.put("replacementCareCaregiverEmail", "");
+        }
+
         return placeholders;
     }
 
@@ -99,7 +110,7 @@ public class MailVersandAnPflegekraft {
         Resend resend = new Resend(dotenv.get("RESEND_API_KEY"));
         String receiver = Optional.ofNullable(formData.getCaregiver())
                           .map(Caregiver::getCaregiverEmail)
-                          .orElse("default@example.com");
+                          .orElse("dal6986@thi.de");
 
         CreateEmailOptions params = CreateEmailOptions.builder()
                 .from("Pflegital <test@pflegital.de>")

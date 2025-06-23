@@ -8,19 +8,19 @@ public class Caregiver {
     @JsonProperty("caregiverEmail")
     private String caregiverEmail;
 
-    @JsonProperty("careStartedDate")
+    @JsonProperty("regularCareStartedDate")
    
     private LocalDate careStartedDate;
 
-    @JsonProperty("caregiverName")
+    @JsonProperty("regularCaregiverName")
   
     private String caregiverName;
 
-    @JsonProperty("caregiverAddress")
+    @JsonProperty("regularCaregiverAddress")
    
     private Address caregiverAddress;
 
-    @JsonProperty("caregiverPhoneNumber")
+    @JsonProperty("regularCaregiverPhoneNumber")
    
     private String caregiverPhoneNumber;
 

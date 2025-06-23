@@ -3,6 +3,7 @@ package de.pflegital.chatbot;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.pflegital.chatbot.model.*;
+import de.pflegital.chatbot.model.replacementCareProvider.ReplacementCareCareGiver;
 import dev.langchain4j.model.output.structured.Description;
 
 public class FormData {
@@ -55,7 +56,18 @@ public class FormData {
     @Description("Details of the person or organization providing the replacement care. Contains information wheter a professional provider is wanted  or a private person.")
     private ReplacementCare replacementCare;
 
+    @JsonProperty("professionalCareGiverName")
+    private ReplacementCareCareGiver replacementCareCareGiver;
+
     // Getter & Setter
+
+    public ReplacementCareCareGiver getReplacementCareCareGiver() {
+        return replacementCareCareGiver;
+    }
+
+    public void setReplacementCareCareGiver(ReplacementCareCareGiver replacementCareCareGiver) {
+        this.replacementCareCareGiver = replacementCareCareGiver;
+    }
 
     public CareType getCareType() {
         return careType;

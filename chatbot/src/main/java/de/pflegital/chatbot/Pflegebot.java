@@ -27,6 +27,13 @@ public class Pflegebot {
     private String currentDate = LocalDate.now().format(DATE_FORMATTER);
 
     public ChatResponse processUserInput(String waId, String userInput) {
+        if (userInput != null && userInput.trim().equalsIgnoreCase("reset")) {
+            sessionStore.removeFormData(waId);
+            FormData resetFormData = new FormData();
+            resetFormData.setChatbotMessage("🧹 Der Testbot wurde zurückgesetzt. Du kannst jetzt von vorne beginnen.");
+            return new ChatResponse(waId, resetFormData);
+
+        }
         FormData currentFormData = sessionStore.getFormData(waId);
         if (currentFormData == null) {
             currentFormData = new FormData();
