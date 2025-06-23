@@ -112,7 +112,7 @@ public class MailVersandAnPflegekraft {
 
     String receiver = Optional.ofNullable(formData.getReplacementCareCareGiver())
                         .map(ReplacementCareCareGiver::getEmail)
-                        .orElse("dal6986@thi.de");
+                        .orElse("dew1318@thi.de");
 
     CreateEmailOptions params = CreateEmailOptions.builder()
             .from("Pflegital <test@pflegital.de>")
