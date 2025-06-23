@@ -5,7 +5,6 @@ import org.acme.travels.model.Address;
 import org.acme.travels.model.Carerecipient;
 import org.acme.travels.model.Caregiver;
 import org.acme.travels.model.Period;
-import org.acme.travels.model.replacementcare.ReplacementCareCareGiver;
 import org.acme.travels.model.FormData;
 
 import com.resend.Resend;
@@ -106,24 +105,23 @@ public class MailVersandAnPflegekraft {
     }
 
     // Angepasste sendEmail-Methode, die Dotenv als Parameter erhält
-    private void sendEmail(String htmlContent, Dotenv dotenv, FormData formData) throws ResendException {
+    private  void sendEmail(String htmlContent, Dotenv dotenv, FormData formData) throws ResendException {
+      
+        Resend resend = new Resend(dotenv.get("RESEND_API_KEY"));
+        String receiver = Optional.ofNullable(formData.getCaregiver())
+                          .map(Caregiver::getCaregiverEmail)
+                          .orElse("dal6986@thi.de");
 
-    Resend resend = new Resend(dotenv.get("RESEND_API_KEY"));
+        CreateEmailOptions params = CreateEmailOptions.builder()
+                .from("Pflegital <test@pflegital.de>")
+                .to(receiver)
+                .subject("Pflege zugewiesen - Pflegital.de")
+                .html(htmlContent)
+                .build();
 
-    String receiver = Optional.ofNullable(formData.getReplacementCareCareGiver())
-                        .map(ReplacementCareCareGiver::getEmail)
-                        .orElse("dew1318@thi.de");
-
-    CreateEmailOptions params = CreateEmailOptions.builder()
-            .from("Pflegital <test@pflegital.de>")
-            .to(receiver)
-            .subject("Pflege zugewiesen - Pflegital.de")
-            .html(htmlContent)
-            .build();
-
-    CreateEmailResponse data = resend.emails().send(params);
-    System.out.println("E-Mail an Pflegekraft erfolgreich versendet. ID: " + data.getId());
-}
+        CreateEmailResponse data = resend.emails().send(params);
+        System.out.println("E-Mail an Pflegekraft erfolgreich versendet. ID: " + data.getId());
+    }
 
     private String loadHtmlTemplate(String fileName) throws IOException {
         try (InputStream inputStream = MailVersand.class.getClassLoader().getResourceAsStream(fileName)) {

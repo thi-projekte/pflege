@@ -304,10 +304,10 @@ const mockCareData = [
 
 // Care staff data
 const dummyPflegekraefte = [
-  { id: 1, name: "Anna Müller", avatarUrl: "", email: "dew1318@thi.de"},
-  { id: 2, name: "Peter Schmidt", avatarUrl: "", email: "dew1318@thi.de"},
-  { id: 3, name: "Sabine Becker", avatarUrl: "", email: "dew1318@thi.de"},
-  { id: 4, name: "Michael Weber", avatarUrl: "", email: "dew1318@thi.de"}
+  { id: 1, name: "Anna Müller", avatarUrl: "", email: "adb7838@thi.de"},
+  { id: 2, name: "Peter Schmidt", avatarUrl: "", email: "adb7838@thi.de"},
+  { id: 3, name: "Sabine Becker", avatarUrl: "", email: "adb7838@thi.de"},
+  { id: 4, name: "Michael Weber", avatarUrl: "", email: "adb7838@thi.de"}
 ];
 
 export default function OverviewTable() {
