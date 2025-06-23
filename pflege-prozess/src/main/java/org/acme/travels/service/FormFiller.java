@@ -6,6 +6,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import org.acme.travels.model.FormData;
+import org.acme.travels.model.Address;
 import org.acme.travels.model.Carerecipient;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -66,7 +67,7 @@ public class FormFiller {
 
 
                         if (cr.getInsuredAddress() != null) {
-                            var adr = cr.getInsuredAddress();
+                            Address adr = cr.getInsuredAddress();
                             setField(form, "map_Versicherter_Strasse_Hausnummer",
                                     adr.getStreet() + " " + adr.getHouseNumber());
                             setField(form, "map_Versicherter_PLZ_Ort", adr.getZip() + " " + adr.getCity());
