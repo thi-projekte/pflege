@@ -101,7 +101,7 @@ public class MailVersand {
     // Angepasste sendEmail-Methode, die Dotenv als Parameter erhält
     private  void sendEmail(String htmlContent, Dotenv dotenv) throws ResendException {
         Resend resend = new Resend(dotenv.get("RESEND_API_KEY"));
-        String receiver = "adb7838@thi.de";
+        String receiver = "dew1318@thi.de";
 
         CreateEmailOptions params = CreateEmailOptions.builder()
                 .from("Pflegital <test@pflegital.de>")
