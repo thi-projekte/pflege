@@ -51,7 +51,8 @@ function sendToWhatsApp() {
         return;
     }
 
-    const phoneNumber = '15556422777';
+    // const phoneNumber = '15556422777';
+    const phoneNumber = '15551641665';
 
     // Nachricht zusammenbauen (inkl. Name, falls angegeben)
     let fullMessage = message;
