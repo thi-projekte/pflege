@@ -22,6 +22,9 @@ public class Pflegebot {
     @Inject
     BpmnProcessService bpmnProcessService;
 
+    @Inject
+    ChatMemoryStore chatMemoryStore;
+
     private static final Logger LOG = getLogger(Pflegebot.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private String currentDate = LocalDate.now().format(DATE_FORMATTER);
@@ -29,10 +32,10 @@ public class Pflegebot {
     public ChatResponse processUserInput(String waId, String userInput) {
         if (userInput != null && userInput.trim().equalsIgnoreCase("reset")) {
             sessionStore.removeFormData(waId);
+            chatMemoryStore.deleteMessages(waId);
             FormData resetFormData = new FormData();
             resetFormData.setChatbotMessage("🧹 Der Testbot wurde zurückgesetzt. Du kannst jetzt von vorne beginnen.");
             return new ChatResponse(waId, resetFormData);
-
         }
         FormData currentFormData = sessionStore.getFormData(waId);
         if (currentFormData == null) {
