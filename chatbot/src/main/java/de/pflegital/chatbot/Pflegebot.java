@@ -31,10 +31,18 @@ public class Pflegebot {
 
     public ChatResponse processUserInput(String waId, String userInput) {
         if (userInput != null && userInput.trim().equalsIgnoreCase("reset")) {
+            // Vorherige Daten holen
+            FormData oldFormData = sessionStore.getFormData(waId);
+            int formDataCount = oldFormData != null ? 1 : 0;
+            int chatMsgCount = chatMemoryStore.getMessages(waId).size();
+            // Löschen
             sessionStore.removeFormData(waId);
             chatMemoryStore.deleteMessages(waId);
+            // Rückmeldung
             FormData resetFormData = new FormData();
-            resetFormData.setChatbotMessage("🧹 Der Testbot wurde zurückgesetzt. Du kannst jetzt von vorne beginnen.");
+            resetFormData.setChatbotMessage(
+                    "🧹 Der Testbot wurde zurückgesetzt. Es wurden " + formDataCount + " Formulardatensatz und "
+                            + chatMsgCount + " Chatnachrichten gelöscht. Du kannst jetzt von vorne beginnen.");
             return new ChatResponse(waId, resetFormData);
         }
         FormData currentFormData = sessionStore.getFormData(waId);
