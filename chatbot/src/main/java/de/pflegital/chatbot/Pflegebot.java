@@ -35,9 +35,12 @@ public class Pflegebot {
             FormData oldFormData = sessionStore.getFormData(waId);
             int formDataCount = oldFormData != null ? 1 : 0;
             int chatMsgCount = chatMemoryStore.getMessages(waId).size();
+            LOG.info("[RESET] Vor dem Löschen: {} Nachrichten im ChatMemory für waId {}", chatMsgCount, waId);
             // Löschen
             sessionStore.removeFormData(waId);
             chatMemoryStore.deleteMessages(waId);
+            int chatMsgCountAfter = chatMemoryStore.getMessages(waId).size();
+            LOG.info("[RESET] Nach dem Löschen: {} Nachrichten im ChatMemory für waId {}", chatMsgCountAfter, waId);
             // Rückmeldung
             FormData resetFormData = new FormData();
             resetFormData.setChatbotMessage(
@@ -46,6 +49,8 @@ public class Pflegebot {
             return new ChatResponse(waId, resetFormData);
         }
         FormData currentFormData = sessionStore.getFormData(waId);
+        int chatMsgCountCurrent = chatMemoryStore.getMessages(waId).size();
+        LOG.info("[PROCESS] Aktuell {} Nachrichten im ChatMemory für waId {}", chatMsgCountCurrent, waId);
         if (currentFormData == null) {
             currentFormData = new FormData();
             sessionStore.setFormData(waId, currentFormData);
