@@ -7,7 +7,7 @@ import jakarta.mail.internet.*;
 import java.io.File;
 import java.util.Properties;
 
-@ApplicationScoped // 🔥 Diese Zeile hinzufügen!
+@ApplicationScoped
 public class EmailService {
 
  public void send(String empfaenger, String betreff, String inhalt) {
