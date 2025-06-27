@@ -328,7 +328,7 @@ export default function OverviewTable() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
-        const response = await fetch("http://pflege-prozess.winfprojekt.de/formDataProcess", {
+        const response = await fetch("https://pflege-prozess.winfprojekt.de/formDataProcess", {
           signal: controller.signal,
           headers: {
             'Accept': 'application/json',
@@ -377,7 +377,7 @@ export default function OverviewTable() {
         // Fetch task IDs for each valid form
         for (const item of validItems) {
           try {
-            const taskResponse = await fetch(`http://pflege-prozess.winfprojekt.de/formDataProcess/${item.id}/tasks`, {
+            const taskResponse = await fetch(`https://pflege-prozess.winfprojekt.de/formDataProcess/${item.id}/tasks`, {
               headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -497,7 +497,7 @@ export default function OverviewTable() {
         
         // Make the POST request with the full message body
         const response = await fetch(
-          `http://pflege-prozess.winfprojekt.de/formDataProcess/${item.id}/Task/${item.taskId}/phases/${phase}`, 
+          `https://pflege-prozess.winfprojekt.de/formDataProcess/${item.id}/Task/${item.taskId}/phases/${phase}`, 
           {
             method: 'POST',
             headers: {
