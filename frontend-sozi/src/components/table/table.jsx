@@ -317,7 +317,9 @@ export default function OverviewTable() {
   const [usingMockData, setUsingMockData] = useState(false);
   
   const [assignments, setAssignments] = useState([]);
-
+  const PROCESS_API_URL_PROD = "http://pflege-prozess.winfprojekt.de/formDataProcess";
+  
+  
   useEffect(() => {
     // Fetch data from the API
     const fetchData = async () => {
@@ -328,7 +330,7 @@ export default function OverviewTable() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
-        const response = await fetch('http://localhost:8083/formDataProcess', {
+        const response = await fetch(PROCESS_API_URL_PROD, {
           signal: controller.signal,
           headers: {
             'Accept': 'application/json',
@@ -377,7 +379,7 @@ export default function OverviewTable() {
         // Fetch task IDs for each valid form
         for (const item of validItems) {
           try {
-            const taskResponse = await fetch(`http://localhost:8083/formDataProcess/${item.id}/tasks`, {
+            const taskResponse = await fetch(`http://pflege-prozess.winfprojekt.de/formDataProcess/${item.id}/tasks`, {
               headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -497,7 +499,7 @@ export default function OverviewTable() {
         
         // Make the POST request with the full message body
         const response = await fetch(
-          `http://localhost:8083/formDataProcess/${item.id}/Task/${item.taskId}/phases/${phase}`, 
+          `http://pflege-prozess.winfprojekt.de/formDataProcess/${item.id}/Task/${item.taskId}/phases/${phase}`, 
           {
             method: 'POST',
             headers: {

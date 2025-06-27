@@ -13,7 +13,7 @@ import java.net.http.HttpResponse;
 public class SendWhatsAppHandler {
  
     public final String WHATSAPP_API_URL = "http://localhost:8084/process-webhook";
- 
+     public final String WHATSAPP_API_URL_PROD = "https://chatbot-backend.winfprojekt.de/webhook";
     public void sendToWhatsApp(FormData formData, WaId waId) {
         
         try {
@@ -30,7 +30,7 @@ public class SendWhatsAppHandler {
  
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(WHATSAPP_API_URL))
+                    .uri(URI.create(WHATSAPP_API_URL_PROD))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                     .build();
