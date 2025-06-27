@@ -317,8 +317,6 @@ export default function OverviewTable() {
   const [usingMockData, setUsingMockData] = useState(false);
   
   const [assignments, setAssignments] = useState([]);
-  const PROCESS_API_URL_PROD = "http://pflege-prozess.winfprojekt.de/formDataProcess";
-  
   
   useEffect(() => {
     // Fetch data from the API
@@ -330,7 +328,7 @@ export default function OverviewTable() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
-        const response = await fetch(PROCESS_API_URL_PROD, {
+        const response = await fetch("http://pflege-prozess.winfprojekt.de/formDataProcess", {
           signal: controller.signal,
           headers: {
             'Accept': 'application/json',
