@@ -19,12 +19,14 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class BpmnProcessService {
 
     private static final Logger LOG = getLogger(BpmnProcessService.class);
+    private static final String PROCESS_API_URL_PROD = "http://pflege-prozess.winfprojekt.de/formDataProcess";
+    private static final String PROCESS_API_URL_DEV = "http://localhost:8083/formDataProcess";
 
     public void startBpmnProcess(FormData finalFormData, String waId) {
         Client client = ClientBuilder.newClient();
 
         try {
-            WebTarget target = client.target("http://localhost:8083/formDataProcess");
+            WebTarget target = client.target(PROCESS_API_URL_PROD);
             Map<String, Object> requestBody = Map.of(
                     "message", finalFormData,
                     "waId", waId);
