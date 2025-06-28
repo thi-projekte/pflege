@@ -13,7 +13,6 @@ import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,13 +28,12 @@ import java.util.Optional;
 @ApplicationScoped
 public class MailVersand {
 
-    @ConfigProperty(name = "resend.api.key")
-    String resendApiKey;
-
     public void sendFormDataEmail(FormData formData) throws IOException, ResendException {
-        String htmlContent = generateHtmlEmail(formData);
-        sendEmail(htmlContent);
-    }
+    Dotenv dotenv = Dotenv.load(); // Lädt automatisch aus .env im Projekt-Root
+
+    String htmlContent = generateHtmlEmail(formData);
+    sendEmail(htmlContent, dotenv);
+}
 
     private  String generateHtmlEmail(FormData formData) throws IOException {
         String template = loadHtmlTemplate("chatbot/email-template.html");
@@ -100,15 +98,18 @@ public class MailVersand {
         return placeholders;
     }
 
-    private void sendEmail(String htmlContent) throws ResendException {
-        Resend resend = new Resend(resendApiKey);
-        String receiver = "dal6986@thi.de";
+    // Angepasste sendEmail-Methode, die Dotenv als Parameter erhält
+    private  void sendEmail(String htmlContent, Dotenv dotenv) throws ResendException {
+        Resend resend = new Resend(dotenv.get("RESEND_API_KEY"));
+        String receiver = "dew1318@thi.de";
+
         CreateEmailOptions params = CreateEmailOptions.builder()
                 .from("Pflegital <test@pflegital.de>")
                 .to(receiver)
                 .subject("Antrag auf Verhinderungspflege - Pflegital.de")
                 .html(htmlContent)
                 .build();
+
         CreateEmailResponse data = resend.emails().send(params);
         System.out.println("E-Mail erfolgreich versendet. ID: " + data.getId());
     }

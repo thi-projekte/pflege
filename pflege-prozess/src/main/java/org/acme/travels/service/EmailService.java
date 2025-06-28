@@ -7,9 +7,7 @@ import jakarta.mail.internet.*;
 import java.io.File;
 import java.util.Properties;
 
-import org.eclipse.microprofile.config.ConfigProvider;
-
-@ApplicationScoped
+@ApplicationScoped // 🔥 Diese Zeile hinzufügen!
 public class EmailService {
 
  public void send(String empfaenger, String betreff, String inhalt) {
@@ -41,10 +39,7 @@ public class EmailService {
 
         // Teil 2: Anhang (PDF-Datei)
         MimeBodyPart attachmentPart = new MimeBodyPart();
-
-        //File pdfFile = new File("target/ausgefuellter_antrag.pdf"); // <- Pfad zur PDF-Datei
-        String exportDir = ConfigProvider.getConfig().getValue("app.export.dir", String.class);
-File    pdfFile = new File(exportDir, "ausgefuellter_antrag.pdf");
+        File pdfFile = new File("target/ausgefuellter_antrag.pdf"); // <- Pfad zur PDF-Datei
         attachmentPart.attachFile(pdfFile);
 
         // Kombiniere beides in einer MultiPart-Mail

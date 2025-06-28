@@ -5,7 +5,7 @@ on:
     paths:
       - 'pflege-prozess/**'
     branches:
-      - main
+      - pflege-prozess-gha
 
 jobs:
   build-and-push:
