@@ -2,6 +2,7 @@ package org.acme.travels.service;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -84,6 +85,7 @@ public class FormFiller {
                             setField(form, "map_Versicherter_PLZ_Ort", adr.getZip() + " " + adr.getCity());
                         }
 
+                        /* 
                         if (message.getCareType() != null) {
                             switch (message.getCareType()) {
                                 case STUNDENWEISE:
@@ -94,6 +96,22 @@ public class FormFiller {
                                     break;
                             }
                         }
+                            */
+
+                            if (message.getCareType() != null) {
+                                String value = switch (message.getCareType()) {
+                                case STUNDENWEISE -> "stundenweise";
+                                case TAGEWEISE -> "tagesweise";
+                                };
+
+                            setField(form, "Ich beantrage", value);
+                            }
+                            
+PDField field = form.getField("Ich beantrage");
+if (field instanceof PDButton btn) {
+    System.out.println("✅ Gültige Button-Werte für 'Ich beantrage': " + btn.getOnValues());
+}
+
 
                         if (message.getReason() != null) {
                             switch (message.getReason()) {
