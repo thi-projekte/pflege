@@ -8,7 +8,7 @@ services:
     networks:
       - nginx-proxy-manager
     volumes:
-      - ./pdf-exports:/opt/app/pdfs  # <-- hier werden PDFs gespeichert
+      - ./pdf-exports:/opt/app/pdfs  
 
 networks:
   nginx-proxy-manager:
