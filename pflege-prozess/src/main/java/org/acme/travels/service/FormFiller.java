@@ -16,11 +16,22 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.eclipse.microprofile.config.ConfigProvider;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+
+
 @ApplicationScoped
 public class FormFiller {
 
-    public void fillForm(FormData message) {
-        String outputPdfPath = "target/ausgefuellter_antrag.pdf";
+    public void fillForm(FormData message) throws IOException {
+       
+       // String outputPdfPath = "target/ausgefuellter_antrag.pdf";
+
+    String exportDir = ConfigProvider.getConfig().getValue("app.export.dir", String.class);
+    Files.createDirectories(Paths.get(exportDir)); // falls das Verzeichnis noch nicht existiert
+    String outputPdfPath = exportDir + File.separator + "ausgefuellter_antrag.pdf";
 
         try (InputStream inputStream = getClass().getClassLoader()
                 .getResourceAsStream("PflegeAntrag/de015_Antrag_Verhinderungspflege.pdf")) {

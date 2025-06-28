@@ -6,7 +6,9 @@ services:
     ports:
       - "8081:8080"
     networks:
-      - nginx-proxy-manager  # Nur noch dieses Netzwerk
+      - nginx-proxy-manager
+    volumes:
+      - ./pdf-exports:/opt/app/pdfs  # <-- hier werden PDFs gespeichert
 
 networks:
   nginx-proxy-manager:
