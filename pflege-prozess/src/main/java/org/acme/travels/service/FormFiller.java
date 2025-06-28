@@ -98,19 +98,10 @@ public class FormFiller {
                         }
                             */
 
-                            if (message.getCareType() != null) {
-                                String value = switch (message.getCareType()) {
-                                case STUNDENWEISE -> "stundenweise";
-                                case TAGEWEISE -> "tagesweise";
-                                };
-
-                            setField(form, "Ich beantrage", value);
-                            }
+                            setField(form, "Ich beantrage", "tagesweise");
                             
-PDField field = form.getField("Ich beantrage");
-if (field instanceof PDButton btn) {
-    System.out.println("✅ Gültige Button-Werte für 'Ich beantrage': " + btn.getOnValues());
-}
+
+
 
 
                         if (message.getReason() != null) {
