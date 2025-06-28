@@ -2,6 +2,7 @@ package org.acme.travels.service;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,11 +17,22 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.eclipse.microprofile.config.ConfigProvider;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+
+
 @ApplicationScoped
 public class FormFiller {
 
-    public void fillForm(FormData message) {
-        String outputPdfPath = "target/ausgefuellter_antrag.pdf";
+    public void fillForm(FormData message) throws IOException {
+       
+       // String outputPdfPath = "target/ausgefuellter_antrag.pdf";
+
+    String exportDir = ConfigProvider.getConfig().getValue("app.export.dir", String.class);
+    Files.createDirectories(Paths.get(exportDir)); // falls das Verzeichnis noch nicht existiert
+    String outputPdfPath = exportDir + File.separator + "ausgefuellter_antrag.pdf";
 
         try (InputStream inputStream = getClass().getClassLoader()
                 .getResourceAsStream("PflegeAntrag/de015_Antrag_Verhinderungspflege.pdf")) {
@@ -73,16 +85,24 @@ public class FormFiller {
                             setField(form, "map_Versicherter_PLZ_Ort", adr.getZip() + " " + adr.getCity());
                         }
 
+                        /* 
                         if (message.getCareType() != null) {
                             switch (message.getCareType()) {
                                 case STUNDENWEISE:
                                     setField(form, "Ich beantrage", "stundenweise Verhinderungspflege");
                                     break;
                                 case TAGEWEISE:
-                                    setField(form, "Ich beantrage", "tageweise Verhinderungspflege");
+                                    setField(form, "Ich beantrage", "tagesweise Verhinderungspflege");
                                     break;
                             }
                         }
+                            */
+
+                            setField(form, "Ich beantrage", "tageweise Verhinderungspflege");
+                            
+
+
+
 
                         if (message.getReason() != null) {
                             switch (message.getReason()) {

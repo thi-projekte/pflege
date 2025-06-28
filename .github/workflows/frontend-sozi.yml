@@ -3,7 +3,7 @@ name: Frontend Sozi - Build and Push Docker Image
 on:
   push:
     branches:
-      - frontend-sozi
+      - main
 
 jobs:
   build-and-push:

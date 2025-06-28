@@ -80,18 +80,31 @@
 ###
 FROM registry.access.redhat.com/ubi9/openjdk-21:1.21
 
+<<<<<<< HEAD
 ENV LANGUAGE='en_US:en'
 
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
+=======
+
+>>>>>>> 6755c705160ab4dd929cd82682dbadba3504c014
 COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
 COPY --chown=185 target/quarkus-app/*.jar /deployments/
 COPY --chown=185 target/quarkus-app/app/ /deployments/app/
 COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
 
 EXPOSE 8080
+
+VOLUME /opt/app/pdfs
+
 USER 185
 ENV JAVA_OPTS_APPEND="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
 
+<<<<<<< HEAD
 ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]
+=======
+
+
+ENTRYPOINT ["java", "-jar", "/deployments/quarkus-run.jar"]
+>>>>>>> 6755c705160ab4dd929cd82682dbadba3504c014

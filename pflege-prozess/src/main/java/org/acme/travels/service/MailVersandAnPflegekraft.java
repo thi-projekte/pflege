@@ -14,6 +14,7 @@ import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,12 +30,13 @@ import java.util.Optional;
 @ApplicationScoped
 public class MailVersandAnPflegekraft {
 
-    public void sendFormDataEmail(FormData formData) throws IOException, ResendException {
-    Dotenv dotenv = Dotenv.load(); // Lädt automatisch aus .env im Projekt-Root
+    @ConfigProperty(name = "resend.api.key")
+    String resendApiKey;
 
-    String htmlContent = generateHtmlEmail(formData);
-    sendEmail(htmlContent, dotenv, formData);
-}
+    public void sendFormDataEmail(FormData formData) throws IOException, ResendException {
+        String htmlContent = generateHtmlEmail(formData);
+        sendEmail(htmlContent, formData);
+    }
 
     private  String generateHtmlEmail(FormData formData) throws IOException {
         String template = loadHtmlTemplate("chatbot/email-template-Pflegekraft.html");
@@ -105,25 +107,20 @@ public class MailVersandAnPflegekraft {
         return placeholders;
     }
 
-    // Angepasste sendEmail-Methode, die Dotenv als Parameter erhält
-       private void sendEmail(String htmlContent, Dotenv dotenv, FormData formData) throws ResendException {
-
-    Resend resend = new Resend(dotenv.get("RESEND_API_KEY"));
-
-    String receiver = Optional.ofNullable(formData.getReplacementCareCareGiver())
-                        .map(ReplacementCareCareGiver::getEmail)
-                        .orElse("dew1318@thi.de");
-
-    CreateEmailOptions params = CreateEmailOptions.builder()
-            .from("Pflegital <test@pflegital.de>")
-            .to(receiver)
-            .subject("Pflege zugewiesen - Pflegital.de")
-            .html(htmlContent)
-            .build();
-
-    CreateEmailResponse data = resend.emails().send(params);
-    System.out.println("E-Mail an Pflegekraft erfolgreich versendet. ID: " + data.getId());
-}
+    private void sendEmail(String htmlContent, FormData formData) throws ResendException {
+        Resend resend = new Resend(resendApiKey);
+        String receiver = Optional.ofNullable(formData.getReplacementCareCareGiver())
+                            .map(ReplacementCareCareGiver::getEmail)
+                            .orElse("dal6986@thi.de");
+        CreateEmailOptions params = CreateEmailOptions.builder()
+                .from("Pflegital <test@pflegital.de>")
+                .to(receiver)
+                .subject("Pflege zugewiesen - Pflegital.de")
+                .html(htmlContent)
+                .build();
+        CreateEmailResponse data = resend.emails().send(params);
+        System.out.println("E-Mail an Pflegekraft erfolgreich versendet. ID: " + data.getId());
+    }
 
     private String loadHtmlTemplate(String fileName) throws IOException {
         try (InputStream inputStream = MailVersand.class.getClassLoader().getResourceAsStream(fileName)) {
@@ -138,13 +135,13 @@ public class MailVersandAnPflegekraft {
         }
     }
     
-    private  String formatAddress(Address address) {
+    private String formatAddress(Address address) {
         if (address == null) return "";
         return String.format("%s %s, %s %s", 
             address.getStreet(), address.getHouseNumber(), address.getZip(), address.getCity()).trim();
     }
     
-    private  String formatDate(LocalDate date) {
+    private String formatDate(LocalDate date) {
         if (date == null) return "";
         try {
             return date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
