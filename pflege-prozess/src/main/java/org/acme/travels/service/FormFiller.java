@@ -79,7 +79,7 @@ public class FormFiller {
                                     setField(form, "Ich beantrage", "stundenweise Verhinderungspflege");
                                     break;
                                 case TAGEWEISE:
-                                    setField(form, "Ich beantrage", "tageweise Verhinderungspflege");
+                                    setField(form, "Ich beantrage", "tagesweise Verhinderungspflege");
                                     break;
                             }
                         }
