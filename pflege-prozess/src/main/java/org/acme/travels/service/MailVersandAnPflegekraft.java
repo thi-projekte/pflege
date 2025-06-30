@@ -111,7 +111,7 @@ public class MailVersandAnPflegekraft {
         Resend resend = new Resend(resendApiKey);
         String receiver = Optional.ofNullable(formData.getReplacementCareCareGiver())
                             .map(ReplacementCareCareGiver::getEmail)
-                            .orElse("dal6986@thi.de");
+                            .orElse("edh1579@thi.de");
         CreateEmailOptions params = CreateEmailOptions.builder()
                 .from("Pflegital <test@pflegital.de>")
                 .to(receiver)

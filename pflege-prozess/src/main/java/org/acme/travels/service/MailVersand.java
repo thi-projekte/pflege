@@ -102,7 +102,7 @@ public class MailVersand {
 
     private void sendEmail(String htmlContent) throws ResendException {
         Resend resend = new Resend(resendApiKey);
-        String receiver = "dal6986@thi.de";
+        String receiver = "edh1579@thi.de";
         CreateEmailOptions params = CreateEmailOptions.builder()
                 .from("Pflegital <test@pflegital.de>")
                 .to(receiver)
