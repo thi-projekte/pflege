@@ -13,8 +13,8 @@ import org.eclipse.microprofile.config.ConfigProvider;
 public class EmailService {
 
  public void send(String empfaenger, String betreff, String inhalt) {
-    final String username = "MS_7weksu@test-r6ke4n1zrxygon12.mlsender.net";
-    final String password = "mssp.aRqwCDF.0r83ql3325plzw1j.LWwx1Ho";
+    final String username = "MS_UBluNt@test-r9084zvdvx8gw63d.mlsender.net";
+    final String password = "mssp.fKSU0mO.jpzkmgq0w324059v.iUWFj3S";
 
     Properties props = new Properties();
     props.put("mail.smtp.auth", "true");
