@@ -12,6 +12,7 @@ public class FormData {
 
     @Inject
     FormDataCompleted formDataCompleted;
+
     // prüft, ob alle FormData schon ausgefüllt / erfragt wurden
     public boolean isComplete() {
         return careLevel != null && careLevel >= 2 && careLevel <= 5 &&
