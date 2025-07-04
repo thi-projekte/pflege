@@ -3,6 +3,8 @@ package de.pflegital.chatbot.services;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import de.pflegital.chatbot.exception.WhatsAppApiException;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -55,12 +57,19 @@ public class WhatsAppRestClient {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() >= 400) {
-                LOGGER.warning("Fehler bei WhatsApp-Antwort: " + response.body());
+                String body = response.body();
+                if (LOGGER.isLoggable(java.util.logging.Level.WARNING)) {
+                    LOGGER.warning(String.format("Fehler bei WhatsApp-Antwort: %s", body));
+                }
+                throw new WhatsAppApiException("Fehler bei WhatsApp-Antwort: " + body);
             }
 
         } catch (IOException | InterruptedException e) {
-            LOGGER.severe("Fehler beim Senden an WhatsApp: " + e.getMessage());
+            if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) {
+                LOGGER.severe(String.format("Fehler beim Senden an WhatsApp: %s", e.getMessage()));
+            }
             Thread.currentThread().interrupt();
+            throw new WhatsAppApiException("Fehler beim Senden an WhatsApp", e);
         }
     }
 

@@ -68,7 +68,6 @@ public class PeriodTool {
                 return LocalDate.parse(date.trim(), formatter);
             } catch (DateTimeParseException e) {
                 // Versuche das nächste Format
-                continue;
             }
         }
         return null;

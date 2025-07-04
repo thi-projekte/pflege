@@ -2,14 +2,14 @@ package de.pflegital.chatbot;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import static org.slf4j.LoggerFactory.getLogger;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
 import dev.langchain4j.store.memory.chat.ChatMemoryStore;
+import de.pflegital.chatbot.exception.ChatResponseCreationException;
 import de.pflegital.chatbot.model.ChatResponse;
 import de.pflegital.chatbot.services.AiService;
 import de.pflegital.chatbot.services.BpmnProcessService;
+import de.pflegital.chatbot.tools.FormDataCompleted;
 
 @ApplicationScoped
 public class Pflegebot {
@@ -25,7 +25,9 @@ public class Pflegebot {
     @Inject
     ChatMemoryStore chatMemoryStore;
 
-    private static final Logger LOG = getLogger(Pflegebot.class);
+    @Inject
+    FormDataCompleted formDataCompleted;
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private String currentDate = LocalDate.now().format(DATE_FORMATTER);
 
@@ -53,9 +55,10 @@ public class Pflegebot {
 
         FormData updatedResponse = aiService.chatWithAiStructured(waId, userInput, currentDate);
 
-        if (updatedResponse.isComplete()) {
+        String validation = formDataCompleted.checkFormData(updatedResponse);
+        if ("Alle erforderlichen Felder sind ausgefüllt und gültig!".equals(validation)) {
             updatedResponse.setChatbotMessage(
-                    "✅ Danke! Es wurden alle benötigten Informationen gesammelt! Ich werde Sie über die nächsten Schritte informieren, sobald es möglich ist.");
+                    "\u2705 Danke! Es wurden alle benötigten Informationen gesammelt! Ich werde Sie über die nächsten Schritte informieren, sobald es möglich ist.");
             bpmnProcessService.startBpmnProcess(updatedResponse, waId);
         }
         sessionStore.setFormData(waId, updatedResponse);
@@ -63,7 +66,7 @@ public class Pflegebot {
         try {
             return new ChatResponse(waId, updatedResponse);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ChatResponseCreationException("Fehler beim Erstellen der ChatResponse für waId: " + waId, e);
         }
     }
 }

@@ -1,4 +1,4 @@
-package de.pflegital.chatbot.model.replacementCareProvider;
+package de.pflegital.chatbot.model.replacementcareprovider;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
