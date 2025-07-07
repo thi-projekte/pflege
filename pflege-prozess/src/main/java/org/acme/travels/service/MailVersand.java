@@ -11,9 +11,11 @@ import com.resend.Resend;
 import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
-import io.github.cdimascio.dotenv.Dotenv;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,6 +30,7 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class MailVersand {
+    private static final Logger LOG = LoggerFactory.getLogger(MailVersand.class);
 
     @ConfigProperty(name = "resend.api.key")
     String resendApiKey;
@@ -90,7 +93,6 @@ public class MailVersand {
         // Ersatzpflege
       
 
-        // Todo: replacementcare richtig stellen
 
         // Zusätzliche Angaben
         placeholders.put("isHomeCare", Optional.ofNullable(formData.getHomeCare()).map(b -> b ? "Ja" : "Nein").orElse("Nein"));
@@ -100,7 +102,7 @@ public class MailVersand {
         return placeholders;
     }
 
-    private void sendEmail(String htmlContent) throws ResendException {
+    private void sendEmail(String htmlContent) throws ResendException  {
         Resend resend = new Resend(resendApiKey);
         String receiver = "edh1579@thi.de";
         CreateEmailOptions params = CreateEmailOptions.builder()
@@ -109,8 +111,8 @@ public class MailVersand {
                 .subject("Antrag auf Verhinderungspflege - Pflegital.de")
                 .html(htmlContent)
                 .build();
-        CreateEmailResponse data = resend.emails().send(params);
-        System.out.println("E-Mail erfolgreich versendet. ID: " + data.getId());
+                CreateEmailResponse data = resend.emails().send(params);
+                LOG.info("E-Mail an Pflegekraft erfolgreich versendet. ID: {}", data.getId());
     }
 
     private String loadHtmlTemplate(String fileName) throws IOException {
@@ -121,7 +123,6 @@ public class MailVersand {
                 String line;
                 while ((line = reader.readLine()) != null) content.append(line).append('\n');
             }
-            System.out.println("HTML Template erfolgreich geladen: " + fileName);
             return content.toString();
         }
     }
