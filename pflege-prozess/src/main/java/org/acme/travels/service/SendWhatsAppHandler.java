@@ -30,7 +30,7 @@ public class SendWhatsAppHandler {
             String jsonPayload = String.format(
                     "{\"request\": \"Bitte weise die Pflegekraft %s hinzu \", \"whatsAppNumber\": \"%s\"}",
                     professionalCareGiverName,
-                    waId.getWaId());
+                    waId.getWhatsappId());
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(WHATSAPP_API_URL_PROD))

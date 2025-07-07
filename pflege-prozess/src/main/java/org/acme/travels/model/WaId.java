@@ -5,22 +5,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class WaId {
 
     @JsonProperty("waId")
-    private String waId;
+    private String whatsappId;
 
-    public WaId() {
-        
+    public WaId() {}
+
+    public WaId(String whatsappId) {
+        this.whatsappId = whatsappId;
     }
 
-    public WaId(String waId) {
-        this.waId = waId;
+    public void setWhatsappId(String whatsappId) {
+        this.whatsappId = whatsappId;
     }
 
-    public void setWaId(String waId) {
-        this.waId = waId;
-    }
-
-    public String getWaId() {
-        return waId;
+    public String getWhatsappId() {
+        return whatsappId;
     }
 
 }
