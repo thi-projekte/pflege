@@ -38,7 +38,7 @@ public interface AiService {
                 → Geben Sie eine Abschlussnachricht aus.
             - Wenn das Formular unvollständig ist:
                 → Stellen Sie gezielte Rückfragen zu den fehlenden oder ungültigen Feldern.
-                → Fragen Sie immer nur zu einer logischen Gruppe (z. B. `Caregiver`, `Carerecipient`) pro Nachricht.
+                → Fragen Sie immer nur zu einer logischen Gruppe (z.\u202FB. `Caregiver`, `Carerecipient`) pro Nachricht.
                 → Niemals mehrere Gruppen in einer Nachricht mischen.
 
             HEUTIGES DATUM: {{currentDate}}

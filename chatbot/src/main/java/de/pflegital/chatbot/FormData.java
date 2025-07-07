@@ -3,10 +3,15 @@ package de.pflegital.chatbot;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.pflegital.chatbot.model.*;
-import de.pflegital.chatbot.model.replacementCareProvider.ReplacementCareCareGiver;
+import de.pflegital.chatbot.model.replacementcareprovider.ReplacementCareCareGiver;
+import de.pflegital.chatbot.tools.FormDataCompleted;
 import dev.langchain4j.model.output.structured.Description;
+import jakarta.inject.Inject;
 
 public class FormData {
+
+    @Inject
+    FormDataCompleted formDataCompleted;
 
     // prüft, ob alle FormData schon ausgefüllt / erfragt wurden
     public boolean isComplete() {

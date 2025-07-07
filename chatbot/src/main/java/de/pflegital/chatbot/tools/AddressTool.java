@@ -35,13 +35,13 @@ public class AddressTool {
         }
 
         // Check if street name contains only valid characters
-        if (!address.getStreet().matches("^[a-zA-Z0-9äöüÄÖÜß\s-]+$")) {
+        if (!address.getStreet().matches("^[a-zA-ZäöüÄÖÜß\\s\\-]+$")) {
             LOG.error("Die Straße enthält ungültige Zeichen!");
             return false;
         }
 
         // Check if city name contains only valid characters
-        if (!address.getCity().matches("^[a-zA-ZäöüÄÖÜß\s-]+$")) {
+        if (!address.getCity().matches("^[a-zA-ZäöüÄÖÜß\\s\\-]+$")) {
             LOG.error("Die Stadt enthält ungültige Zeichen!");
             return false;
         }

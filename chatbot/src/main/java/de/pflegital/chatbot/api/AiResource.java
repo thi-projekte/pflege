@@ -1,25 +1,29 @@
+/*
+ * This class is only used for testing the ai service without whatsapp integration.
+ * It is not used in the production environment.
+ */
 package de.pflegital.chatbot.api;
 
+import de.pflegital.chatbot.services.BpmnProcessService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.slf4j.Logger;
 
 import de.pflegital.chatbot.FormData;
 import de.pflegital.chatbot.SessionStore;
+import de.pflegital.chatbot.exception.BpmnProcessException;
+import de.pflegital.chatbot.exception.ChatResponseCreationException;
 import de.pflegital.chatbot.model.ChatResponse;
 import de.pflegital.chatbot.services.AiService;
-import de.pflegital.chatbot.services.ProcessRequestAiService;
-import de.pflegital.chatbot.services.WhatsAppRestClient;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.store.memory.chat.ChatMemoryStore;
+import de.pflegital.chatbot.tools.FormDataCompleted;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -37,32 +41,31 @@ public class AiResource {
     AiService aiService;
 
     @Inject
-    WhatsAppRestClient whatsAppRestClient;
-
-    @Inject
-    ProcessRequestAiService processRequestAiService;
-
-    @Inject
     ChatMemoryStore chatMemoryStore;
+
+    @Inject
+    SessionStore sessionStore;
+
+    @Inject
+    FormDataCompleted formDataCompleted;
 
     private static final Logger LOG = getLogger(AiResource.class);
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private static final String currentDate = LocalDate.now().format(DATE_FORMATTER);
-    @Inject
-    SessionStore sessionStore;
+    private static final String CURRENT_DATE = LocalDate.now().format(DATE_FORMATTER);
 
     @POST
     @Path("/start")
     public ChatResponse startChat() {
         String memoryId = UUID.randomUUID().toString();
-        FormData aiResponse = aiService.chatWithAiStructured(memoryId, "Start conversation.", currentDate);
+        FormData aiResponse = aiService.chatWithAiStructured(memoryId, "Start conversation.", CURRENT_DATE);
         sessionStore.setFormData(memoryId, aiResponse);
 
         try {
             LOG.info("Chat started: {}", aiResponse.getChatbotMessage());
             return new ChatResponse(memoryId, aiResponse);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ChatResponseCreationException("Fehler beim Erstellen der ChatResponse für memoryId: " + memoryId,
+                    e);
         }
     }
 
@@ -77,9 +80,10 @@ public class AiResource {
 
         List<ChatMessage> memory = chatMemoryStore.getMessages(memoryId);
         LOG.info("Memory has {} items", memory.size());
-        FormData updatedResponse = getFormData(memoryId, userInput, currentDate);
+        FormData updatedResponse = getFormData(memoryId, userInput);
 
-        if (updatedResponse.isComplete()) {
+        String validation = formDataCompleted.checkFormData(updatedResponse);
+        if ("Alle erforderlichen Felder sind ausgefüllt und gültig!".equals(validation)) {
             updatedResponse.setChatbotMessage("Danke! Es wurden alle benötigten Informationen gesammelt!");
             // Prozess starten:
             startBpmnProcess(updatedResponse, memoryId);
@@ -90,21 +94,22 @@ public class AiResource {
             LOG.info("AI response: {}", updatedResponse.getChatbotMessage());
             return new ChatResponse(memoryId, updatedResponse);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ChatResponseCreationException("Fehler beim Erstellen der ChatResponse für memoryId: " + memoryId,
+                    e);
         }
     }
 
     @Retry(maxRetries = 3)
-    protected FormData getFormData(String memoryId, String prompt, String currentDate) {
+    protected FormData getFormData(String memoryId, String prompt) {
         LOG.info("Prompt to AI: {}", prompt);
         try {
-            return aiService.chatWithAiStructured(memoryId, prompt, currentDate);
+            return aiService.chatWithAiStructured(memoryId, prompt, CURRENT_DATE);
         } catch (Exception e) {
-            LOG.error("Error getting form data: {}", e.getMessage());
             throw new WebApplicationException(e);
         }
     }
 
+    // local bpmn process
     public void startBpmnProcess(FormData finalFormData, String waId) {
         Client client = ClientBuilder.newClient();
 
@@ -115,17 +120,11 @@ public class AiResource {
                     "waId", waId,
                     "waid", waId);
 
-            try (Response response = target.request()
-                    .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {
-
-                int status = response.getStatus();
-                if (status != 200 && status != 201) {
-                    LOG.error("Prozessstart fehlgeschlagen. Status: {}", response.getStatus());
-                }
-                LOG.info("BPMN-Prozess erfolgreich gestartet für WAID: {}", waId);
+            try {
+                BpmnProcessService.post(waId, target, requestBody, LOG);
+            } catch (BpmnProcessException e) {
+                throw new BpmnProcessException("Fehler beim BPMN-Prozess für waId: " + waId, e);
             }
-        } catch (Exception e) {
-            LOG.error("Fehler beim Aufruf des BPMN-Prozesses", e);
         } finally {
             client.close();
         }

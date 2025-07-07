@@ -11,7 +11,7 @@ import dev.langchain4j.agent.tool.Tool;
 public class FormDataCompleted {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private String currentDate = LocalDate.now().format(DATE_FORMATTER);
+    private final String currentDate = LocalDate.now().format(DATE_FORMATTER);
 
     @Tool("Prüft, ob alle Pflichtfelder im Formular ausgefüllt und gültig sind. Gibt eine Liste der fehlenden oder ungültigen Felder zurück.")
     public String checkFormData(FormData formData) {
@@ -23,7 +23,7 @@ public class FormDataCompleted {
             return "Pflegegrad der pflegebedürftigen Person fehlt oder ist ungültig.";
         }
         if (formData.getCareType() == null) {
-            return "Art der Verhinderunsflege (stundenweise oder tageweise)fehlt.";
+            return "Art der Verhinderunsflege (stundenweise oder tageweise) fehlt.";
         }
         if (formData.getCarePeriod() == null || !formData.getCarePeriod().isValid()) {
             return "Zeitraum der Verhinderungspflege fehlt oder ist ungültig (Start: ab dem aktuellen Datum"

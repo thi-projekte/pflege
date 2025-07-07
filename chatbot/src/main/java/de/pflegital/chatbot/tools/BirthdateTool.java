@@ -33,34 +33,29 @@ public class BirthdateTool {
         for (DateTimeFormatter formatter : DATE_FORMATTERS) {
             try {
                 parsedDate = LocalDate.parse(birthdate.trim(), formatter);
+                // Wenn erfolgreich, verlasse die Schleife
                 break;
             } catch (DateTimeParseException e) {
                 // Versuche das nächste Format
-                continue;
             }
         }
-
         if (parsedDate == null) {
             LOG.error("Das Geburtsdatum hat kein gültiges Format!");
             return false;
         }
-
         LocalDate now = LocalDate.now();
         LocalDate minDate = now.minusMonths(6); // Frühestes Geburtsdatum: 6 Monate vor jetzt (da Person mind. 6 Monate
                                                 // gepflegt werden muss um Verhinderungspflege zu beantragen)
         LocalDate maxDate = now.minusYears(120); // Spätestes Geburtsdatum: 120 Jahre vor jetzt
-
         // Prüfe ob das Datum zwischen minDate und maxDate liegt
         if (parsedDate.isAfter(minDate)) {
             LOG.error("Das Geburtsdatum muss mindestens 6 Monate in der Vergangenheit liegen!");
             return false;
         }
-
         if (parsedDate.isBefore(maxDate)) {
             LOG.error("Das Geburtsdatum darf nicht älter als 120 Jahre sein!");
             return false;
         }
-
         return true;
     }
 }
