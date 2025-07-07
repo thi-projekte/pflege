@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.pflegital.chatbot.Pflegebot;
+import de.pflegital.chatbot.exception.WhatsAppApiException;
 import de.pflegital.chatbot.model.ChatResponse;
 import de.pflegital.chatbot.services.AiService;
 import de.pflegital.chatbot.services.WhatsAppRestClient;
@@ -84,7 +85,7 @@ public class WhatsAppWebhookResource {
                                     if (!replyText.getMessage().isEmpty()) {
                                         try {
                                             whatsAppClient.sendWhatsAppReply(fromWaid, replyText.getMessage());
-                                        } catch (de.pflegital.chatbot.exception.WhatsAppApiException e) {
+                                        } catch (WhatsAppApiException e) {
                                             LOGGER.log(Level.SEVERE, "Error sending WhatsApp message to {0}: {1}",
                                                     new Object[] { fromWaid, e.getMessage() });
                                         }
