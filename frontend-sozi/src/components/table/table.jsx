@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-// Backup mock data for when API is unavailable
+// Backup mock data wenn die API nicht erreichbar ist
 const mockCareData = [
   {
     id: "mock-id-1",
@@ -302,7 +302,7 @@ const mockCareData = [
   }
 ];
 
-// Care staff data
+// Pflegekräfte für Dropdown-Menü
 const dummyPflegekraefte = [
   { id: 1, name: "Albijan Musliu", avatarUrl: "", email: "edh1579@thi.de"},
   { id: 2, name: "Peter Schmidt", avatarUrl: "", email: "edh1579@thi.de"},
@@ -319,12 +319,12 @@ export default function OverviewTable() {
   const [assignments, setAssignments] = useState([]);
   
   useEffect(() => {
-    // Fetch data from the API
+    // Fetch data von API
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        // Set a timeout to prevent the fetch from hanging too long
+        // Timeout um die Anfrage zu beenden, wenn sie zu lange dauert 5s
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
@@ -345,13 +345,10 @@ export default function OverviewTable() {
         const data = await response.json();
         console.log("Raw API response:", data);
 
-        // Filter out items with missing required fields
+        // Rausfiltern von ungültigen oder unvollständigen Einträgen
         const validItems = data.filter(item => {
-          const isValid = item && 
-            item.message && 
-            item.message.careRecipient && 
-            item.message.careRecipient.insuredAddress &&
-            item.message.careRecipient.fullName; // Make sure we have a name
+          const isValid = item?.message?.careRecipient?.insuredAddress && 
+            item?.message?.careRecipient?.fullName;
           
           if (!isValid) {
             console.log("Skipping incomplete item:", item);
@@ -362,7 +359,7 @@ export default function OverviewTable() {
 
         console.log(`Found ${validItems.length} valid items out of ${data.length} total`);
 
-        // If no valid items, show appropriate message
+        // Wenn keine gültigen Einträge, dann setze leere Daten
         if (validItems.length === 0) {
           console.log("No valid items found in the API response");
           setCareData([]);
@@ -371,10 +368,10 @@ export default function OverviewTable() {
           return;
         }
 
-        // Create a temporary array to hold the data while we fetch task IDs
+        // Erstellen einer temporären Datenstruktur
         const tempData = [];
         
-        // Fetch task IDs for each valid form
+        // Iterieren über die gültigen Einträge und holen der Aufgaben
         for (const item of validItems) {
           try {
             const taskResponse = await fetch(`https://pflege-prozess.winfprojekt.de/formDataProcess/${item.id}/tasks`, {
@@ -394,7 +391,7 @@ export default function OverviewTable() {
             const recipient = item.message.careRecipient;
             const address = recipient.insuredAddress;
             
-            // Format address
+            // Adresse formatieren
             const formattedAddress = `${address.street} ${address.houseNumber}, ${address.zip} ${address.city}`;
             
             tempData.push({
@@ -404,13 +401,13 @@ export default function OverviewTable() {
               geburtsdatum: formatDate(recipient.birthDate),
               adresse: formattedAddress,
               grund: formatReason(item.message.reason),
-              // Store the original message for later use
+              // Originalnachricht speichern, so dass sie später verwendet werden kann
               originalMessage: item.message
             });
           } catch (taskErr) {
             console.error(`Error fetching task for form ${item.id}:`, taskErr);
             
-            // Still add the item, but with a default task ID
+            // Wenn ein Fehler beim Abrufen der Aufgaben auftritt, trotzdem die Nachricht speichern
             const recipient = item.message.careRecipient;
             const address = recipient.insuredAddress;
             const formattedAddress = `${address.street} ${address.houseNumber}, ${address.zip} ${address.city}`;
@@ -427,13 +424,13 @@ export default function OverviewTable() {
         }
         
         setCareData(tempData);
-        // Initialize assignments state based on actual data length
+        // Initialisieren der Zuweisungen für jede Anfrage
         setAssignments(tempData.map(() => ({ selected: null })));
         setLoading(false);
       } catch (err) {
         console.error("Error fetching data:", err);
         
-        // Use mock data as fallback
+        // Fallback auf Mock-Daten
         console.log("Using mock data as fallback");
         setCareData(mockCareData);
         setAssignments(mockCareData.map(() => ({ selected: null })));
@@ -446,19 +443,20 @@ export default function OverviewTable() {
     fetchData();
   }, []);
 
-  // Helper function to format date from YYYY-MM-DD to DD.MM.YYYY
+  // Helper function zum Formatieren von Datumsangaben
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
   
-  // Helper function to translate reason codes
+  // Helper function um Gründe zu formatieren
   const formatReason = (reason) => {
     const reasons = {
       "URLAUB": "Urlaub",
       "KRANKHEIT": "Krankheit"
-      // Add other reason mappings as needed
+      // Fall nötig hier weitere Mappings hinzufügen
+      // "ANDERER_GRUND": "Anderer Grund"
     };
     return reasons[reason] || reason;
   };
@@ -476,26 +474,26 @@ export default function OverviewTable() {
         const item = careData[rowIndex];
         const phase = "complete";
         
-        // Get the original message and update the caregiver information
+        // Originalnachricht kopieren und aktualisieren
         const updatedMessage = { ...item.originalMessage };
         
-        // Log the original message
+        // Originalnachricht loggen für Testing
         console.log("Original message:", JSON.stringify(item.originalMessage));
         
-        // Create or update caregiver information
+        // Updaten der Nachricht mit den Details der Pflegekraft
         if (!updatedMessage.replacementCare) updatedMessage.replacementCare = {};
         updatedMessage.professionalCareGiverName = { 
           replacementCareCaregiver: sel.name, 
           replacementCareCaregiverEmail: sel.email 
         };
         
-        // Log the request payload
+        // Log die aktualisierte Nachricht für Testing
         const requestBody = {
           message: updatedMessage
         };
         console.log("Request body:", JSON.stringify(requestBody));
         
-        // Make the POST request with the full message body
+        // Post-Anfrage an die API senden
         const response = await fetch(
           `https://pflege-prozess.winfprojekt.de/formDataProcess/${item.id}/Task/${item.taskId}/phases/${phase}`, 
           {
@@ -511,23 +509,24 @@ export default function OverviewTable() {
         console.log(`Response status: ${response.status}`);
         
         if (!response.ok) {
-          // Try to get error details from response
+          // Fehlerbehandlung
           let errorDetails = "";
           try {
             const errorText = await response.text();
             errorDetails = errorText;
             console.error("Error response body:", errorText);
           } catch (e) {
-            console.error("Couldn't read error response");
+            console.error("Couldn't read error response:", e);
+            errorDetails = `Failed to read error details: ${e.message}`;
           }
           
-          throw new Error(`HTTP error! Status: ${response.status}${errorDetails ? ` - ${errorDetails}` : ""}`);
+          throw new Error(`HTTP error! Status: ${response.status}${errorDetails ? " - " + errorDetails : ""}`);
         }
         
-        // Handle successful assignment
+        // Erfolgsmeldung
         window.alert(`Pflegekraft ${sel.name} erfolgreich zugewiesen`);
         
-        // Reset the assignment
+        // Aktualisieren der Zuweisungen
         const newAssign = [...assignments];
         newAssign[rowIndex].selected = null;
         setAssignments(newAssign);
