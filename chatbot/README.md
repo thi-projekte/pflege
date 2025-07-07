@@ -8,7 +8,6 @@ Ein intelligenter Chatbot zur Unterstützung bei der Beantragung der **Verhinder
 
 - [🚀 Schnellstart](#-schnellstart)
 - [🔐 API-Endpunkte](#-api-endpunkte)
-- [🧪 API testen mit Swagger UI](#-api-testen-mit-swagger-ui)
 - [🎨 Code-Formatierung](#-code-formatierung)
 - [✅ Tests & Testabdeckung](#-tests--testabdeckung)
 - [🛠️ Tools-Verzeichnis](#-tools-verzeichnis)
@@ -21,7 +20,7 @@ Ein intelligenter Chatbot zur Unterstützung bei der Beantragung der **Verhinder
 cd chatbot
 
 # 2. Umgebungsvariablen konfigurieren (.env Datei)
-QUARKUS_LANGCHAIN4J_OPENAI_API_KEY={YOUR_API_KEY}
+.env Datei konfigurieren
 
 # 3. Projekt bauen
 mvn clean install
@@ -33,27 +32,21 @@ quarkus dev
 ```
 
 👉 Drücke `d` im Terminal, um die **Quarkus Dev UI** zu öffnen:  
-[http://localhost:8080](http://localhost:8080)
+[http://localhost:8084](http://localhost:8084)
 
 ---
 
 ## 🔐 API-Endpunkte
 
-Diese Endpunkte sind in Produktion mit **OAuth2 / OIDC** geschützt:
 
 | Methode | Pfad        | Beschreibung                        |
 |--------|-------------|-------------------------------------|
-| POST   | `/chat/reply` | Chat-Nachricht senden               |
-| POST   | `/chat/start` | Chat-Session initialisieren         |
+| POST   | `/chat/reply` | Chat-Nachricht senden  (nur für Testzwecke)             |
+| POST   | `/chat/start` | Chat-Session initialisieren (nur für Testzwecke)         |
+| POST   | `/process-webhook` | Zum Aufrufen des BPMN-Prozess         |
+| POSt   | `/webhook` | Für Whatsappnachrichten       |
 
----
-
-## 🧪 API testen mit Swagger UI
-
-1. Dev UI öffnen (`d` im Terminal).
-2. **Keycloak Provider** auswählen und mit dem Test-Account einloggen.
-3. Anschließend Swagger UI über Dev UI aufrufen.
-4. Jetzt kannst du die geschützten Endpunkte testen (kein 401-Fehler mehr).
+🧪 Die APIs können mit Swagger UI getestet werden
 
 ---
 
