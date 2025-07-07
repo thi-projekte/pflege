@@ -10,6 +10,7 @@
   <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white" alt="Docker" />
   <img src="https://img.shields.io/badge/Keycloak-0066FF?logo=keycloak&logoColor=white" alt="Keycloak" />
   <img src="https://img.shields.io/badge/NGINX-009639?logo=nginx&logoColor=white" alt="NGINX" />
+  <img src="https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white" alt="OpenAI" />
 </p>
 
 ---
@@ -74,27 +75,40 @@ npm run dev
 # Prozess-Engine (Kogito)
 cd ../pflege-prozess
 ./mvnw quarkus:dev
-
+```
 
 ---
 
 ## Tech-Stack
 
-| Bereich         | Technologie         |
-|-----------------|--------------------|
-| Frontend        | ![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black) ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white) |
-| Backend         | ![Java](https://img.shields.io/badge/Java-ED8B00?logo=java&logoColor=white) ![Quarkus](https://img.shields.io/badge/Quarkus-4695EB?logo=quarkus&logoColor=white) |
-| Prozess-Engine  | ![Kogito](https://img.shields.io/badge/BPMN-0052CC?logo=apachekafka&logoColor=white) |
-| Authentifizierung | ![Keycloak](https://img.shields.io/badge/Keycloak-0066FF?logo=keycloak&logoColor=white) |
-| Containerisierung | ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white) |
-| Reverse Proxy   | ![NGINX](https://img.shields.io/badge/NGINX-009639?logo=nginx&logoColor=white) |
+**Frontend:**  
+![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
+
+**Backend:**  
+![Java](https://img.shields.io/badge/Java-ED8B00?logo=java&logoColor=white)
+![Quarkus](https://img.shields.io/badge/Quarkus-4695EB?logo=quarkus&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)
+
+**Prozess-Engine:**  
+![Kogito](https://img.shields.io/badge/BPMN-0052CC?logo=apachekafka&logoColor=white)
+
+**Authentifizierung:**  
+![Keycloak](https://img.shields.io/badge/Keycloak-0066FF?logo=keycloak&logoColor=white)
+
+**Containerisierung:**  
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+
+**Reverse Proxy:**  
+![NGINX](https://img.shields.io/badge/NGINX-009639?logo=nginx&logoColor=white)
+
+---
 
 
 ## Lizenz
 
 MIT License
-
----
 
 > **Pflegital** – einfach, schnell, digital
 
