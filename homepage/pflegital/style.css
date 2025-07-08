@@ -1,0 +1,899 @@
+:root {
+  --color-bg: #FEFCEB;
+  --color-text: #5E5043;
+  --color-accent: #F49B62;
+  --color-white: #FFFFFF;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --transition-base: 0.3s;
+  --radius: 8px;
+  --font-sans: 'Work Sans', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+  --breakpoint-md: 768px;
+  --breakpoint-sm: 480px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+header {
+  background-color: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  position: relative;
+  box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+.logo svg {
+  max-width: 120px;
+  display: block;
+  transition: transform var(--transition-base);
+}
+
+.logo svg:hover,
+.logo svg:focus {
+  transform: scale(1.05);
+  outline: none;
+}
+
+/* Ausgelagertes CSS für das Logo-Bild */
+.logo img {
+  max-width: 120px;
+}
+
+@media (max-width: 768px) {
+  .logo svg {
+    max-width: 100px;
+  }
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+}
+
+nav a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 700;
+  transition: color var(--transition-base);
+}
+
+nav a:hover,
+nav a:focus {
+  color: var(--color-accent);
+  outline: none;
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-color: var(--color-text);
+  margin: 0;
+  transition: background-color var(--transition-base), transform var(--transition-base);
+}
+
+.hero {
+  position: relative;
+  min-height: 90vh; /* Mindesthöhe statt auto */
+  max-height: 800px; /* Maximale Höhe begrenzen */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  overflow: hidden;
+  text-align: left;
+  color: #5E5043;
+  padding: 3rem 0 3rem 10%; /* Oberer und unterer Abstand hinzugefügt */
+  box-sizing: border-box; /* Sicherstellen, dass Padding in die Höhe einberechnet wird */
+}
+
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('assets/test.webp') no-repeat center center;
+  background-size: cover;
+  z-index: -2;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(254, 252, 235, 0.8));
+  z-index: -1;
+}
+
+.hero-content {
+  max-width: 600px; /* Etwas schmaler für bessere Lesbarkeit */
+  margin: 1rem 0; /* Abstand oben und unten */
+  padding: 1rem;
+  text-align: left;
+  width: 90%; /* Maximalbreite relativ zur Hero-Sektion */
+}
+
+.hero-content h1 {
+  font-size: 3.2rem;
+  margin-bottom: 1.5rem;
+  color: #5E5043;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.6);
+  line-height: 1.2;
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.hero .btn {
+  background-color: #F49B62;
+  color: #5E5043;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Verbesserte Styles für den Hero-Hintergrund */
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('assets/test.webp') no-repeat center center;
+  background-size: cover;
+  z-index: -2;
+}
+
+/* Media Queries für responsive Hintergrundbilder */
+@media screen and (max-width: 1024px) {
+  .hero {
+    padding: 2rem 0 2rem 8%;
+    min-height: 80vh;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .hero {
+    padding: 2rem 0 2rem 5%;
+    min-height: 75vh;
+  }
+  
+  .hero-content h1 {
+    font-size: 2.5rem;
+    line-height: 1.3;
+  }
+  
+  .hero-content p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .hero .btn {
+    padding: 0.8rem 1.6rem;
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .hero {
+    padding: 1.5rem 0 1.5rem 5%;
+    min-height: 70vh;
+  }
+  
+  .hero-content, .cta-section {
+    padding: 0.8rem;
+    width: 90%;
+  }
+  
+  .hero-content h1 {
+    font-size: 2rem;
+    line-height: 1.4;
+  }
+  
+  .hero-content p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .hero .btn {
+    padding: 0.8rem 1.6rem;
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .hero {
+    min-height: 65vh;
+  }
+  
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero-content p {
+    font-size: 0.9rem;
+  }
+}
+
+.btn {
+  display: inline-block;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  padding: 1rem 2rem;
+  border-radius: var(--radius);
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  font-weight: 600;
+  transition: background-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.btn:hover,
+.btn:focus {
+  background-color: #e68045;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background-color: var(--color-bg);
+}
+
+.feature {
+  flex: 1 1 250px;
+  max-width: 300px;
+  margin: 1rem;
+  padding: 1.5rem;
+  background-color: var(--color-white);
+  box-shadow: 0 2px 6px var(--color-shadow);
+  border-radius: 12px;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.feature:hover,
+.feature:focus-within {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  outline: none;
+}
+
+.cta-section {
+  max-width: 600px; /* Gleiche Breite wie hero-content für konsistentes Layout */
+  margin: 1rem 0; /* Abstand oben und unten */
+  padding: 1rem;
+  text-align: left;
+  width: 90%;
+}
+
+.whatsapp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.whatsapp-form input,
+.whatsapp-form textarea {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.9); /* Leicht transparenter Hintergrund */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.whatsapp-form button {
+  width: 100%;           /* Volle Breite wie die Textfelder */
+  max-width: 400px;      /* Gleiche maximale Breite wie die Textfelder */
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  padding: 1rem 2rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  border: none;
+  font-weight: 600;
+  transition: background-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+}
+
+.whatsapp-form button:hover,
+.whatsapp-form button:focus {
+  background-color: #e68045;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background-color: var(--color-bg);
+    position: absolute;
+    top: 70px;
+    left: 0;
+    padding: 1rem;
+    box-shadow: 0 4px 6px var(--color-shadow);
+    z-index: 9;
+  }
+
+  nav.active {
+    display: flex;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .cta-section {
+    padding: 1.5rem;
+  }
+
+  .whatsapp-form input,
+  .whatsapp-form textarea {
+    max-width: 100%; /* Volle Breite auf kleinen Bildschirmen */
+  }
+}
+
+@media (max-width: var(--breakpoint-sm)) {
+  .features {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .feature {
+    max-width: 90%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .hero-content {
+    padding: 1rem;
+    margin: 0; /* Keine Zentrierung */
+    width: 90%;
+  }
+
+  .cta-section {
+    padding: 1rem;
+    margin: 1rem 0;
+    width: 90%;
+    /* Text bleibt linksbündig auch auf kleinen Bildschirmen */
+    text-align: left;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .hero-content {
+    padding: 1rem;
+    margin-left: 0;
+    text-align: center;
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .cta-section {
+    padding: 1rem;
+    text-align: center; /* Zentrierter Text auf kleinen Bildschirmen */
+  }
+}
+
+/* Chat */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 2rem auto;
+  animation: restart-animation 10s linear infinite; /* 10s entspricht der Dauer der Animation */
+}
+
+.chat-row {
+  display: flex;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s ease forwards;
+}
+
+.chat-row.bot {
+  justify-content: flex-start;
+}
+
+.chat-row.user {
+  justify-content: flex-end;
+}
+
+.chat-bubble {
+  background-color: var(--color-white);
+  color: var(--color-text);
+  padding: 1rem 1.25rem;
+  border-radius: 20px;
+  max-width: 70%;
+  box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+.chat-row.user .chat-bubble {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+.delay-1 { animation-delay: 1s; }
+.delay-2 { animation-delay: 2.5s; }
+.delay-3 { animation-delay: 4s; }
+.delay-4 { animation-delay: 5.5s; }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes restart-animation {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.pdp-gallery {
+  max-width: 700px; /* Breiterer Container */
+  margin: 0 auto;
+  padding: 0 1rem; /* Platz für die Navigationspfeile angepasst */
+  position: relative;
+}
+
+/* Haupt-Slider */
+.pdp-gallery__main {
+  position: relative;
+  overflow: hidden;
+}
+.pdp-gallery__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+.pdp-gallery__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  position: relative;
+}
+.pdp-gallery__slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+}
+.gallery-title {
+  text-align: center;
+  font-size: 2.2rem;
+  color: #5E5043;
+  margin-bottom: 2rem;
+  position: relative;
+}
+.gallery-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: #F49B62;
+  margin: 0.5rem auto 0;
+  border-radius: 2px;
+}
+
+/* Nav-Buttons */
+.pdp-gallery__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  background: #F49B62;
+  color: white;
+  font-weight: bold;
+  font-size: 1.8rem;
+  transition: background 0.3s ease;
+}
+.pdp-gallery__nav:hover {
+  background: #e68045;
+}
+.pdp-gallery__nav--prev { left: 0.25rem; }
+.pdp-gallery__nav--next { right: 0.25rem; }
+
+/* Thumbnail-Slider */
+.pdp-gallery__thumbs {
+  position: relative;
+  margin-top: 1rem;
+  overflow: hidden;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.pdp-gallery__thumb-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  justify-content: center;
+}
+.pdp-gallery__thumb {
+  flex: 0 0 80px;
+  margin-right: 0.5rem;
+  scroll-snap-align: center;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.pdp-gallery__thumb.active,
+.pdp-gallery__thumb:hover {
+  opacity: 1;
+}
+.pdp-gallery__thumb img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* Thumbnail-Nav */
+.pdp-gallery__thumb-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.pdp-gallery__thumb-nav--prev { left: -0.5rem; }
+.pdp-gallery__thumb-nav--next { right: -0.5rem; }
+
+/* ——————————————————————————————————————————
+   1) Hauptslider einengen und Höhe fixieren
+   —————————————————————————————————————————— */
+/* style.css */
+
+.pdp-gallery__main {
+  max-width: 450px;    /* breitere Slider-Breite */
+  margin: 0 auto;
+  position: relative;
+  padding: 0 2.5rem;   /* mehr Platz für die Pfeile außerhalb */
+  /* kein overflow:hidden mehr, sonst wird zugeschnitten */
+}
+
+.pdp-gallery__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  margin: 0 auto;      /* Zentrierung */
+  align-items: center; /* vertikale Zentrierung */
+  /* keine fixe Höhe mehr */
+}
+
+.pdp-gallery__slide {
+  flex: 0 0 100%;            /* Slide so breit wie der Container */
+  scroll-snap-align: center;
+  padding: 0.5rem 0;         /* optional: etwas Abstand oben/unten */
+  /* kein overflow:hidden hier */
+  display: flex;             /* Flex hinzufügen für horizontale Zentrierung */
+  justify-content: center;   /* Horizontales Zentrieren des Bildes */
+}
+
+.pdp-gallery__slide img {
+  display: block;
+  width: 85%;               /* etwas schmaler, damit die Pfeile gut sichtbar sind */
+  height: auto;              /* bewahrt das Seitenverhältnis */
+  object-fit: contain;       /* skaliert rein, ohne zu beschneiden */
+}
+
+/* Punkte unter dem Slider */
+.pdp-gallery__dots {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+.pdp-gallery__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ccc;
+  margin: 0 4px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.pdp-gallery__dot.active {
+  background: #333;
+}
+
+/* Für Firefox */
+.pdp-gallery__track {
+  scrollbar-width: none;       /* Versteckt die Scrollbar */
+  -ms-overflow-style: none;    /* IE 10+ */
+}
+
+/* Für WebKit-Browser (Chrome, Safari, Edge) */
+.pdp-gallery__track::-webkit-scrollbar {
+  display: none;               /* Versteckt die Scrollbar */
+}
+
+.impressum {
+  margin-left: 5%;
+}
+
+.datenschutz {
+  margin-left: 5%;
+}
+
+#backToTop {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+
+  /* Feste, gleiche Breite & Höhe für Kreisform */
+  width: 3rem;
+  height: 3rem;
+
+  /* Padding raus, stattdessen flex für Zentrierung */
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #F49B62;
+  color: white;
+  border: none;
+
+  /* macht den Button rund */
+  border-radius: 50%;
+
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: opacity 0.3s, transform 0.2s;
+  opacity: 0;
+}
+#backToTop.show {
+  display: flex;
+  opacity: 1;
+}
+#backToTop:hover {
+  transform: scale(1.1);
+}
+
+/* Footer styles */
+footer {
+  padding: 3rem 2rem;
+  background: linear-gradient(to right, var(--color-accent), var(--color-accent));
+  color: var(--color-text);
+  text-align: center;
+}
+
+footer a {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+footer .footer-links {
+  margin-top: 2rem;
+}
+
+footer .footer-links a {
+  color: var(--color-text);
+  margin: 0 1rem;
+  text-decoration: none;
+}
+
+footer .footer-links a:hover {
+  text-decoration: underline;
+}
+.pdp-gallery-wrapper {
+  padding: 2rem 1rem;
+  background-color: #fff;
+}
+
+.pdp-gallery-frame {
+  background-color: #fffdf7; /* heller Kontrast */
+  border: 2px solid #F49B62;
+  border-radius: 24px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+  padding: 3rem 2rem;
+  margin: 2rem auto;
+  max-width: 900px;
+}
+
+
+/* Responsive Überschrift */
+.responsive-title {
+  font-size: 3.2rem;
+  margin-bottom: 1.5rem;
+  color: #5E5043;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.6);
+  line-height: 1.2;
+}
+
+/* Desktop-Version anzeigen, mobile-Version ausblenden */
+.mobile-text {
+  display: none;
+}
+
+/* Tablet-Ansicht */
+@media screen and (max-width: 768px) {
+  .responsive-title {
+    font-size: 2.5rem;
+  }
+}
+
+/* Mobile Ansicht */
+@media screen and (max-width: 600px) {
+  /* Desktop-Version ausblenden, mobile-Version einblenden */
+  .desktop-text {
+    display: none;
+  }
+  
+  .mobile-text {
+    display: inline;
+  }
+  
+  .responsive-title {
+    font-size: 2rem;
+    white-space: normal;
+    line-height: 1.3;
+  }
+}
+
+/* Sehr kleine Handys */
+@media screen and (max-width: 380px) {
+  .responsive-title {
+    font-size: 1.8rem;
+  }
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.popup-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  position: relative;
+  text-align: left;
+  max-height: 90vh;         /* nicht größer als Viewport */
+  overflow-y: auto;         /* vertikales Scrollen aktivieren */
+  padding: 2rem 1.5rem;     /* etwas schmaleres Padding für Mobilgeräte */
+  box-sizing: border-box;  /* Padding in die Höhe einrechnen */
+}
+
+.popup-content p:last-of-type {
+  margin-top: 1rem;
+}
+
+.popup-content .button-container {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+#knowledgePopup {
+  display: none;
+}
+
+#demo-chat {
+  padding: 2rem;
+  background: #FEFCEB;
+}
+
+#demo-chat h2 {
+  text-align: center;
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.8rem;
+  cursor: pointer;
+  z-index: 10;
+  background: transparent;
+  border: none;
+  color: #333;
+}
+
+
