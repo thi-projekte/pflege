@@ -77,3 +77,7 @@ jobs:
             "$API_URL/endpoints/$ENDPOINT_ID/docker/containers/${PROJECT_LABEL}_${SERVICE_LABEL}_1/start"
 
           echo "✅ Redeploy completed!"
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
