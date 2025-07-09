@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build-chatbot:
-    name: Build and analyze
+    name: Build and analyze chatbot
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,10 +34,10 @@ jobs:
         working-directory: chatbot
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify sonar:sonar -DskipTests -Dsonar.login=${{ secrets.SONAR_TOKEN }} org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
+        run: mvn -B verify sonar:sonar -DskipTests -Dformatter.skip=true -Dsonar.login=${{ secrets.SONAR_TOKEN }} org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
   
   build-pflege-prozess:
-    name: Build and analyze
+    name: Build and analyze pflege-prozess
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -64,4 +64,4 @@ jobs:
         working-directory: pflege-prozess
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify sonar:sonar -DskipTests -Dsonar.login=${{ secrets.SONAR_TOKEN }} org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
+        run: mvn -B verify sonar:sonar -DskipTests -Dformatter.skip=true -Dsonar.login=${{ secrets.SONAR_TOKEN }} org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
