@@ -31,6 +31,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('chatbot/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build and analyze
+        working-directory: chatbot
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
@@ -60,6 +61,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('pflege-prozess/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build and analyze
+        working-directory: pflege-prozess
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
