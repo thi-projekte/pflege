@@ -1,42 +1,62 @@
-name: SonarQube
+name: SonarCloud-Analyse
+
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
+
 jobs:
-  build:
-    name: Build and analyze
+  build-chatbot:
+    name: Chatbot Build & Analyse
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
-      - name: Cache SonarQube packages
+          distribution: 'zulu'
+      - name: Cache Sonar und Maven (Chatbot)
         uses: actions/cache@v4
         with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
+          paths: |
+            ~/.sonar/cache
+            ~/.m2
+          key: ${{ runner.os }}-chatbot-${{ hashFiles('chatbot/pom.xml') }}
+      - name: Build & Sonar (Chatbot)
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn -B -f chatbot/pom.xml \
+            verify \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
+
+  build-pflege:
+    name: Pflege-Prozess Build & Analyse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'zulu'
+      - name: Cache Sonar und Maven (Pflege)
         uses: actions/cache@v4
         with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze Chatbot
+          paths: |
+            ~/.sonar/cache
+            ~/.m2
+          key: ${{ runner.os }}-pflege-${{ hashFiles('pflege-prozess/pom.xml') }}
+      - name: Build & Sonar (Pflege-Prozess)
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        working-directory: chatbot
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
-      - name: Build and analyze Pflege-Prozess
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        working-directory: pflege-prozess
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
+        run: |
+          mvn -B -f pflege-prozess/pom.xml \
+            verify \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
