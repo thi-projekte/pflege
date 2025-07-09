@@ -34,7 +34,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         working-directory: chatbot
-        run: mvn -B mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thi-projekte_pflege
       - name: Build and analyze Pflege-Prozess
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
