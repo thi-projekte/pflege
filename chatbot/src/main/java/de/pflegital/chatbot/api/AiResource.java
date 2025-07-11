@@ -121,7 +121,7 @@ public class AiResource {
                     "waid", waId);
 
             try {
-                BpmnProcessService.post(waId, target, requestBody, LOG);
+                BpmnProcessService.post(target, requestBody, LOG);
             } catch (BpmnProcessException e) {
                 throw new BpmnProcessException("Fehler beim BPMN-Prozess für waId: " + waId, e);
             }

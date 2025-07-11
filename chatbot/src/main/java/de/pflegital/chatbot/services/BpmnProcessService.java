@@ -31,7 +31,7 @@ public class BpmnProcessService {
                     "message", finalFormData,
                     "waId", waId);
 
-            post(waId, target, requestBody, LOG);
+            post(target, requestBody, LOG);
         } catch (Exception e) {
             throw new BpmnProcessException("Fehler beim Aufruf des BPMN-Prozesses für waId: " + waId, e);
         } finally {
@@ -39,7 +39,7 @@ public class BpmnProcessService {
         }
     }
 
-    public static void post(String waId, WebTarget target, Map<String, Object> requestBody, Logger log) {
+    public static void post(WebTarget target, Map<String, Object> requestBody, Logger log) {
         try (Response response = target.request()
                 .post(Entity.entity(requestBody, MediaType.APPLICATION_JSON))) {
 
