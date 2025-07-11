@@ -47,7 +47,7 @@ public class BpmnProcessService {
             if (status != 200 && status != 201) {
                 log.error("Prozessstart fehlgeschlagen. Status: {}", response.getStatus());
             }
-            log.info("BPMN-Prozess erfolgreich gestartet für WAID: {}", waId);
+            log.info("BPMN-Prozess erfolgreich gestartet");
         }
     }
 }

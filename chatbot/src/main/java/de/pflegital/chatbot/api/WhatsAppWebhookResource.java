@@ -38,7 +38,6 @@ public class WhatsAppWebhookResource {
     @Inject
     Pflegebot pflegebot;
 
-
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response verifyWebhook(
@@ -55,66 +54,61 @@ public class WhatsAppWebhookResource {
         }
     }
 
-
     public Response handleIncomingMessage(String requestBody) {
-    if (LOGGER.isLoggable(Level.INFO)) {
-        LOGGER.info(String.format("Received Whatsapp message: %s", requestBody));
-    }
+        if (LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.info(String.format("Received Whatsapp message: %s", requestBody));
+        }
 
-    try {
-        JsonNode rootNode = objectMapper.readTree(requestBody);
-        processWebhookEntries(rootNode); // Delegate processing
-        return Response.ok("{\"status\":\"EVENT_RECEIVED\"}").build();
+        try {
+            JsonNode rootNode = objectMapper.readTree(requestBody);
+            processWebhookEntries(rootNode); // Delegate processing
+            return Response.ok("{\"status\":\"EVENT_RECEIVED\"}").build();
 
-    } catch (Exception e) {
-        LOGGER.log(Level.SEVERE, "Error handling WhatsApp message", e);
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("{\"status\":\"ERROR_PROCESSING_EVENT\"}")
-                .build();
-    }
-}
-
-
-private void processWebhookEntries(JsonNode rootNode) {
-    if (!isValidWhatsAppObject(rootNode)) {
-        return;
-    }
-    StreamSupport.stream(rootNode.path("entry").spliterator(), false)
-        .flatMap(entry -> StreamSupport.stream(entry.path("changes").spliterator(), false))
-        .filter(change -> "messages".equals(change.path("field").asText()))
-        .flatMap(change -> StreamSupport.stream(change.path("value").path("messages").spliterator(), false))
-        .forEach(this::processMessage);
-}
-
-
-private boolean isValidWhatsAppObject(JsonNode rootNode) {
-    return rootNode.has("object") && "whatsapp_business_account".equals(rootNode.get("object").asText());
-}
-
-
-private void processMessage(JsonNode messageNode) {
-    if ("text".equals(messageNode.path("type").asText())) {
-        String fromWaid = messageNode.path("from").asText();
-        String messageText = messageNode.path("text").path("body").asText();
-
-        LOGGER.log(Level.INFO, "Message from {0}: {1}", new Object[]{fromWaid, messageText});
-
-        ChatResponse reply = pflegebot.processUserInput(fromWaid, messageText);
-        
-        if (!reply.getMessage().isEmpty()) {
-            sendWhatsAppReply(fromWaid, reply.getMessage()); // Delegate sending the reply
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error handling WhatsApp message", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"status\":\"ERROR_PROCESSING_EVENT\"}")
+                    .build();
         }
     }
-}
 
-
-private void sendWhatsAppReply(String recipientId, String message) {
-    try {
-        LOGGER.log(Level.INFO, "Sending reply to {0}: {1}", new Object[]{recipientId, message});
-        whatsAppClient.sendWhatsAppReply(recipientId, message);
-    } catch (WhatsAppApiException e) {
-        LOGGER.log(Level.SEVERE, "Error sending WhatsApp message to {0}: {1}",
-                new Object[]{recipientId, e.getMessage()});
+    private void processWebhookEntries(JsonNode rootNode) {
+        if (!isValidWhatsAppObject(rootNode)) {
+            return;
+        }
+        StreamSupport.stream(rootNode.path("entry").spliterator(), false)
+                .flatMap(entry -> StreamSupport.stream(entry.path("changes").spliterator(), false))
+                .filter(change -> "messages".equals(change.path("field").asText()))
+                .flatMap(change -> StreamSupport.stream(change.path("value").path("messages").spliterator(), false))
+                .forEach(this::processMessage);
     }
-}
+
+    private boolean isValidWhatsAppObject(JsonNode rootNode) {
+        return rootNode.has("object") && "whatsapp_business_account".equals(rootNode.get("object").asText());
+    }
+
+    private void processMessage(JsonNode messageNode) {
+        if ("text".equals(messageNode.path("type").asText())) {
+            String fromWaid = messageNode.path("from").asText();
+            String messageText = messageNode.path("text").path("body").asText();
+
+            LOGGER.log(Level.INFO, "Message from {0}: {1}", new Object[] { fromWaid, messageText });
+
+            ChatResponse reply = pflegebot.processUserInput(fromWaid, messageText);
+
+            if (!reply.getMessage().isEmpty()) {
+                sendWhatsAppReply(fromWaid, reply.getMessage()); // Delegate sending the reply
+            }
+        }
+    }
+
+    private void sendWhatsAppReply(String recipientId, String message) {
+        try {
+            LOGGER.log(Level.INFO, "Sending reply to {0}: {1}", new Object[] { recipientId, message });
+            whatsAppClient.sendWhatsAppReply(recipientId, message);
+        } catch (WhatsAppApiException e) {
+            LOGGER.log(Level.SEVERE, "Error sending WhatsApp message to {0}: {1}",
+                    new Object[] { recipientId, e.getMessage() });
+        }
+    }
 }

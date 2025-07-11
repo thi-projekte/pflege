@@ -85,25 +85,6 @@ public class FormFiller {
                             setField(form, "map_Versicherter_PLZ_Ort", adr.getZip() + " " + adr.getCity());
                         }
 
-                        /* 
-                        if (message.getCareType() != null) {
-                            switch (message.getCareType()) {
-                                case STUNDENWEISE:
-                                    setField(form, "Ich beantrage", "stundenweise Verhinderungspflege");
-                                    break;
-                                case TAGEWEISE:
-                                    setField(form, "Ich beantrage", "tagesweise Verhinderungspflege");
-                                    break;
-                            }
-                        }
-                            */
-
-                         /*    setField(form, "Ich beantrage", "tageweise Verhinderungspflege"); */
-                            
-
-
-
-
                         if (message.getReason() != null) {
                             switch (message.getReason()) {
                                 case URLAUB:

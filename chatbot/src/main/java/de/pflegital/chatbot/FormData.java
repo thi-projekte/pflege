@@ -4,16 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.pflegital.chatbot.model.*;
 import de.pflegital.chatbot.model.replacementcareprovider.ReplacementCareCareGiver;
-import de.pflegital.chatbot.tools.FormDataCompleted;
 import dev.langchain4j.model.output.structured.Description;
-import jakarta.inject.Inject;
 
 public class FormData {
 
-    @Inject
-    FormDataCompleted formDataCompleted;
-
-    // prüft, ob alle FormData schon ausgefüllt / erfragt wurden
+    // prüft, ob alle FormData schon ausgefüllt / erfragt wurden. Könnte noch bei Bedarf durch die FormDataCompleted
+    // Klasse ersetzt werden.
     public boolean isComplete() {
         return careLevel != null && careLevel >= 2 && careLevel <= 5 &&
                 careType != null &&
