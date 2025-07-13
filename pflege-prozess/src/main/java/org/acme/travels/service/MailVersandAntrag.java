@@ -1,12 +1,11 @@
 package org.acme.travels.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class MailVersandAntrag {
 
-    @Inject
+    
     EmailService emailService;
 
     public void executeWorkItem() {
