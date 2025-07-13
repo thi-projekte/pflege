@@ -20,26 +20,22 @@ import java.io.IOException;
 import org.eclipse.microprofile.config.ConfigProvider;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.Path;
-
 
 @ApplicationScoped
 public class FormFiller {
 
-    public void fillForm(FormData message) throws IOException {
-       
-       // String outputPdfPath = "target/ausgefuellter_antrag.pdf";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    String exportDir = ConfigProvider.getConfig().getValue("app.export.dir", String.class);
-    Files.createDirectories(Paths.get(exportDir)); // falls das Verzeichnis noch nicht existiert
-    String outputPdfPath = exportDir + File.separator + "ausgefuellter_antrag.pdf";
+    public void fillForm(FormData message) throws IOException {
+        String exportDir = ConfigProvider.getConfig().getValue("app.export.dir", String.class);
+        Files.createDirectories(Paths.get(exportDir));
+        String outputPdfPath = exportDir + File.separator + "ausgefuellter_antrag.pdf";
 
         try (InputStream inputStream = getClass().getClassLoader()
                 .getResourceAsStream("PflegeAntrag/de015_Antrag_Verhinderungspflege.pdf")) {
 
             if (inputStream == null) {
-                throw new IOException(
-                        "PDF nicht im Classpath gefunden: PflegeAntrag/de015_Antrag_Verhinderungspflege.pdf");
+                throw new IOException("PDF nicht im Classpath gefunden: PflegeAntrag/de015_Antrag_Verhinderungspflege.pdf");
             }
 
             try (PDDocument pdfDocument = PDDocument.load(inputStream)) {
@@ -49,9 +45,9 @@ public class FormFiller {
                     Carerecipient cr = message.getCareRecipient();
                     LocalDate careStart = message.getCarePeriod().getCareStart();
                     LocalDate careEnd = message.getCarePeriod().getCareEnd();
-                    // Formatieren als z. B. "23.06.2025"
-                    String formattedStart = careStart.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-                    String formattedEnd = careEnd.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+
+                    String formattedStart = careStart.format(DATE_FORMATTER);
+                    String formattedEnd = careEnd.format(DATE_FORMATTER);
 
                     if (cr != null) {
                         setField(form, "map_Versicherter_Fullname_Nachname_Vorname", cr.getFullName());
@@ -59,8 +55,7 @@ public class FormFiller {
                                 cr.getBirthDate() != null ? cr.getBirthDate().toString() : "");
                         setField(form, "map_Versicherter_Telefon", cr.getPhoneNumber());
                         setField(form, "map_Versicherter_VersNummer", "451424200695");
-                        setField(form, "map_System_Tagesdatum",
-                                LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                        setField(form, "map_System_Tagesdatum", LocalDate.now().format(DATE_FORMATTER));
                         setField(form, "Name der Pflegeperson", message.getCaregiver().getCaregiverName());
                         setField(form, "Anschrift der Pflegeperson",
                                 message.getCaregiver().getCaregiverAddress().getZip()
@@ -73,10 +68,10 @@ public class FormFiller {
                                 formattedStart);
                         setField(form, "Die Verhinderungspflege wird in folgendem Zeitraum durchgeführt: Datum bis",
                                 formattedEnd);
-                                for (PDField field : form.getFields()) {
-    System.out.println("Feldname: " + field.getFullyQualifiedName());
-}
 
+                        for (PDField field : form.getFields()) {
+                            System.out.println("Feldname: " + field.getFullyQualifiedName());
+                        }
 
                         if (cr.getInsuredAddress() != null) {
                             Address adr = cr.getInsuredAddress();
@@ -97,37 +92,32 @@ public class FormFiller {
                                     break;
                             }
                         }
-                        if (message.getReplacementCare().isProfessional()) {
 
+                        if (message.getReplacementCare().isProfessional()) {
                             setField(form, "Die Verhinderungspflege wird durchgeführt von",
                                     "eine erwerbsmäßig tätige Pflegeperson");
                             setField(form, "Name der Einrichtung / des Pflegedienstes",
                                     message.getReplacementCareCareGiver().getRegularCaregiverName());
                             setField(form, "Anschrift der Einrichtung / des Pflegedienstes", "Teststraße");
-
                         } else {
                             setField(form, "Die Verhinderungspflege wird durchgeführt von", "eine Privatperson");
                         }
-
                     }
-
+                } else {
+                    System.err.println("Kein AcroForm im PDF gefunden.");
                 }
 
-                form.flatten(); // Formular sperren
+                form.flatten();
 
                 try (FileOutputStream fos = new FileOutputStream(new File(outputPdfPath))) {
                     pdfDocument.save(fos);
                     System.out.println("PDF erfolgreich gespeichert unter: " + outputPdfPath);
                 }
-                {
-                    System.err.println("Kein AcroForm im PDF gefunden.");
-                }
+
             }
         } catch (IOException e) {
             System.err.println("Fehler beim Ausfüllen des PDFs: " + e.getMessage());
-            
         }
-
     }
 
     private void setField(PDAcroForm form, String name, String value) throws IOException {
@@ -138,5 +128,4 @@ public class FormFiller {
             System.err.println("PDF-Feld nicht gefunden: " + name);
         }
     }
-
 }
