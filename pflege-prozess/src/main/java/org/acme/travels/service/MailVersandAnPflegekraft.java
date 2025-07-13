@@ -31,7 +31,7 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class MailVersandAnPflegekraft {
-private static final Logger Log = getLogger(BpmnProcessService.class);
+private static final Logger Log = getLogger(MailVersandAnPflegekraft.class);
     @ConfigProperty(name = "resend.api.key")
     String resendApiKey;
 
@@ -121,7 +121,7 @@ private static final Logger Log = getLogger(BpmnProcessService.class);
                 .html(htmlContent)
                 .build();
         CreateEmailResponse data = resend.emails().send(params);
-        Log.info("E-Mail an Pflegekraft erfolgreich versendet. ID: " + data.getId());
+        Log.info("E-Mail an Pflegekraft erfolgreich versendet. ID: {}", data.getId());
       
     }
 
@@ -133,7 +133,7 @@ private static final Logger Log = getLogger(BpmnProcessService.class);
                 String line;
                 while ((line = reader.readLine()) != null) content.append(line).append('\n');
             }
-            Log.info("HTML Template erfolgreich geladen: " + fileName);
+            Log.info("HTML Template erfolgreich geladen: {}", fileName);
             return content.toString();
         }
     }

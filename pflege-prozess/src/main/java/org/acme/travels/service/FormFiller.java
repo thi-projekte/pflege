@@ -21,7 +21,6 @@ import java.io.IOException;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
 
-import io.quarkus.logging.Log;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import java.nio.file.Files;
@@ -31,7 +30,7 @@ import java.nio.file.Paths;
 public class FormFiller {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private static final Logger Log = getLogger(BpmnProcessService.class);
+    private static final Logger Log = getLogger(FormFiller.class);
     public void fillForm(FormData message) throws IOException {
         String exportDir = ConfigProvider.getConfig().getValue("app.export.dir", String.class);
         Files.createDirectories(Paths.get(exportDir));
@@ -76,7 +75,7 @@ public class FormFiller {
                                 formattedEnd);
 
                         for (PDField field : form.getFields()) {
-                            Log.info("Feldname " + field.getFullyQualifiedName());
+                            Log.info("Feldname {}", field.getFullyQualifiedName());
                         }
 
                         if (cr.getInsuredAddress() != null) {
@@ -112,12 +111,12 @@ public class FormFiller {
 
                 try (FileOutputStream fos = new FileOutputStream(new File(outputPdfPath))) {
                     pdfDocument.save(fos);
-                    Log.info("PDF erfolgreich gespeichert unter: " + outputPdfPath);
+                    Log.info("PDF erfolgreich gespeichert unter: {}", outputPdfPath);
                 }
 
             }
         } catch (IOException e) {
-            Log.error("Fehler beim Ausfüllen des PDFs: "+ e.getMessage());
+            Log.error("Fehler beim Ausfüllen des PDFs: {}", e.getMessage());
         }
     }
 
@@ -126,7 +125,7 @@ public class FormFiller {
         if (field != null) {
             field.setValue(value != null ? value : "");
         } else {
-            Log.error("PDF-Feld nicht gefunden: " + name);
+            Log.error("PDF-Feld nicht gefunden: {}", name);
           
         }
     }
