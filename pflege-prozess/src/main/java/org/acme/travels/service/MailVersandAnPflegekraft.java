@@ -6,16 +6,18 @@ import org.acme.travels.model.Carerecipient;
 import org.acme.travels.model.Caregiver;
 import org.acme.travels.model.Period;
 import org.acme.travels.model.replacementcare.ReplacementCareCareGiver;
+import org.apache.syncope.common.rest.api.service.BpmnProcessService;
 import org.acme.travels.model.FormData;
 
 import com.resend.Resend;
 import com.resend.core.exception.ResendException;
 import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
-import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +31,7 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class MailVersandAnPflegekraft {
-
+private static final Logger Log = getLogger(BpmnProcessService.class);
     @ConfigProperty(name = "resend.api.key")
     String resendApiKey;
 
@@ -119,7 +121,8 @@ public class MailVersandAnPflegekraft {
                 .html(htmlContent)
                 .build();
         CreateEmailResponse data = resend.emails().send(params);
-        System.out.println("E-Mail an Pflegekraft erfolgreich versendet. ID: " + data.getId());
+        Log.info("E-Mail an Pflegekraft erfolgreich versendet. ID: " + data.getId());
+      
     }
 
     private String loadHtmlTemplate(String fileName) throws IOException {
@@ -130,7 +133,7 @@ public class MailVersandAnPflegekraft {
                 String line;
                 while ((line = reader.readLine()) != null) content.append(line).append('\n');
             }
-            System.out.println("HTML Template erfolgreich geladen: " + fileName);
+            Log.info("HTML Template erfolgreich geladen: " + fileName);
             return content.toString();
         }
     }

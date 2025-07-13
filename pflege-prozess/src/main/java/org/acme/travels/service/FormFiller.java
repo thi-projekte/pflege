@@ -2,11 +2,12 @@ package org.acme.travels.service;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.syncope.common.rest.api.service.BpmnProcessService;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import org.acme.travels.model.FormData;
+import org.acme.travels.model.Reason;
 import org.acme.travels.model.Address;
 import org.acme.travels.model.Carerecipient;
 import java.time.LocalDate;
@@ -18,6 +19,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.slf4j.Logger;
+
+import io.quarkus.logging.Log;
+
+import static org.slf4j.LoggerFactory.getLogger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -25,7 +31,7 @@ import java.nio.file.Paths;
 public class FormFiller {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
+    private static final Logger Log = getLogger(BpmnProcessService.class);
     public void fillForm(FormData message) throws IOException {
         String exportDir = ConfigProvider.getConfig().getValue("app.export.dir", String.class);
         Files.createDirectories(Paths.get(exportDir));
@@ -70,7 +76,7 @@ public class FormFiller {
                                 formattedEnd);
 
                         for (PDField field : form.getFields()) {
-                            System.out.println("Feldname: " + field.getFullyQualifiedName());
+                            Log.info("Feldname " + field.getFullyQualifiedName());
                         }
 
                         if (cr.getInsuredAddress() != null) {
@@ -80,18 +86,13 @@ public class FormFiller {
                             setField(form, "map_Versicherter_PLZ_Ort", adr.getZip() + " " + adr.getCity());
                         }
 
-                        if (message.getReason() != null) {
-                            switch (message.getReason()) {
-                                case URLAUB:
-                                    setField(form, "Die stunden- bzw. tageweise Verhinderungspflege wird erbracht:",
-                                            "weil meine Pflegeperson wegen Urlaub vorübergehend verhindert ist.");
-                                    break;
-                                case SONSTIGES:
-                                    setField(form, "Die stunden- bzw. tageweise Verhinderungspflege wird erbracht:",
-                                            "weil meine Pflegeperson aus sonstigen Gründen vorübergehend verhindert ist");
-                                    break;
-                            }
-                        }
+                     if (message.getReason() == Reason.URLAUB) {
+    setField(form, "Die stunden- bzw. tageweise Verhinderungspflege wird erbracht:",
+             "weil meine Pflegeperson wegen Urlaub vorübergehend verhindert ist.");
+} else if (message.getReason() == Reason.SONSTIGES) {
+    setField(form, "Die stunden- bzw. tageweise Verhinderungspflege wird erbracht:",
+             "weil meine Pflegeperson aus sonstigen Gründen vorübergehend verhindert ist");
+}
 
                         if (message.getReplacementCare().isProfessional()) {
                             setField(form, "Die Verhinderungspflege wird durchgeführt von",
@@ -104,19 +105,19 @@ public class FormFiller {
                         }
                     }
                 } else {
-                    System.err.println("Kein AcroForm im PDF gefunden.");
+                    Log.error("Kein AcroForm im PDF gefunden.");
                 }
 
                 form.flatten();
 
                 try (FileOutputStream fos = new FileOutputStream(new File(outputPdfPath))) {
                     pdfDocument.save(fos);
-                    System.out.println("PDF erfolgreich gespeichert unter: " + outputPdfPath);
+                    Log.info("PDF erfolgreich gespeichert unter: " + outputPdfPath);
                 }
 
             }
         } catch (IOException e) {
-            System.err.println("Fehler beim Ausfüllen des PDFs: " + e.getMessage());
+            Log.error("Fehler beim Ausfüllen des PDFs: "+ e.getMessage());
         }
     }
 
@@ -125,7 +126,8 @@ public class FormFiller {
         if (field != null) {
             field.setValue(value != null ? value : "");
         } else {
-            System.err.println("PDF-Feld nicht gefunden: " + name);
+            Log.error("PDF-Feld nicht gefunden: " + name);
+          
         }
     }
 }

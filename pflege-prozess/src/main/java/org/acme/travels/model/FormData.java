@@ -2,7 +2,7 @@ package org.acme.travels.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.acme.travels.model.*;
+
 import org.acme.travels.model.replacementcare.ReplacementCareCareGiver;
 
 
