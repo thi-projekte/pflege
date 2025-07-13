@@ -46,11 +46,11 @@ public class EmailService {
         }
 
         Session session = Session.getInstance(props,
-            new Authenticator() {
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(username, password);
-                }
-            });
+                new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
 
         try {
             Message message = new MimeMessage(session);
@@ -76,7 +76,7 @@ public class EmailService {
             Transport.send(message);
 
         } catch (Exception e) {
-            throw new RuntimeException("Fehler beim Senden der E-Mail", e);
+            throw new EmailSendException("Fehler beim Senden der E-Mail", e);
         }
     }
 }
