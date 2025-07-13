@@ -125,7 +125,7 @@ public class FormFiller {
             }
         } catch (IOException e) {
             System.err.println("Fehler beim Ausfüllen des PDFs: " + e.getMessage());
-            e.printStackTrace();
+            
         }
 
     }
