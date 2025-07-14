@@ -118,7 +118,7 @@ void testLoadHtmlTemplate_realCall_throwsIfMissing() {
     assertThrows(IOException.class, () -> real.loadHtmlTemplate("nicht-da.html"));
 }
 @Test
-protected void testCreatePlaceholderMap_booleanVarianten() {
+ void testCreatePlaceholderMap_booleanVarianten() {
     FormData data = new FormData();
     data.setCareDurationMin6Months(false);
     data.setLegalAcknowledgement(true);
@@ -133,14 +133,14 @@ protected void testCreatePlaceholderMap_booleanVarianten() {
     assertEquals("Nein", map.get("isHomeCare"));
 }
 @Test
- protected void testFormatDate_handlesNull() {
+  void testFormatDate_handlesNull() {
     MailVersandAnPflegekraft service = new MailVersandAnPflegekraft();
     String result = service.formatDate(null); // Methode ggf. auf protected ändern
     assertEquals("", result);
 }
 
 @Test
-protected void testFormatAddress_nullAddressReturnsEmpty() {
+ void testFormatAddress_nullAddressReturnsEmpty() {
     MailVersandAnPflegekraft service = new MailVersandAnPflegekraft();
     String result = service.formatAddress(null); // Methode ggf. auf protected ändern
     assertEquals("", result);

@@ -3,6 +3,7 @@ package org.acme.travels.service;
 import org.acme.travels.model.*;
 import org.acme.travels.model.replacementcare.ReplacementCareCareGiver;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,17 +93,22 @@ class FormFillerTest {
         assertDoesNotThrow(() -> brokenFiller.fillForm(formData));
     }
 
-    @Test
-    void testSetField_fieldNotFound_logsError() throws IOException {
-        PDDocument doc = new PDDocument();
-        PDAcroForm form = new PDAcroForm(doc);
-        doc.getDocumentCatalog().setAcroForm(form);
+   @Test
+void testSetField_fieldNotFound_logsError() throws IOException {
+    PDDocument doc = new PDDocument();
+    PDDocumentCatalog catalog = new PDDocumentCatalog(doc);
+    PDAcroForm form = new PDAcroForm(doc);
+    catalog.setAcroForm(form);
 
-        // field "doesNotExist" gibt es nicht
+    doc.getDocumentCatalog().setAcroForm(form);
+
+    assertDoesNotThrow(() -> {
         formFiller.setField(form, "doesNotExist", "Testwert");
+    });
 
-        doc.close();
-    }
+    doc.close();
+}
+
 
     // Hilfsmethode zum Validieren des PDF-Outputs
     private void assertPdfExists() {
