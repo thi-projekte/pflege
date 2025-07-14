@@ -90,7 +90,3 @@ mvn clean quarkus:dev
 	•	WhatsApp-Benachrichtigung durch SendWhatsAppHandler.java 
 
 ⸻
-
-## 🛡️ Sicherheit & Zugang
-	•	Quarkus + Keycloak für Authentifizierung 
-	•	Rollentrennung auf Prozessebene möglich 
