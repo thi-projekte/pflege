@@ -32,7 +32,7 @@ Dieses Modul implementiert die BPMN-gesteuerten Prozesse der **Pflegital-Plattfo
 
 ## 🧾 Datenmodell (Auszug)
 
-```java
+```
 Caregiver
 Carerecipient
 Address
@@ -40,6 +40,7 @@ Period
 CareType
 Reason
 ReplacementCare
+```
 
 ## BPMN-Prozess
 
@@ -52,6 +53,7 @@ Der zentrale BPMN-Prozess (pflegeprozess.bpmn2) besteht u.a. aus folgenden Schri
 
 ## Projektstruktur 
 
+```
 pflege-prozess/
 ├── src/
 │   ├── main/
@@ -66,6 +68,7 @@ pflege-prozess/
 ├── Dockerfile.jvm
 ├── Dockerfile.native
 └── application.properties
+```
 
 ## Entwicklung & Ausführung
 
@@ -79,6 +82,7 @@ pflege-prozess/
 
 ```bash
 mvn clean quarkus:dev
+```
 
 ## 📨 Automatisierte Kommunikation
 	•	E-Mail-Versand über MailVersand.java, MailVersandAnPflegekraft.java
