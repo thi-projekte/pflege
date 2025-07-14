@@ -51,7 +51,7 @@ private static final Logger Log = getLogger(MailVersandAnPflegekraft.class);
         return htmlContent;
     }
     
-    private  Map<String, String> createPlaceholderMap(FormData formData) {
+    Map<String, String> createPlaceholderMap(FormData formData) {
         Map<String, String> placeholders = new HashMap<>();
 
         // Allgemeine Informationen
@@ -108,7 +108,7 @@ private static final Logger Log = getLogger(MailVersandAnPflegekraft.class);
         return placeholders;
     }
 
-    private void sendEmail(String htmlContent, FormData formData) throws ResendException {
+    protected void sendEmail(String htmlContent, FormData formData) throws ResendException {
         Resend resend = new Resend(resendApiKey);
         String receiver = Optional.ofNullable(formData.getReplacementCareCareGiver())
                             .map(ReplacementCareCareGiver::getEmail)
@@ -124,7 +124,7 @@ private static final Logger Log = getLogger(MailVersandAnPflegekraft.class);
       
     }
 
-    private String loadHtmlTemplate(String fileName) throws IOException {
+    protected String loadHtmlTemplate(String fileName) throws IOException {
         try (InputStream inputStream = MailVersand.class.getClassLoader().getResourceAsStream(fileName)) {
             if (inputStream == null) throw new IOException("HTML Template nicht gefunden: " + fileName);
             StringBuilder content = new StringBuilder();
@@ -137,13 +137,13 @@ private static final Logger Log = getLogger(MailVersandAnPflegekraft.class);
         }
     }
     
-    private String formatAddress(Address address) {
+    String formatAddress(Address address) {
         if (address == null) return "";
         return String.format("%s %s, %s %s", 
             address.getStreet(), address.getHouseNumber(), address.getZip(), address.getCity()).trim();
     }
     
-    private String formatDate(LocalDate date) {
+    String formatDate(LocalDate date) {
         if (date == null) return "";
         try {
             return date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));

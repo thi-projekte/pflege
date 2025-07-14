@@ -48,7 +48,7 @@ public class FormFiller {
         return exportDir + File.separator + "ausgefuellter_antrag.pdf";
     }
  
-    private InputStream loadTemplate() throws IOException {
+    protected InputStream loadTemplate() throws IOException {
         InputStream inputStream = getClass().getClassLoader()
                 .getResourceAsStream("PflegeAntrag/de015_Antrag_Verhinderungspflege.pdf");
         if (inputStream == null) {
@@ -106,13 +106,19 @@ public class FormFiller {
     }
  
     private void fillReason(PDAcroForm form, Reason reason) throws IOException {
-        String text = switch (reason) {
-            case URLAUB -> "weil meine Pflegeperson wegen Urlaub vorübergehend verhindert ist.";
-            case SONSTIGES -> "weil meine Pflegeperson aus sonstigen Gründen vorübergehend verhindert ist";
-            default -> "";
-        };
-        setField(form, "Die stunden- bzw. tageweise Verhinderungspflege wird erbracht:", text);
+    if (reason == null) {
+        setField(form, "Die stunden- bzw. tageweise Verhinderungspflege wird erbracht:", "");
+        return;
     }
+
+    String text = switch (reason) {
+        case URLAUB -> "weil meine Pflegeperson wegen Urlaub vorübergehend verhindert ist.";
+        case SONSTIGES -> "weil meine Pflegeperson aus sonstigen Gründen vorübergehend verhindert ist";
+        default -> "";
+    };
+    setField(form, "Die stunden- bzw. tageweise Verhinderungspflege wird erbracht:", text);
+}
+
  
     private void fillReplacementCare(PDAcroForm form, FormData message) throws IOException {
         if (message.getReplacementCare().isProfessional()) {
@@ -131,7 +137,7 @@ public class FormFiller {
         }
     }
  
-    private void setField(PDAcroForm form, String name, String value) throws IOException {
+    void setField(PDAcroForm form, String name, String value) throws IOException {
         PDField field = form.getField(name);
         if (field != null) {
             field.setValue(value != null ? value : "");
