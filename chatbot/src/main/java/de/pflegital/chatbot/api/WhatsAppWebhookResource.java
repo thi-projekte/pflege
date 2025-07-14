@@ -54,6 +54,13 @@ public class WhatsAppWebhookResource {
         }
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response handleWebhook(String requestBody) {
+        return handleIncomingMessage(requestBody);
+    }
+
     public Response handleIncomingMessage(String requestBody) {
         if (LOGGER.isLoggable(Level.INFO)) {
             LOGGER.info(String.format("Received Whatsapp message: %s", requestBody));

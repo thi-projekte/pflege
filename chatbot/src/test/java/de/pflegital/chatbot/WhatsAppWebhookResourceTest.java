@@ -71,24 +71,26 @@ class WhatsAppWebhookResourceTest {
     @Test
     void testHandleWhatsAppMessage() {
         // Sample WhatsApp message payload
-        String payload = "{\n" +
-                "  \"object\": \"whatsapp_business_account\",\n" +
-                "  \"entry\": [{\n" +
-                "    \"id\": \"123456789\",\n" +
-                "    \"changes\": [{\n" +
-                "      \"field\": \"messages\",\n" +
-                "      \"value\": {\n" +
-                "        \"messages\": [{\n" +
-                "          \"from\": \"491234567890\",\n" +
-                "          \"type\": \"text\",\n" +
-                "          \"text\": {\n" +
-                "            \"body\": \"Hello, this is a test message\"\n" +
-                "          }\n" +
-                "        }]\n" +
-                "      }\n" +
-                "    }]\n" +
-                "  }]\n" +
-                "}";
+        String payload = """
+                {
+                  "object": "whatsapp_business_account",
+                  "entry": [{
+                    "id": "123456789",
+                    "changes": [{
+                      "field": "messages",
+                      "value": {
+                        "messages": [{
+                          "from": "491234567890",
+                          "type": "text",
+                          "text": {
+                            "body": "Hello, this is a test message"
+                          }
+                        }]
+                      }
+                    }]
+                  }]
+                }
+                """;
 
         given()
                 .contentType(ContentType.JSON)
@@ -102,11 +104,11 @@ class WhatsAppWebhookResourceTest {
 
         // Verify the bot was called to process the message
         Mockito.verify(pflegebot, Mockito.times(1))
-                .processUserInput(Mockito.eq("491234567890"), Mockito.eq("Hello, this is a test message"));
+                .processUserInput("491234567890", "Hello, this is a test message");
 
         // Verify a reply was sent
         Mockito.verify(whatsAppClient)
-                .sendWhatsAppReply(Mockito.eq("491234567890"), Mockito.eq("This is a test response"));
+                .sendWhatsAppReply("491234567890", "This is a test response");
     }
 
     @Test

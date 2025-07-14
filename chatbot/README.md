@@ -43,7 +43,7 @@ quarkus dev
 |--------|-------------|-------------------------------------|
 | POST   | `/chat/reply` | Chat-Nachricht senden  (nur für Testzwecke)             |
 | POST   | `/chat/start` | Chat-Session initialisieren (nur für Testzwecke)         |
-| POST   | `/process-webhook` | Zum Aufrufen des BPMN-Prozess         |
+| POST   | `/process-webhook` | kann vom  BPMN-Prozess aufgerufen werden (funktioniert nur mit Whatsappnummer )         |
 | POSt   | `/webhook` | Für Whatsappnachrichten       |
 
 🧪 Die APIs können mit Swagger UI getestet werden
