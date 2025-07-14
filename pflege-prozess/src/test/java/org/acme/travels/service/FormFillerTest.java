@@ -4,6 +4,15 @@ import org.acme.travels.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.acme.travels.model.Address;
+import org.acme.travels.model.Carerecipient;
+import org.acme.travels.model.Caregiver;
+import org.acme.travels.model.FormData;
+import org.acme.travels.model.Reason;
+import org.acme.travels.model.ReplacementCare;
+import org.acme.travels.model.replacementcare.ReplacementCareCareGiver;
+import org.acme.travels.model.Period;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -31,20 +40,20 @@ class FormFillerTest {
     void testFillForm_createsPdf() throws IOException {
         // Arrange – Testdaten bauen
         FormData formData = new FormData();
-        formData.setCarePeriod(new CarePeriod(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 10)));
+        formData.setCarePeriod(new Period(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 10)));
 
         Carerecipient cr = new Carerecipient();
         cr.setFullName("Max Mustermann");
         cr.setBirthDate(LocalDate.of(1970, 1, 1));
         cr.setPhoneNumber("123456789");
-        Address insuredAddress = new Address("Musterstraße", "1", "12345", "Musterstadt");
+        Address insuredAddress = new Address("Musterstraße", 1 , "12345", "Musterstadt");
         cr.setInsuredAddress(insuredAddress);
         formData.setCareRecipient(cr);
 
         Caregiver caregiver = new Caregiver();
         caregiver.setCaregiverName("Erika Musterfrau");
         caregiver.setCaregiverPhoneNumber("987654321");
-        caregiver.setCaregiverAddress(new Address("Pflegeweg", "2", "54321", "Pflegestadt"));
+        caregiver.setCaregiverAddress(new Address("Pflegeweg", 1, "54321", "Pflegestadt"));
         formData.setCaregiver(caregiver);
 
         formData.setReason(Reason.URLAUB);

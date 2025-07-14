@@ -4,6 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class Address {
+    public Address(String street, int houseNumber, String zip, String city) {
+    this.street = street;
+    this.houseNumber = houseNumber;
+    this.zip = zip;
+    this.city = city;
+}
+
 
     @JsonProperty("street")
    
