@@ -139,7 +139,7 @@
     <dependency>
       <groupId>org.apache.syncope.ext.flowable</groupId>
       <artifactId>syncope-ext-flowable-rest-api</artifactId>
-      <version>3.0.12</version>
+      <version>4.0.0</version>
     </dependency>
   
     <dependency>
