@@ -21,7 +21,7 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.version>3.21.0</quarkus.platform.version>
-    <quarkus-plugin.version>3.21.0</quarkus-plugin.version>
+    <quarkus-plugin.version>3.25.0</quarkus-plugin.version>
 
     <!-- Kogito -->
     <kogito.bom.group-id>org.kie.kogito</kogito.bom.group-id>
